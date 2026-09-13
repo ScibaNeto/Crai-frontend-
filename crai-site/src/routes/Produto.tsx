@@ -117,7 +117,7 @@ export function Produto() {
           </div>
           <figure className="rounded-[14px] border border-line bg-slate p-5 md:p-8 lg:col-span-8">
             <ControleChart serie={serieReferencia} titulo={medicao.grafico.titulo} descricao={medicao.grafico.descricao} rotulos={medicao.grafico} />
-            <figcaption className="t-h3 mt-8 border-t border-line pt-6 text-paper">{medicao.legenda}</figcaption>
+            <figcaption className="t-h2 mt-8 border-t border-line pt-6 text-paper">{medicao.legenda}</figcaption>
           </figure>
         </div>
       </section>

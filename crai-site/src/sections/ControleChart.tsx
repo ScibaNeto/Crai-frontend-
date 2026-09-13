@@ -40,7 +40,7 @@ export function ControleChart({ serie, titulo, descricao, rotulos, className }: 
           {ticks.map((t) => (
             <span
               key={t}
-              className="absolute right-0 -translate-y-1/2 text-[12px] text-silver tabular"
+              className="absolute right-0 -translate-y-1/2 font-mono text-[11px] text-silver"
               style={{ top: `${(yDe(t) / H) * 100}%` }}
             >
               {`${Math.round(t)}%`}
@@ -66,7 +66,7 @@ export function ControleChart({ serie, titulo, descricao, rotulos, className }: 
         </SelfDrawingSvg>
       </div>
 
-      <div aria-hidden="true" className="mt-3 flex justify-between pl-10 text-[12px] text-silver tabular">
+      <div aria-hidden="true" className="mt-3 flex justify-between pl-10 font-mono text-[11px] text-silver">
         {rotulosX.map((p, i) => (
           // No mobile, só rótulos alternados (e sempre o último) para não encavalar.
           <span key={p.rotulo} className={i % 2 === 1 && i !== rotulosX.length - 1 ? 'hidden sm:inline' : undefined}>

@@ -40,8 +40,8 @@ export function NotFound() {
       </div>
 
       <div className="container-site relative flex min-h-[72vh] flex-col justify-center py-20">
-        <p className="t-apoio tabular text-silver">{naoEncontrada.codigo}</p>
-        <RevealWords texto={naoEncontrada.titulo} as="h1" className="t-h1 mt-4 max-w-[15em]" start={ready} />
+        <p className="t-mega t-outline">{naoEncontrada.codigo}</p>
+        <RevealWords texto={naoEncontrada.titulo} as="h1" className="t-h1 mt-2 max-w-[15em]" start={ready} />
         <div className="mt-10">
           <Button to={naoEncontrada.link.para} size="lg">
             {naoEncontrada.link.rotulo}

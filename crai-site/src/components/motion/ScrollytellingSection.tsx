@@ -57,10 +57,15 @@ export function ScrollytellingSection({ passos, ilustracao }: ScrollytellingSect
                 ativo === i ? 'w-16' : 'w-0',
               )}
             />
-            <span className={cx('t-apoio tabular transition-colors duration-300', ativo === i ? 'text-paper' : 'text-silver')}>
+            <span
+              className={cx(
+                'font-display block text-[44px] leading-none tracking-[-0.03em] transition-colors duration-300 md:text-[56px]',
+                ativo === i ? 'text-paper' : 'text-silver',
+              )}
+            >
               {passo.numero}
             </span>
-            <h3 className="t-h3 mt-2 text-paper">{passo.titulo}</h3>
+            <h3 className="t-h2 mt-5 text-paper">{passo.titulo}</h3>
             <p className="t-body measure mt-3 text-silver">{passo.texto}</p>
           </li>
         ))}

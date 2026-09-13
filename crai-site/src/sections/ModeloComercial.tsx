@@ -1,12 +1,12 @@
 import { Button } from '../components/ui/Button'
-import { Card } from '../components/ui/Card'
 import { home } from '../data/conteudo'
 
 export function ModeloComercial() {
   const { modelo } = home
   return (
-    <section className="container-site section-y border-t border-line" aria-labelledby="modelo-titulo">
-      <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-8">
+    <section className="container-site section-y" aria-labelledby="modelo-titulo">
+      <div aria-hidden="true" className="ledger-rule" />
+      <div className="mt-8 grid items-start gap-12 lg:grid-cols-12 lg:gap-8">
         <div className="lg:col-span-6">
           <h2 id="modelo-titulo" className="t-h1">
             {modelo.titulo}
@@ -19,17 +19,21 @@ export function ModeloComercial() {
           </div>
         </div>
 
-        <Card className="glow-focus p-6 md:p-8 lg:col-span-5 lg:col-start-8">
-          <h3 className="t-apoio text-silver">{modelo.extratoTitulo}</h3>
-          <dl className="mt-3 divide-y divide-line">
+        {/* Extrato: borda serrilhada, linhas pontilhadas de guia e filete duplo de total. */}
+        <div className="receipt bg-slate px-6 pt-9 pb-7 md:px-8 md:pt-11 lg:col-span-5 lg:col-start-8">
+          <h3 className="t-label text-silver">{modelo.extratoTitulo}</h3>
+          <dl className="mt-5">
             {modelo.extrato.map((linha) => (
-              <div key={linha.rotulo} className="flex items-baseline justify-between gap-6 py-4">
-                <dt className="text-silver">{linha.rotulo}</dt>
-                <dd className="tabular text-right font-[540] text-paper">{linha.valor}</dd>
+              <div key={linha.rotulo} className="flex items-baseline gap-3 py-3">
+                <dt className="flex min-w-0 flex-1 items-baseline gap-3 text-silver after:min-w-6 after:flex-1 after:border-b after:border-dotted after:border-graphite after:content-['']">
+                  {linha.rotulo}
+                </dt>
+                <dd className="text-right font-mono text-[14px] text-paper">{linha.valor}</dd>
               </div>
             ))}
           </dl>
-        </Card>
+          <div aria-hidden="true" className="mt-4 border-t-[3px] border-double border-silver/30" />
+        </div>
       </div>
     </section>
   )

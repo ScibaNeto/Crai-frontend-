@@ -14,7 +14,7 @@ export function PlanCards() {
             {standard.nome}
           </h2>
           <p className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <span className="t-number text-paper">{standard.taxa}</span>
+            <span className="t-figure text-paper">{standard.taxa}</span>
             <span className="text-silver">{standard.base}</span>
           </p>
           <p className="t-apoio mt-4 text-silver">{standard.resumo}</p>
@@ -59,7 +59,7 @@ export function PlanCards() {
 
           <p className="t-apoio mt-7 text-silver">{planosPagina.premiumSoma}</p>
           <p className="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <span className="t-number text-paper">{premium.taxa}</span>
+            <span className="t-figure text-paper">{premium.taxa}</span>
             <span className="text-silver">{premium.base}</span>
           </p>
           <p className="t-apoio mt-4 text-silver">{premium.resumo}</p>

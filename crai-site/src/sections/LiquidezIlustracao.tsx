@@ -48,7 +48,7 @@ export function LiquidezIlustracao() {
 
         <div className="mt-3 grid grid-cols-7 gap-2 md:gap-3">
           {ilustracao.dias.map((dia) => (
-            <span key={dia} className="text-center text-[12px] text-silver tabular">
+            <span key={dia} className="text-center font-mono text-[11px] text-silver">
               {dia}
             </span>
           ))}

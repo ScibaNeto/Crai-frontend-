@@ -45,8 +45,8 @@ export function HeroChart() {
   }
 
   return (
-    <figure className="relative rounded-[14px] border border-line bg-slate/55 p-5 backdrop-blur-[2px] md:p-6">
-      <figcaption className="t-apoio flex items-center justify-between gap-4 text-silver">
+    <figure className="relative border-b border-line pb-5">
+      <figcaption className="t-label flex items-center justify-between gap-4 border-b border-line pb-3 text-silver">
         <span>{grafico.rotulos.faturamento}</span>
         <span className="flex items-center gap-2">
           <span aria-hidden="true" className="h-2 w-2 rounded-full bg-orange" />
@@ -92,7 +92,7 @@ export function HeroChart() {
 
         <motion.span
           aria-hidden="true"
-          className="t-apoio pointer-events-none absolute text-silver"
+          className="t-label pointer-events-none absolute text-silver"
           style={{ left: '24%', top: '58%' }}
           {...aparece(silver.delay + 0.6)}
         >

@@ -33,7 +33,7 @@ export function Stepper({ steps, current, onStepClick, label }: StepperProps) {
                   />
                 </span>
                 <span className="flex min-w-0 flex-col sm:flex-row sm:items-baseline sm:gap-2">
-                  <span className={cx('t-apoio tabular', active || done ? 'text-paper' : 'text-silver')}>{String(i + 1).padStart(2, '0')}</span>
+                  <span className={cx('font-mono text-[12px] leading-[1.6]', active || done ? 'text-paper' : 'text-silver')}>{String(i + 1).padStart(2, '0')}</span>
                   <span
                     className={cx(
                       'text-[13px] leading-[1.35] font-[520] break-words transition-colors sm:text-[15px]',

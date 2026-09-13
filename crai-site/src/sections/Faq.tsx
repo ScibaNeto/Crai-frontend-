@@ -29,7 +29,7 @@ export function Faq() {
                     aria-expanded={open}
                     aria-controls={painelId}
                     onClick={() => setAberto(open ? null : i)}
-                    className="flex w-full items-center justify-between gap-6 rounded-[4px] py-5 text-left text-[17px] font-[540] text-paper transition-colors hover:text-amber focus-visible:outline-offset-2"
+                    className="flex w-full items-center justify-between gap-6 rounded-[4px] py-6 text-left font-display text-[19px] leading-[1.3] text-paper md:text-[22px] transition-colors hover:text-amber focus-visible:outline-offset-2"
                   >
                     <span>{item.pergunta}</span>
                     <motion.span

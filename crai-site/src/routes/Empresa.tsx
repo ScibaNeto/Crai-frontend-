@@ -17,7 +17,7 @@ export function Empresa() {
           <h2 id="proposito-titulo" className="t-h2 lg:col-span-4">
             {proposito.titulo}
           </h2>
-          <p className="t-h3 measure font-[450] text-paper lg:col-span-7 lg:col-start-6">{proposito.texto}</p>
+          <p className="t-quote text-paper lg:col-span-7 lg:col-start-6">{proposito.texto}</p>
         </div>
       </section>
 
@@ -45,7 +45,7 @@ export function Empresa() {
           <ul className="mt-10 grid gap-4 md:grid-cols-3 md:gap-6">
             {time.pessoas.map((pessoa) => (
               <Card as="li" key={pessoa.nome} className="flex flex-col p-6 md:p-8">
-                <span aria-hidden="true" className="grid h-12 w-12 place-items-center rounded-[4px] border border-line bg-ink/50 text-[15px] font-[600] tracking-[-0.01em] text-silver">
+                <span aria-hidden="true" className="font-display text-[56px] leading-none tracking-[-0.03em] text-silver">
                   {iniciais(pessoa.nome)}
                 </span>
                 <h3 className="t-h3 mt-10">{pessoa.nome}</h3>

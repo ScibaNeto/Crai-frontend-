@@ -13,12 +13,12 @@ interface PageShellProps {
 export function PageShell({ titulo, lead, badge, children, className }: PageShellProps) {
   return (
     <div className={className}>
-      <div className="container-site pt-14 pb-12 md:pt-24 md:pb-16">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-          <h1 className={cx('t-h1 max-w-[18em]')}>{titulo}</h1>
+      <div className="container-site pt-14 pb-12 md:pt-24 md:pb-20">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+          <h1 className={cx('t-h1 max-w-[16em]')}>{titulo}</h1>
           {badge}
         </div>
-        {lead ? <p className="t-body measure mt-5 text-silver">{lead}</p> : null}
+        {lead ? <p className="t-body measure mt-6 text-silver">{lead}</p> : null}
       </div>
       {children}
     </div>

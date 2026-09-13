@@ -62,7 +62,7 @@ export function MorphIcon() {
           strokeLinejoin="round"
         />
       </svg>
-      <p className="text-[17px] font-[560] text-paper" aria-live="polite">
+      <p className="font-display text-[22px] leading-[1.2] text-paper" aria-live="polite">
         {confirmado ? morph.depois : morph.antes}
       </p>
     </div>

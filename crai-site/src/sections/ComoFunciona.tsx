@@ -27,9 +27,14 @@ function Ilustracao({ ativo }: { ativo: number }) {
                 ) : null}
                 <span className="relative flex items-start justify-between">
                   <Icone size={26} className={cx('transition-colors duration-300', on ? 'text-orange' : 'text-silver')} />
-                  <span className="t-apoio tabular text-silver">{passo.numero}</span>
+                  <span className="t-label text-silver">{passo.numero}</span>
                 </span>
-                <span className={cx('relative mt-8 block text-[17px] font-[560] transition-colors duration-300 md:mt-12', on ? 'text-paper' : 'text-silver')}>
+                <span
+                  className={cx(
+                    'font-display relative mt-8 block text-[22px] leading-[1.1] tracking-[-0.01em] transition-colors duration-300 md:mt-12 md:text-[26px]',
+                    on ? 'text-paper' : 'text-silver',
+                  )}
+                >
                   {passo.titulo}
                 </span>
               </motion.li>
@@ -71,9 +76,10 @@ function Ilustracao({ ativo }: { ativo: number }) {
 export function ComoFunciona() {
   const { comoFunciona } = home
   return (
-    <section className="section-y border-t border-line" aria-labelledby="como-titulo">
+    <section className="section-y" aria-labelledby="como-titulo">
       <div className="container-site">
-        <h2 id="como-titulo" className="t-h2">
+        <div aria-hidden="true" className="ledger-rule" />
+        <h2 id="como-titulo" className="t-h1 mt-8">
           {comoFunciona.titulo}
         </h2>
         <div className="mt-10 lg:mt-4">

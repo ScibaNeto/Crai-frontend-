@@ -206,7 +206,7 @@ export function Pagamento() {
                 <p className="t-apoio mt-2 text-silver">{pagamento.resumo.estimativaNota}</p>
               </div>
 
-              <div className="mt-6 flex items-baseline justify-between gap-4 border-t border-line pt-6">
+              <div className="mt-6 flex items-baseline justify-between gap-4 border-t-[3px] border-double border-silver/30 pt-6">
                 <span className="font-[560] text-paper">{pagamento.resumo.totalHoje}</span>
                 <span className="t-number text-paper">{formatBRL(0)}</span>
               </div>

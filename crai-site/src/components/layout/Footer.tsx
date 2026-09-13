@@ -38,6 +38,13 @@ export function Footer() {
       </div>
 
       <p className="t-apoio container-site pb-8 text-center text-silver">{rodape.legal}</p>
+
+      {/* Assinatura: wordmark gigante e apagado, cortado pela borda da página. */}
+      <div aria-hidden="true" className="container-site overflow-hidden select-none">
+        <div className="translate-y-[22%] text-[clamp(96px,27vw,340px)] opacity-[0.07]">
+          <Wordmark instant decorative />
+        </div>
+      </div>
     </footer>
   )
 }
