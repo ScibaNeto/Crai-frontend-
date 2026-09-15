@@ -8,15 +8,13 @@ import { Checkbox, Field } from '../components/ui/Field'
 import { Select } from '../components/ui/Select'
 import { Stepper } from '../components/ui/Stepper'
 import { Toggle } from '../components/ui/Toggle'
-import { cadastro, simuladorCopy } from '../data/conteudo'
-import { empresa, operacao, responsavel } from '../data/mockCadastro'
+import { mockCadastro } from '../data/mockCadastro'
 import { interpolar } from '../lib/cx'
 import { formatCNPJ, formatTelefone, somenteDigitos } from '../lib/format'
+import { useConteudo, useLang } from '../lib/i18n'
 import { EASE_EXPO } from '../lib/intro'
 import type { Plano } from '../lib/simulador'
 import { useReducedMotion } from '../lib/useReducedMotion'
-
-const opcoesPlano = simuladorCopy.planos as { value: Plano; label: string }[]
 
 interface DadosOperacao {
   plano: Plano
@@ -26,17 +24,29 @@ interface DadosOperacao {
   aceitouComunicacao: boolean
 }
 
+/** Remonta o formulário ao trocar de idioma: o pré-preenchimento de demonstração é refeito no idioma novo. */
 export function Cadastro() {
+  const lang = useLang()
+  return <CadastroForm key={lang} />
+}
+
+function CadastroForm() {
   const navigate = useNavigate()
   const reduced = useReducedMotion()
+  const conteudo = useConteudo()
+  const { cadastro, simuladorCopy } = conteudo
   const [etapa, setEtapa] = useState(0)
   const [direcao, setDirecao] = useState(1)
-  const [dadosEmpresa, setDadosEmpresa] = useState({ ...empresa, assinantes: String(empresa.assinantes) })
-  const [dadosResp, setDadosResp] = useState(responsavel)
-  const [dadosOp, setDadosOp] = useState<DadosOperacao>(operacao)
+  const [dadosEmpresa, setDadosEmpresa] = useState(() => {
+    const { empresa } = mockCadastro(conteudo)
+    return { ...empresa, assinantes: String(empresa.assinantes) }
+  })
+  const [dadosResp, setDadosResp] = useState(() => mockCadastro(conteudo).responsavel)
+  const [dadosOp, setDadosOp] = useState<DadosOperacao>(() => mockCadastro(conteudo).operacao)
   const tituloRef = useRef<HTMLHeadingElement>(null)
   const precisaFoco = useRef(false)
 
+  const opcoesPlano = simuladorCopy.planos as { value: Plano; label: string }[]
   const total = cadastro.etapas.length
   const ultima = etapa === total - 1
 

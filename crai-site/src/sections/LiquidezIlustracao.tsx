@@ -1,4 +1,4 @@
-import { produto } from '../data/conteudo'
+import { useConteudo } from '../lib/i18n'
 import { cx } from '../lib/cx'
 
 // Forma ilustrativa do saldo ao longo do mês (sem valores exibidos).
@@ -7,7 +7,7 @@ const FIXA = 0
 const JANELA = 2
 
 export function LiquidezIlustracao() {
-  const { ilustracao } = produto.liquidez
+  const { ilustracao } = useConteudo().produto.liquidez
   return (
     <figure className="rounded-[14px] border border-line bg-slate p-5 md:p-8">
       <p className="sr-only">

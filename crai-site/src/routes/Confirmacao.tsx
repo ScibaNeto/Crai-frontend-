@@ -1,8 +1,9 @@
 import { SelfDrawingSvg } from '../components/motion/SelfDrawingSvg'
 import { Button } from '../components/ui/Button'
-import { confirmacao } from '../data/conteudo'
+import { useConteudo } from '../lib/i18n'
 
 export function Confirmacao() {
+  const { confirmacao } = useConteudo()
   return (
     <section className="container-site pt-16 pb-24 md:pt-28 md:pb-40">
       <SelfDrawingSvg

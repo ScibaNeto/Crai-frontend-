@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { home } from '../data/conteudo'
+import { useConteudo } from '../lib/i18n'
 import { useIntroReady } from '../lib/intro'
 import { useReducedMotion } from '../lib/useReducedMotion'
 
@@ -16,7 +16,7 @@ const EASE_DESENHO = [0.65, 0, 0.35, 1] as const
 export function HeroChart() {
   const ready = useIntroReady()
   const reduced = useReducedMotion()
-  const { grafico } = home.hero
+  const { grafico } = useConteudo().home.hero
 
   const t0 = 0.35
   const silver = { delay: t0, duration: 0.8 }

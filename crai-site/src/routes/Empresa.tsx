@@ -1,6 +1,6 @@
 import { PageShell } from '../components/layout/PageShell'
 import { Card } from '../components/ui/Card'
-import { empresaPagina } from '../data/conteudo'
+import { useConteudo } from '../lib/i18n'
 
 function iniciais(nome: string) {
   const partes = nome.split(' ').filter((p) => p.length > 2)
@@ -8,6 +8,7 @@ function iniciais(nome: string) {
 }
 
 export function Empresa() {
+  const { empresaPagina } = useConteudo()
   const { proposito, operacao, time, origem } = empresaPagina
 
   return (

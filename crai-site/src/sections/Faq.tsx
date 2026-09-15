@@ -1,12 +1,12 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { IconPlus } from '../components/icons/Icons'
-import { planosPagina } from '../data/conteudo'
+import { useConteudo } from '../lib/i18n'
 import { EASE_EXPO } from '../lib/intro'
 
 /** Accordion com microinteração (10.7): + gira 45° e vira ×; altura animada. */
 export function Faq() {
-  const { faq } = planosPagina
+  const { faq } = useConteudo().planosPagina
   const [aberto, setAberto] = useState<number | null>(null)
 
   return (

@@ -5,24 +5,24 @@ import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Field } from '../components/ui/Field'
 import { Toggle } from '../components/ui/Toggle'
-import { simuladorCopy } from '../data/conteudo'
-import { empresa } from '../data/mockCadastro'
+import { empresaBase } from '../data/mockCadastro'
 import { interpolar } from '../lib/cx'
-import { formatBRLInteiro, formatNumero, somenteDigitos } from '../lib/format'
+import { somenteDigitos } from '../lib/format'
+import { useConteudo, useFormato } from '../lib/i18n'
 import { simular, type Plano } from '../lib/simulador'
 
 const MIN = 10_000
 const MAX = 700_000
 const PASSO = 1_000
 
-const opcoesPlano = simuladorCopy.planos as { value: Plano; label: string }[]
-
 export function Simulador() {
-  const [mrr, setMrr] = useState(empresa.mrr)
+  const { simuladorCopy: s } = useConteudo()
+  const f = useFormato()
+  const [mrr, setMrr] = useState(empresaBase.mrr)
   const [plano, setPlano] = useState<Plano>('standard')
   const r = simular(mrr, plano)
-  const s = simuladorCopy
 
+  const opcoesPlano = s.planos as { value: Plano; label: string }[]
   const noTrilho = Math.min(MAX, Math.max(MIN, mrr))
   const progresso = ((noTrilho - MIN) / (MAX - MIN)) * 100
 
@@ -41,7 +41,7 @@ export function Simulador() {
               label={s.mrrRotulo}
               inputMode="numeric"
               autoComplete="off"
-              value={mrr ? formatNumero(mrr) : ''}
+              value={mrr ? f.numero(mrr) : ''}
               onChange={(e) => setMrr(Number(somenteDigitos(e.target.value).slice(0, 9)))}
               className="tabular text-[20px] font-[560]"
             />
@@ -57,13 +57,13 @@ export function Simulador() {
               max={MAX}
               step={PASSO}
               value={noTrilho}
-              aria-valuetext={formatBRLInteiro(noTrilho)}
+              aria-valuetext={f.brlInteiro(noTrilho)}
               onChange={(e) => setMrr(Number(e.target.value))}
               style={{ '--p': `${progresso}%` } as CSSProperties}
             />
             <div aria-hidden="true" className="mt-1 flex justify-between text-[12px] text-silver tabular">
-              <span>{formatBRLInteiro(MIN)}</span>
-              <span>{formatBRLInteiro(MAX)}</span>
+              <span>{f.brlInteiro(MIN)}</span>
+              <span>{f.brlInteiro(MAX)}</span>
             </div>
 
             <p className="t-apoio mt-3 min-h-[21px] text-silver" role="status">
@@ -78,18 +78,18 @@ export function Simulador() {
               <div>
                 <dt className="t-apoio text-silver">{s.saidas.risco}</dt>
                 <dd className="t-number-sm mt-2 text-paper">
-                  <CountUp value={r.receitaEmRisco} format={formatBRLInteiro} />
+                  <CountUp value={r.receitaEmRisco} format={f.brlInteiro} />
                 </dd>
               </div>
               <div>
                 <dt className="t-apoio text-silver">{s.saidas.ganho}</dt>
                 <dd className="mt-2">
                   <span className="t-number-sm block text-paper">
-                    <CountUp value={r.ganhoIncrementalRS} format={formatBRLInteiro} />
+                    <CountUp value={r.ganhoIncrementalRS} format={f.brlInteiro} />
                   </span>
                   {plano === 'premium' ? (
                     <span className="t-apoio mt-1 block text-silver">
-                      {interpolar(s.preservada, { valor: formatBRLInteiro(r.receitaPreservada) })}
+                      {interpolar(s.preservada, { valor: f.brlInteiro(r.receitaPreservada) })}
                     </span>
                   ) : null}
                 </dd>
@@ -98,13 +98,13 @@ export function Simulador() {
                 <dt className="t-apoio text-silver">{s.saidas.taxa}</dt>
                 <dd className="mt-2">
                   <span className="t-number-sm block text-paper">
-                    <CountUp value={r.taxaCrai} format={formatBRLInteiro} />
+                    <CountUp value={r.taxaCrai} format={f.brlInteiro} />
                   </span>
                   <span className="t-apoio mt-1 block text-silver">
                     {plano === 'premium'
                       ? interpolar(s.taxaDetalhePremium, {
-                          rec: formatBRLInteiro(r.taxaStandard),
-                          ret: formatBRLInteiro(r.taxaRetencao),
+                          rec: f.brlInteiro(r.taxaStandard),
+                          ret: f.brlInteiro(r.taxaRetencao),
                         })
                       : s.taxaDetalheStandard}
                   </span>
@@ -113,7 +113,7 @@ export function Simulador() {
               <div className="border-t border-line pt-6 sm:col-span-2">
                 <dt className="t-apoio text-silver">{s.saidas.fica}</dt>
                 <dd className="t-number mt-3 text-orange">
-                  <CountUp value={r.ficaComVoce} format={formatBRLInteiro} />
+                  <CountUp value={r.ficaComVoce} format={f.brlInteiro} />
                 </dd>
               </div>
             </dl>

@@ -1,8 +1,8 @@
-import { home } from '../data/conteudo'
+import { useConteudo } from '../lib/i18n'
 
 /** Bloco de honestidade, 12/12, fundo slate com hachura discreta. */
 export function NaoFazemos() {
-  const { naoFaz } = home
+  const { naoFaz } = useConteudo().home
   return (
     <section className="hatch section-y bg-slate" aria-labelledby="naofaz-titulo">
       <div className="container-site">

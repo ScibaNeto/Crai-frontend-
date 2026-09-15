@@ -1,6 +1,6 @@
 import { IconCardFail, IconClockRetry, IconExit } from '../components/icons/Icons'
 import { HorizontalRail } from '../components/motion/HorizontalRail'
-import { home } from '../data/conteudo'
+import { useConteudo } from '../lib/i18n'
 
 const ICONES = {
   falha: IconCardFail,
@@ -10,7 +10,7 @@ const ICONES = {
 
 /** Três blocos sem numeração — não é sequência. Colunas abertas, separadas por filete, como num relatório. */
 export function OndeEscapa() {
-  const { escapa } = home
+  const { escapa } = useConteudo().home
   return (
     <section className="container-site section-y" aria-labelledby="escapa-titulo">
       <div aria-hidden="true" className="ledger-rule" />

@@ -2,6 +2,7 @@ import { SelfDrawingSvg } from '../components/motion/SelfDrawingSvg'
 import type { PontoSerie } from '../data/mockPainel'
 import { areaEntre, caminhoSuave, escalarSerie } from '../lib/chart'
 import { cx } from '../lib/cx'
+import { useRotuloSerie } from '../lib/rotuloSerie'
 
 interface ControleChartProps {
   serie: PontoSerie[]
@@ -17,6 +18,7 @@ const MY = 14
 
 /** Controle × tratado, com a área entre as linhas em laranja. Linhas se desenham ao entrar na tela. */
 export function ControleChart({ serie, titulo, descricao, rotulos, className }: ControleChartProps) {
+  const rotular = useRotuloSerie()
   const controle = serie.map((p) => p.controle)
   const tratado = serie.map((p) => p.tratado)
   const min = Math.floor((Math.min(...controle) - 4) / 10) * 10
@@ -29,7 +31,7 @@ export function ControleChart({ serie, titulo, descricao, rotulos, className }: 
   const yDe = (v: number) => MY + (1 - (v - min) / (max - min)) * (H - MY * 2)
 
   const passoRotulo = Math.max(1, Math.ceil(serie.length / 6))
-  const rotulosX = serie.filter((_, i) => i % passoRotulo === 0 || i === serie.length - 1)
+  const rotulosX = serie.filter((_, i) => i % passoRotulo === 0 || i === serie.length - 1).map((p) => rotular(p.rotulo))
   const ultimoT = ptsTratado[ptsTratado.length - 1]
   const ultimoC = ptsControle[ptsControle.length - 1]
 
@@ -67,10 +69,10 @@ export function ControleChart({ serie, titulo, descricao, rotulos, className }: 
       </div>
 
       <div aria-hidden="true" className="mt-3 flex justify-between pl-10 font-mono text-[11px] text-silver">
-        {rotulosX.map((p, i) => (
+        {rotulosX.map((rotulo, i) => (
           // No mobile, só rótulos alternados (e sempre o último) para não encavalar.
-          <span key={p.rotulo} className={i % 2 === 1 && i !== rotulosX.length - 1 ? 'hidden sm:inline' : undefined}>
-            {p.rotulo}
+          <span key={rotulo} className={i % 2 === 1 && i !== rotulosX.length - 1 ? 'hidden sm:inline' : undefined}>
+            {rotulo}
           </span>
         ))}
       </div>

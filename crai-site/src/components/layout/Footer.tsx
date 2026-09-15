@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
-import { site } from '../../data/conteudo'
+import { useConteudo } from '../../lib/i18n'
 import { Wordmark } from '../ui/Wordmark'
 
 export function Footer() {
+  const { site } = useConteudo()
   const { rodape } = site
   return (
     <footer className="border-t border-line">

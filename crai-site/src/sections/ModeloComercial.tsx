@@ -1,8 +1,8 @@
 import { Button } from '../components/ui/Button'
-import { home } from '../data/conteudo'
+import { useConteudo } from '../lib/i18n'
 
 export function ModeloComercial() {
-  const { modelo } = home
+  const { modelo } = useConteudo().home
   return (
     <section className="container-site section-y" aria-labelledby="modelo-titulo">
       <div aria-hidden="true" className="ledger-rule" />

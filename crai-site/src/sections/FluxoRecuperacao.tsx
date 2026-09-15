@@ -1,5 +1,5 @@
 import { SelfDrawingSvg } from '../components/motion/SelfDrawingSvg'
-import { produto } from '../data/conteudo'
+import { useConteudo } from '../lib/i18n'
 
 interface NoProps {
   x: number
@@ -58,7 +58,7 @@ const conector = {
 
 /** Diagrama auto-desenhado (10.4) — protagonista do Produto. Horizontal no desktop, vertical no mobile. */
 export function FluxoRecuperacao() {
-  const { fluxo } = produto.recuperacao
+  const { fluxo } = useConteudo().produto.recuperacao
   const { nos } = fluxo
 
   return (

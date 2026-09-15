@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useEffect, useId, useRef, useState } from 'react'
-import { produto } from '../data/conteudo'
+import { useConteudo } from '../lib/i18n'
 import { useInView } from '../lib/useInView'
 import { useReducedMotion } from '../lib/useReducedMotion'
 
@@ -17,7 +17,7 @@ const SILVER = '#A6AAAD'
 const LARANJA = '#EF9311'
 
 export function MorphIcon() {
-  const { morph } = produto.recuperacao
+  const { morph } = useConteudo().produto.recuperacao
   const reduced = useReducedMotion()
   const [ref, inView] = useInView<HTMLDivElement>({ threshold: 0.6 })
   const [confirmado, setConfirmado] = useState(false)

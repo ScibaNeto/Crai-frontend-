@@ -1,9 +1,8 @@
 import type { ReactNode } from 'react'
 import { CountUp } from '../components/motion/CountUp'
-import { produto } from '../data/conteudo'
+import { useConteudo, useFormato } from '../lib/i18n'
 import { cobrancas, periodos, serieReferencia } from '../data/mockPainel'
 import { areaEntre, caminhoSuave, escalarSerie } from '../lib/chart'
-import { formatBRL } from '../lib/format'
 import { StatusCobrancaTag } from './StatusCobrancaTag'
 
 function Janela({ titulo, children }: { titulo: string; children: ReactNode }) {
@@ -24,7 +23,8 @@ function Janela({ titulo, children }: { titulo: string; children: ReactNode }) {
 
 /** Três "prints" do painel como componentes React — não imagens. */
 export function PainelPrints() {
-  const { prints } = produto.painel
+  const { prints } = useConteudo().produto.painel
+  const f = useFormato()
   const ind = periodos['30d'].indicadores
   const escala = { largura: 280, altura: 120, min: 30, max: 60, margemX: 2, margemY: 6 }
   const c = escalarSerie(
@@ -41,7 +41,7 @@ export function PainelPrints() {
       <li>
         <Janela titulo={prints.indicador}>
           <p className="t-number-sm mt-auto text-orange">
-            <CountUp value={ind.ganhoIncremental} format={formatBRL} />
+            <CountUp value={ind.ganhoIncremental} format={f.brl} />
           </p>
           <p className="t-apoio mt-2 text-silver">{prints.indicadorDetalhe}</p>
         </Janela>
@@ -62,7 +62,7 @@ export function PainelPrints() {
               <li key={cb.id} className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
                 <span className="min-w-0 truncate text-paper">{cb.assinante}</span>
                 <span className="flex shrink-0 items-center gap-3">
-                  <span className="tabular text-silver">{formatBRL(cb.valor)}</span>
+                  <span className="tabular text-silver">{f.brl(cb.valor)}</span>
                   <StatusCobrancaTag status={cb.status} compacto />
                 </span>
               </li>

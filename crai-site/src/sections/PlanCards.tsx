@@ -1,11 +1,15 @@
 import { IconCheck } from '../components/icons/Icons'
 import { TiltCard } from '../components/motion/TiltCard'
 import { Button } from '../components/ui/Button'
-import { planosPagina } from '../data/conteudo'
-import { premium, standard } from '../data/planos'
+import { getPlanos } from '../data/planos'
+import { useConteudo } from '../lib/i18n'
 
 /** Dois cards em degrau: o Premium envolve visualmente o bloco "Tudo do Standard". Nenhum preço mensal. */
 export function PlanCards() {
+  const conteudo = useConteudo()
+  const { planosPagina } = conteudo
+  const { standard, premium } = getPlanos(conteudo)
+
   return (
     <div className="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-6">
       <TiltCard className="rounded-[14px] lg:col-span-5">

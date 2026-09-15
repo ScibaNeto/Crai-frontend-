@@ -2,18 +2,26 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { IconArrowRight } from '../components/icons/Icons'
 import { PageShell } from '../components/layout/PageShell'
+import { SelfDrawingSvg } from '../components/motion/SelfDrawingSvg'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Field, TextArea } from '../components/ui/Field'
 import { Select } from '../components/ui/Select'
-import { contatoPagina } from '../data/conteudo'
-import { contato } from '../data/mockCadastro'
-import { SelfDrawingSvg } from '../components/motion/SelfDrawingSvg'
+import { mockCadastro } from '../data/mockCadastro'
+import { useConteudo, useLang } from '../lib/i18n'
 
 type Estado = 'editando' | 'enviando' | 'enviado'
 
+/** Remonta o formulário ao trocar de idioma: o pré-preenchimento de demonstração é refeito no idioma novo. */
 export function Contato() {
-  const [form, setForm] = useState(contato)
+  const lang = useLang()
+  return <ContatoForm key={lang} />
+}
+
+function ContatoForm() {
+  const conteudo = useConteudo()
+  const { contatoPagina } = conteudo
+  const [form, setForm] = useState(() => mockCadastro(conteudo).contato)
   const [estado, setEstado] = useState<Estado>('editando')
   const sucessoRef = useRef<HTMLHeadingElement>(null)
   const c = contatoPagina.campos

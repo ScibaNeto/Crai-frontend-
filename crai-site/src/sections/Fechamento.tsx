@@ -1,8 +1,8 @@
 import { Button } from '../components/ui/Button'
-import { home } from '../data/conteudo'
+import { useConteudo } from '../lib/i18n'
 
 export function Fechamento() {
-  const { fechamento } = home
+  const { fechamento } = useConteudo().home
   return (
     <section className="container-site section-y" aria-labelledby="fechamento-titulo">
       <div aria-hidden="true" className="ledger-rule" />

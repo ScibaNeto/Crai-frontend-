@@ -3,7 +3,7 @@ import { AmbientBackground } from '../components/motion/AmbientBackground'
 import { MagneticButton } from '../components/motion/MagneticButton'
 import { RevealWords } from '../components/motion/Reveal'
 import { Button } from '../components/ui/Button'
-import { home } from '../data/conteudo'
+import { useConteudo } from '../lib/i18n'
 import { EASE_EXPO, useIntroReady } from '../lib/intro'
 import { useReducedMotion } from '../lib/useReducedMotion'
 import { HeroChart } from './HeroChart'
@@ -11,7 +11,7 @@ import { HeroChart } from './HeroChart'
 export function HeroHome() {
   const ready = useIntroReady()
   const reduced = useReducedMotion()
-  const { hero } = home
+  const { hero } = useConteudo().home
 
   const entra = (delay: number) => ({
     initial: { opacity: 0, y: reduced ? 0 : 12 },

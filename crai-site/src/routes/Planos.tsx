@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { PageShell } from '../components/layout/PageShell'
-import { planosPagina } from '../data/conteudo'
+import { useConteudo } from '../lib/i18n'
 import { useReducedMotion } from '../lib/useReducedMotion'
 import { Faq } from '../sections/Faq'
 import { PlanCards } from '../sections/PlanCards'
@@ -10,6 +10,7 @@ import { Simulador } from '../sections/Simulador'
 export function Planos() {
   const { hash } = useLocation()
   const reduced = useReducedMotion()
+  const { planosPagina } = useConteudo()
 
   useEffect(() => {
     if (!hash) return

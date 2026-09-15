@@ -1,6 +1,6 @@
 import { RevealWords } from '../components/motion/Reveal'
 import { Button } from '../components/ui/Button'
-import { naoEncontrada } from '../data/conteudo'
+import { useConteudo } from '../lib/i18n'
 import { useIntroReady } from '../lib/intro'
 import { useReducedMotion } from '../lib/useReducedMotion'
 
@@ -11,6 +11,7 @@ const BLOB_B = 'M210 72 C300 70 335 135 348 205 C360 285 280 335 190 338 C100 34
 export function NotFound() {
   const reduced = useReducedMotion()
   const ready = useIntroReady()
+  const { naoEncontrada } = useConteudo()
 
   return (
     <section className="relative overflow-hidden">

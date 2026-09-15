@@ -5,10 +5,9 @@ import { PageShell } from '../components/layout/PageShell'
 import { CountUp } from '../components/motion/CountUp'
 import { Skeleton } from '../components/motion/Skeleton'
 import { Badge } from '../components/ui/Badge'
-import { painel } from '../data/conteudo'
 import { cobrancas, empresaPainel, ordemPeriodos, periodos, riscosCancelamento, type Periodo } from '../data/mockPainel'
 import { cx, interpolar } from '../lib/cx'
-import { formatBRL, formatBRLInteiro } from '../lib/format'
+import { useConteudo, useFormato } from '../lib/i18n'
 import { ControleChart } from '../sections/ControleChart'
 import { StatusCobrancaTag } from '../sections/StatusCobrancaTag'
 
@@ -84,18 +83,20 @@ function SkeletonRetencao() {
 }
 
 function Recuperacao({ periodo }: { periodo: Periodo }) {
+  const { painel } = useConteudo()
+  const f = useFormato()
   const { indicadores: ind, serie } = periodos[periodo]
   const t = painel.indicadores
   const kpis = [
-    { id: 'risco', rotulo: t.risco, valor: ind.receitaEmRisco, detalhe: t.riscoDetalhe, formato: formatBRLInteiro, destaque: false },
-    { id: 'recuperada', rotulo: t.recuperada, valor: ind.receitaRecuperada, detalhe: t.recuperadaDetalhe, formato: formatBRLInteiro, destaque: false },
-    { id: 'ganho', rotulo: t.ganho, valor: ind.ganhoIncremental, detalhe: t.ganhoDetalhe, formato: formatBRLInteiro, destaque: true },
+    { id: 'risco', rotulo: t.risco, valor: ind.receitaEmRisco, detalhe: t.riscoDetalhe, formato: f.brlInteiro, destaque: false },
+    { id: 'recuperada', rotulo: t.recuperada, valor: ind.receitaRecuperada, detalhe: t.recuperadaDetalhe, formato: f.brlInteiro, destaque: false },
+    { id: 'ganho', rotulo: t.ganho, valor: ind.ganhoIncremental, detalhe: t.ganhoDetalhe, formato: f.brlInteiro, destaque: true },
     {
       id: 'taxa',
       rotulo: t.taxa,
       valor: ind.taxaCrai,
-      detalhe: interpolar(t.taxaDetalhe, { rec: formatBRL(ind.taxaRecuperacao), ret: formatBRL(ind.taxaRetencao) }),
-      formato: formatBRL,
+      detalhe: interpolar(t.taxaDetalhe, { rec: f.brl(ind.taxaRecuperacao), ret: f.brl(ind.taxaRetencao) }),
+      formato: f.brl,
       destaque: false,
     },
   ]
@@ -149,9 +150,11 @@ function Recuperacao({ periodo }: { periodo: Periodo }) {
                   <th scope="row" className="px-4 py-3 font-[450] text-paper md:px-6">
                     {c.assinante}
                   </th>
-                  <td className="px-4 py-3 text-right text-paper md:px-6">{formatBRL(c.valor)}</td>
-                  <td className="px-4 py-3 text-silver md:px-6">{c.motivo}</td>
-                  <td className="px-4 py-3 text-silver md:px-6">{c.janela}</td>
+                  <td className="px-4 py-3 text-right text-paper md:px-6">{f.brl(c.valor)}</td>
+                  <td className="px-4 py-3 text-silver md:px-6">{painel.motivos[c.motivo]}</td>
+                  <td className="px-4 py-3 text-silver md:px-6">
+                    {c.janela ? interpolar(painel.tabela.janela, { ...c.janela }) : painel.tabela.semJanela}
+                  </td>
                   <td className="px-4 py-3 md:px-6">
                     <StatusCobrancaTag status={c.status} />
                   </td>
@@ -167,16 +170,18 @@ function Recuperacao({ periodo }: { periodo: Periodo }) {
 }
 
 function Retencao() {
+  const { painel } = useConteudo()
+  const { retencao } = painel
   return (
     <section className={bloco} aria-labelledby="retencao-titulo">
       <h2 id="retencao-titulo" className="px-4 pt-4 text-[15px] font-[560] text-paper md:px-6 md:pt-5">
-        {painel.retencao.titulo}
+        {retencao.titulo}
       </h2>
       <div className="mt-3 overflow-x-auto" role="region" aria-labelledby="retencao-titulo" tabIndex={0}>
         <table className="w-full min-w-[720px] text-left text-[14px]">
           <thead>
             <tr className="border-b border-line text-silver">
-              {painel.retencao.colunas.map((coluna) => (
+              {retencao.colunas.map((coluna) => (
                 <th key={coluna} scope="col" className="px-4 py-3 font-[500] md:px-6">
                   {coluna}
                 </th>
@@ -184,31 +189,35 @@ function Retencao() {
             </tr>
           </thead>
           <tbody>
-            {riscosCancelamento.map((r) => (
-              <tr key={r.id} className="border-b border-line last:border-0 hover:bg-paper/[0.025]">
-                <th scope="row" className="px-4 py-3.5 font-[450] md:px-6">
-                  <span className="block text-paper">{r.assinante}</span>
-                  <span className="block text-[13px] text-silver">{r.plano}</span>
-                </th>
-                <td className="px-4 py-3.5 text-silver md:px-6">{r.sinal}</td>
-                <td className="px-4 py-3.5 md:px-6">
-                  <Badge tone={r.risco === 'Alto' ? 'beta' : 'neutral'}>{r.risco}</Badge>
-                </td>
-                <td className="px-4 py-3.5 text-paper md:px-6">{r.acao}</td>
-              </tr>
-            ))}
+            {riscosCancelamento.map((r) => {
+              const caso = retencao.casos[r.id]
+              return (
+                <tr key={r.id} className="border-b border-line last:border-0 hover:bg-paper/[0.025]">
+                  <th scope="row" className="px-4 py-3.5 font-[450] md:px-6">
+                    <span className="block text-paper">{r.assinante}</span>
+                    <span className="block text-[13px] text-silver">{retencao.planosAssinante[r.plano]}</span>
+                  </th>
+                  <td className="px-4 py-3.5 text-silver md:px-6">{caso.sinal}</td>
+                  <td className="px-4 py-3.5 md:px-6">
+                    <Badge tone={r.risco === 'alto' ? 'beta' : 'neutral'}>{retencao.riscos[r.risco]}</Badge>
+                  </td>
+                  <td className="px-4 py-3.5 text-paper md:px-6">{caso.acao}</td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>
       <p className="t-apoio flex items-start gap-3 border-t border-line px-4 py-4 text-silver md:px-6">
         <IconShield size={18} className="mt-0.5 shrink-0" />
-        {painel.retencao.nota}
+        {retencao.nota}
       </p>
     </section>
   )
 }
 
 export function Painel() {
+  const { painel } = useConteudo()
   const [periodo, setPeriodo] = useState<Periodo>('30d')
   const [aba, setAba] = useState<Aba>('recuperacao')
   const [carregando, setCarregando] = useState(true)
@@ -333,7 +342,7 @@ export function Painel() {
                           transition={{ type: 'spring', stiffness: 520, damping: 40 }}
                         />
                       ) : null}
-                      <span className="relative">{periodos[p].rotulo}</span>
+                      <span className="relative">{painel.periodos[p]}</span>
                     </button>
                   )
                 })}

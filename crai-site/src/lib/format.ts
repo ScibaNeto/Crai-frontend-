@@ -1,36 +1,67 @@
-const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
-const brlInteiro = new Intl.NumberFormat('pt-BR', {
-  style: 'currency',
-  currency: 'BRL',
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-})
-const numero = new Intl.NumberFormat('pt-BR')
+import { LANG_LOCALE, type Lang } from './lang'
 
-export function formatBRL(valor: number) {
-  return brl.format(valor)
+// Moeda é sempre BRL nos dois idiomas (a operação é brasileira). O idioma muda só o locale do Intl:
+// separador decimal, agrupamento e ordem da data curta.
+
+export interface Formatadores {
+  /** R$ 1.234,56 · R$1,234.56 */
+  brl: (valor: number) => string
+  /** Sem centavos, arredondado. */
+  brlInteiro: (valor: number) => string
+  numero: (valor: number) => string
+  percent: (valor: number, casas?: number) => string
+  /** Percentual que já vem em pontos (ex.: 54.6 → "54,6%" / "54.6%"). */
+  pontos: (valor: number, casas?: number) => string
+  /** Dia e mês numéricos (14/08 · 08/14). */
+  dataCurta: (data: Date) => string
 }
 
-export function formatBRLInteiro(valor: number) {
-  return brlInteiro.format(Math.round(valor))
+const cache = new Map<Lang, Formatadores>()
+
+export function criarFormatadores(lang: Lang): Formatadores {
+  const pronto = cache.get(lang)
+  if (pronto) return pronto
+
+  const locale = LANG_LOCALE[lang]
+  const brl = new Intl.NumberFormat(locale, { style: 'currency', currency: 'BRL' })
+  const brlInteiro = new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  })
+  const numero = new Intl.NumberFormat(locale)
+  const dataCurta = new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit' })
+  const percentCache = new Map<number, Intl.NumberFormat>()
+  const pontosCache = new Map<number, Intl.NumberFormat>()
+
+  const f: Formatadores = {
+    brl: (valor) => brl.format(valor),
+    brlInteiro: (valor) => brlInteiro.format(Math.round(valor)),
+    numero: (valor) => numero.format(Math.round(valor)),
+    percent: (valor, casas = 0) => {
+      let nf = percentCache.get(casas)
+      if (!nf) {
+        nf = new Intl.NumberFormat(locale, { style: 'percent', minimumFractionDigits: casas, maximumFractionDigits: casas })
+        percentCache.set(casas, nf)
+      }
+      return nf.format(valor)
+    },
+    pontos: (valor, casas = 1) => {
+      let nf = pontosCache.get(casas)
+      if (!nf) {
+        nf = new Intl.NumberFormat(locale, { minimumFractionDigits: casas, maximumFractionDigits: casas })
+        pontosCache.set(casas, nf)
+      }
+      return `${nf.format(valor)}%`
+    },
+    dataCurta: (data) => dataCurta.format(data),
+  }
+  cache.set(lang, f)
+  return f
 }
 
-export function formatNumero(valor: number) {
-  return numero.format(Math.round(valor))
-}
-
-export function formatPercent(valor: number, casas = 0) {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'percent',
-    minimumFractionDigits: casas,
-    maximumFractionDigits: casas,
-  }).format(valor)
-}
-
-/** Percentual que já vem em pontos (ex.: 54.6 → "54,6%"). */
-export function formatPontos(valor: number, casas = 1) {
-  return `${valor.toLocaleString('pt-BR', { minimumFractionDigits: casas, maximumFractionDigits: casas })}%`
-}
+// Máscaras de entrada: independem de idioma (CNPJ, CPF e telefone são formatos brasileiros).
 
 export function somenteDigitos(valor: string) {
   return valor.replace(/\D/g, '')

@@ -1,11 +1,12 @@
 import { AnimatePresence, MotionConfig } from 'framer-motion'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { createBrowserRouter, RouterProvider, useLocation, useOutlet } from 'react-router-dom'
 import { Footer } from './components/layout/Footer'
 import { Header } from './components/layout/Header'
 import { PageTransition } from './components/motion/PageTransition'
 import { Preloader } from './components/motion/Preloader'
-import { site } from './data/conteudo'
+import type { Conteudo } from './data/conteudo.pt'
+import { LanguageProvider, useConteudo } from './lib/i18n'
 import { IntroContext } from './lib/intro'
 import { deveMostrarPreloader, marcarPreloaderVisto } from './lib/preloader'
 import { Cadastro } from './routes/Cadastro'
@@ -19,6 +20,19 @@ import { Painel } from './routes/Painel'
 import { Planos } from './routes/Planos'
 import { Produto } from './routes/Produto'
 
+/** `<title>` de cada rota, pela chave em `conteudo.titulos`. Rota desconhecida cai no 404. */
+const TITULO_POR_ROTA: Record<string, keyof Conteudo['titulos']> = {
+  '/': 'home',
+  '/produto': 'produto',
+  '/planos': 'planos',
+  '/painel': 'painel',
+  '/cadastro': 'cadastro',
+  '/pagamento': 'pagamento',
+  '/confirmacao': 'confirmacao',
+  '/empresa': 'empresa',
+  '/contato': 'contato',
+}
+
 /** Congela o outlet da página que está saindo, para a animação de saída não trocar de conteúdo no meio. */
 function OutletCongelado() {
   const outlet = useOutlet()
@@ -28,12 +42,20 @@ function OutletCongelado() {
 
 function RootLayout() {
   const location = useLocation()
+  const { site, titulos, metaDescricao } = useConteudo()
   const [preloading, setPreloading] = useState(deveMostrarPreloader)
 
   const concluirPreloader = useCallback(() => {
     marcarPreloaderVisto()
     setPreloading(false)
   }, [])
+
+  // Título e descrição acompanham rota e idioma.
+  useEffect(() => {
+    const chave = TITULO_POR_ROTA[location.pathname.replace(/\/+$/, '') || '/'] ?? 'naoEncontrada'
+    document.title = titulos[chave]
+    document.querySelector('meta[name="description"]')?.setAttribute('content', metaDescricao)
+  }, [location.pathname, titulos, metaDescricao])
 
   return (
     <IntroContext.Provider value={!preloading}>
@@ -87,5 +109,9 @@ const router = createBrowserRouter(
 )
 
 export default function App() {
-  return <RouterProvider router={router} future={{ v7_startTransition: true }} />
+  return (
+    <LanguageProvider>
+      <RouterProvider router={router} future={{ v7_startTransition: true }} />
+    </LanguageProvider>
+  )
 }

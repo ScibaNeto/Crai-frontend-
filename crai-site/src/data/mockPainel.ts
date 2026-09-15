@@ -1,12 +1,17 @@
 import { mulberry32 } from '../lib/prng'
+import type { Conteudo } from './conteudo.pt'
 
 // Dados do painel de demonstração (NimbusFlow, fictícia). Tudo determinístico:
 // séries escritas à mão ou geradas com seed fixa, calculadas uma vez no carregamento do módulo.
+// Nenhum texto visível vive aqui: motivos, status, riscos e casos são ids que apontam para o copy
+// (`conteudo.*.ts`), e os rótulos do eixo do tempo são estruturados para formatar no idioma atual.
 
 export type Periodo = '30d' | '90d' | '12m'
 
+export type RotuloSerie = { tipo: 'data'; data: Date } | { tipo: 'semana'; n: number } | { tipo: 'mes'; mes: number }
+
 export interface PontoSerie {
-  rotulo: string
+  rotulo: RotuloSerie
   controle: number // % da receita em risco recuperada pelo grupo de controle
   tratado: number // % recuperada pelo grupo que recebeu a ação da CRAI
 }
@@ -21,27 +26,34 @@ export interface Indicadores {
   taxaCrai: number
 }
 
-export type MotivoFalha = 'Saldo insuficiente' | 'Limite excedido' | 'Autorização revogada' | 'Erro na instituição'
+export type MotivoFalha = keyof Conteudo['painel']['motivos']
+export type StatusCobranca = keyof Conteudo['painel']['status']
+export type RiscoNivel = keyof Conteudo['painel']['retencao']['riscos']
+export type PlanoAssinante = keyof Conteudo['painel']['retencao']['planosAssinante']
+export type CasoRetencao = keyof Conteudo['painel']['retencao']['casos']
 
-export type StatusCobranca = 'Recuperada' | 'Reagendada' | 'Em tentativa' | 'Grupo de controle' | 'Não recuperada'
+/** Janela estimada de liquidez: dia do mês e faixa de horas (24h). */
+export interface JanelaEstimada {
+  dia: number
+  de: number
+  ate: number
+}
 
 export interface Cobranca {
   id: string
   assinante: string
   valor: number
   motivo: MotivoFalha
-  janela: string
+  janela: JanelaEstimada | null
   status: StatusCobranca
   tentativa: number
 }
 
 export interface RiscoCancelamento {
-  id: string
+  id: CasoRetencao
   assinante: string
-  plano: string
-  sinal: string
-  risco: 'Alto' | 'Médio'
-  acao: string
+  plano: PlanoAssinante
+  risco: RiscoNivel
 }
 
 function indicadores(receitaEmRisco: number, receitaRecuperada: number, ganhoIncremental: number, receitaPreservada: number): Indicadores {
@@ -60,23 +72,28 @@ function indicadores(receitaEmRisco: number, receitaRecuperada: number, ganhoInc
 
 const um = (n: number) => Math.round(n * 10) / 10
 
-// 12 meses, escrito à mão: começa perto do controle (implantação) e se afasta.
-const serie12m: PontoSerie[] = [
-  { rotulo: 'Out', controle: 34.2, tratado: 35.1 },
-  { rotulo: 'Nov', controle: 35.0, tratado: 39.8 },
-  { rotulo: 'Dez', controle: 33.8, tratado: 44.6 },
-  { rotulo: 'Jan', controle: 34.6, tratado: 47.9 },
-  { rotulo: 'Fev', controle: 35.4, tratado: 50.2 },
-  { rotulo: 'Mar', controle: 34.9, tratado: 51.8 },
-  { rotulo: 'Abr', controle: 35.8, tratado: 53.1 },
-  { rotulo: 'Mai', controle: 35.2, tratado: 53.9 },
-  { rotulo: 'Jun', controle: 36.1, tratado: 54.6 },
-  { rotulo: 'Jul', controle: 35.6, tratado: 55.2 },
-  { rotulo: 'Ago', controle: 36.4, tratado: 55.9 },
-  { rotulo: 'Set', controle: 36.0, tratado: 56.3 },
+// 12 meses, escrito à mão: começa perto do controle (implantação) e se afasta. Out → Set.
+const valores12m: [number, number][] = [
+  [34.2, 35.1],
+  [35.0, 39.8],
+  [33.8, 44.6],
+  [34.6, 47.9],
+  [35.4, 50.2],
+  [34.9, 51.8],
+  [35.8, 53.1],
+  [35.2, 53.9],
+  [36.1, 54.6],
+  [35.6, 55.2],
+  [36.4, 55.9],
+  [36.0, 56.3],
 ]
+const serie12m: PontoSerie[] = valores12m.map(([controle, tratado], i) => ({
+  rotulo: { tipo: 'mes', mes: (9 + i) % 12 },
+  controle,
+  tratado,
+}))
 
-function gerarSerie(seed: number, pontos: number, rotulo: (i: number) => string): PontoSerie[] {
+function gerarSerie(seed: number, pontos: number, rotulo: (i: number) => RotuloSerie): PontoSerie[] {
   const rand = mulberry32(seed)
   return Array.from({ length: pontos }, (_, i) => ({
     rotulo: rotulo(i),
@@ -85,26 +102,22 @@ function gerarSerie(seed: number, pontos: number, rotulo: (i: number) => string)
   }))
 }
 
-function dataCurta(base: Date, somaDias: number) {
-  const d = new Date(base.getFullYear(), base.getMonth(), base.getDate() + somaDias)
-  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`
+function somarDias(base: Date, dias: number) {
+  return new Date(base.getFullYear(), base.getMonth(), base.getDate() + dias)
 }
 
 const inicio30d = new Date(2026, 7, 14)
 
-export const periodos: Record<Periodo, { rotulo: string; indicadores: Indicadores; serie: PontoSerie[] }> = {
+export const periodos: Record<Periodo, { indicadores: Indicadores; serie: PontoSerie[] }> = {
   '30d': {
-    rotulo: 'Últimos 30 dias',
     indicadores: indicadores(5120, 2940, 1030, 2180),
-    serie: gerarSerie(3017, 15, (i) => dataCurta(inicio30d, i * 2)),
+    serie: gerarSerie(3017, 15, (i) => ({ tipo: 'data', data: somarDias(inicio30d, i * 2) })),
   },
   '90d': {
-    rotulo: '90 dias',
     indicadores: indicadores(15380, 8910, 3090, 6420),
-    serie: gerarSerie(9011, 13, (i) => `Sem ${i + 1}`),
+    serie: gerarSerie(9011, 13, (i) => ({ tipo: 'semana', n: i + 1 })),
   },
   '12m': {
-    rotulo: '12 meses',
     indicadores: indicadores(58900, 30400, 9870, 23800),
     serie: serie12m,
   },
@@ -116,33 +129,35 @@ export const serieReferencia = serie12m
 
 export const empresaPainel = 'NimbusFlow Tecnologia'
 
-type LinhaCobranca = [string, number, MotivoFalha, string, StatusCobranca, number]
+const janela = (dia: number, de: number, ate: number): JanelaEstimada => ({ dia, de, ate })
+
+type LinhaCobranca = [string, number, MotivoFalha, JanelaEstimada | null, StatusCobranca, number]
 
 const linhas: LinhaCobranca[] = [
-  ['Clínica Vale Verde', 99, 'Saldo insuficiente', 'Dia 10 · 8h–11h', 'Recuperada', 2],
-  ['Odonto Serra Azul', 149, 'Limite excedido', 'Dia 12 · 9h–12h', 'Reagendada', 1],
-  ['Instituto Pele Viva', 119, 'Saldo insuficiente', 'Dia 6 · 7h–10h', 'Recuperada', 1],
-  ['Clínica Horizonte', 89, 'Erro na instituição', 'Dia 11 · 10h–13h', 'Recuperada', 2],
-  ['Fisio Movimento', 79, 'Saldo insuficiente', 'Dia 15 · 8h–11h', 'Grupo de controle', 2],
-  ['Centro Médico Aurora', 249, 'Autorização revogada', '—', 'Não recuperada', 1],
-  ['Clínica Bem-Estar Sul', 99, 'Saldo insuficiente', 'Dia 13 · 12h–15h', 'Em tentativa', 3],
-  ['Ortho Prime', 129, 'Limite excedido', 'Dia 20 · 9h–12h', 'Reagendada', 2],
-  ['Clínica Santa Luzia', 99, 'Saldo insuficiente', 'Dia 5 · 8h–11h', 'Recuperada', 1],
-  ['Espaço Nutri Leve', 79, 'Saldo insuficiente', 'Dia 7 · 18h–21h', 'Grupo de controle', 1],
-  ['Clínica Ponte Alta', 119, 'Erro na instituição', 'Dia 11 · 9h–12h', 'Recuperada', 1],
-  ['Vita Dermatologia', 149, 'Saldo insuficiente', 'Dia 25 · 8h–11h', 'Reagendada', 2],
-  ['Pediatria Pequeno Passo', 99, 'Limite excedido', 'Dia 10 · 13h–16h', 'Recuperada', 3],
-  ['Clínica Mar Aberto', 89, 'Saldo insuficiente', 'Dia 14 · 8h–11h', 'Não recuperada', 3],
-  ['Oftalmo Visão Clara', 129, 'Saldo insuficiente', 'Dia 6 · 9h–12h', 'Recuperada', 2],
-  ['Clínica Jardim Norte', 99, 'Autorização revogada', '—', 'Grupo de controle', 1],
-  ['Psico Equilíbrio', 79, 'Saldo insuficiente', 'Dia 16 · 19h–22h', 'Em tentativa', 2],
-  ['Clínica Três Rios', 119, 'Limite excedido', 'Dia 21 · 8h–11h', 'Reagendada', 1],
-  ['Cardio Vale', 249, 'Saldo insuficiente', 'Dia 5 · 10h–13h', 'Recuperada', 1],
-  ['Clínica Nova Esperança', 99, 'Erro na instituição', 'Dia 12 · 8h–11h', 'Recuperada', 2],
-  ['Studio Fisio Ativa', 89, 'Saldo insuficiente', 'Dia 18 · 7h–10h', 'Grupo de controle', 2],
-  ['Clínica Alto da Serra', 129, 'Saldo insuficiente', 'Dia 9 · 9h–12h', 'Não recuperada', 3],
-  ['Odonto Sorriso Leste', 149, 'Limite excedido', 'Dia 22 · 12h–15h', 'Reagendada', 1],
-  ['Clínica Boa Vista', 99, 'Saldo insuficiente', 'Dia 8 · 8h–11h', 'Recuperada', 1],
+  ['Clínica Vale Verde', 99, 'saldo', janela(10, 8, 11), 'recuperada', 2],
+  ['Odonto Serra Azul', 149, 'limite', janela(12, 9, 12), 'reagendada', 1],
+  ['Instituto Pele Viva', 119, 'saldo', janela(6, 7, 10), 'recuperada', 1],
+  ['Clínica Horizonte', 89, 'instituicao', janela(11, 10, 13), 'recuperada', 2],
+  ['Fisio Movimento', 79, 'saldo', janela(15, 8, 11), 'controle', 2],
+  ['Centro Médico Aurora', 249, 'revogada', null, 'naoRecuperada', 1],
+  ['Clínica Bem-Estar Sul', 99, 'saldo', janela(13, 12, 15), 'tentativa', 3],
+  ['Ortho Prime', 129, 'limite', janela(20, 9, 12), 'reagendada', 2],
+  ['Clínica Santa Luzia', 99, 'saldo', janela(5, 8, 11), 'recuperada', 1],
+  ['Espaço Nutri Leve', 79, 'saldo', janela(7, 18, 21), 'controle', 1],
+  ['Clínica Ponte Alta', 119, 'instituicao', janela(11, 9, 12), 'recuperada', 1],
+  ['Vita Dermatologia', 149, 'saldo', janela(25, 8, 11), 'reagendada', 2],
+  ['Pediatria Pequeno Passo', 99, 'limite', janela(10, 13, 16), 'recuperada', 3],
+  ['Clínica Mar Aberto', 89, 'saldo', janela(14, 8, 11), 'naoRecuperada', 3],
+  ['Oftalmo Visão Clara', 129, 'saldo', janela(6, 9, 12), 'recuperada', 2],
+  ['Clínica Jardim Norte', 99, 'revogada', null, 'controle', 1],
+  ['Psico Equilíbrio', 79, 'saldo', janela(16, 19, 22), 'tentativa', 2],
+  ['Clínica Três Rios', 119, 'limite', janela(21, 8, 11), 'reagendada', 1],
+  ['Cardio Vale', 249, 'saldo', janela(5, 10, 13), 'recuperada', 1],
+  ['Clínica Nova Esperança', 99, 'instituicao', janela(12, 8, 11), 'recuperada', 2],
+  ['Studio Fisio Ativa', 89, 'saldo', janela(18, 7, 10), 'controle', 2],
+  ['Clínica Alto da Serra', 129, 'saldo', janela(9, 9, 12), 'naoRecuperada', 3],
+  ['Odonto Sorriso Leste', 149, 'limite', janela(22, 12, 15), 'reagendada', 1],
+  ['Clínica Boa Vista', 99, 'saldo', janela(8, 8, 11), 'recuperada', 1],
 ]
 
 export const cobrancas: Cobranca[] = linhas.map(([assinante, valor, motivo, janela, status, tentativa], i) => ({
@@ -155,13 +170,14 @@ export const cobrancas: Cobranca[] = linhas.map(([assinante, valor, motivo, jane
   tentativa,
 }))
 
+// Sinal e ação sugerida de cada linha ficam em `conteudo.*.ts` → painel.retencao.casos[id].
 export const riscosCancelamento: RiscoCancelamento[] = [
-  { id: 'rc-1', assinante: 'Clínica Horizonte', plano: 'Plano Clínica', sinal: 'Uso caiu 48% nas últimas 4 semanas', risco: 'Alto', acao: 'Contato do time de sucesso do cliente' },
-  { id: 'rc-2', assinante: 'Ortho Prime', plano: 'Plano Rede', sinal: 'Duas cobranças falharam em sequência', risco: 'Alto', acao: 'Oferecer pausa de um mês' },
-  { id: 'rc-3', assinante: 'Vita Dermatologia', plano: 'Plano Clínica', sinal: 'Pediu exportação completa dos dados', risco: 'Alto', acao: 'Perguntar o motivo, sem oferta' },
-  { id: 'rc-4', assinante: 'Espaço Nutri Leve', plano: 'Plano Essencial', sinal: 'Nenhum acesso do administrador há 21 dias', risco: 'Médio', acao: 'Enviar resumo de uso do mês' },
-  { id: 'rc-5', assinante: 'Clínica Três Rios', plano: 'Plano Clínica', sinal: 'Usuários ativos caíram de 12 para 5', risco: 'Médio', acao: 'Sugerir plano menor' },
-  { id: 'rc-6', assinante: 'Psico Equilíbrio', plano: 'Plano Essencial', sinal: 'Chamado de suporte sem resposta há 6 dias', risco: 'Médio', acao: 'Priorizar o chamado em aberto' },
-  { id: 'rc-7', assinante: 'Cardio Vale', plano: 'Plano Rede', sinal: 'Visitou a página de cancelamento', risco: 'Alto', acao: 'Oferecer conversa com o time, se quiser' },
-  { id: 'rc-8', assinante: 'Clínica Boa Vista', plano: 'Plano Clínica', sinal: 'Recurso de agenda sem uso há 30 dias', risco: 'Médio', acao: 'Oferecer treinamento para a equipe' },
+  { id: 'rc-1', assinante: 'Clínica Horizonte', plano: 'clinica', risco: 'alto' },
+  { id: 'rc-2', assinante: 'Ortho Prime', plano: 'rede', risco: 'alto' },
+  { id: 'rc-3', assinante: 'Vita Dermatologia', plano: 'clinica', risco: 'alto' },
+  { id: 'rc-4', assinante: 'Espaço Nutri Leve', plano: 'essencial', risco: 'medio' },
+  { id: 'rc-5', assinante: 'Clínica Três Rios', plano: 'clinica', risco: 'medio' },
+  { id: 'rc-6', assinante: 'Psico Equilíbrio', plano: 'essencial', risco: 'medio' },
+  { id: 'rc-7', assinante: 'Cardio Vale', plano: 'rede', risco: 'alto' },
+  { id: 'rc-8', assinante: 'Clínica Boa Vista', plano: 'clinica', risco: 'medio' },
 ]

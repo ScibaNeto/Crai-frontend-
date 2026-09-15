@@ -1,15 +1,58 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { site } from '../../data/conteudo'
 import { cx } from '../../lib/cx'
+import { useConteudo, useLang, useSetLang } from '../../lib/i18n'
 import { EASE_EXPO } from '../../lib/intro'
+import { isLang, LANG_HTML } from '../../lib/lang'
 import { IconClose, IconMenu } from '../icons/Icons'
 import { Button } from '../ui/Button'
 import { Wordmark } from '../ui/Wordmark'
 
+/** PT / EN: o ativo marcado por peso, com uma barra que desliza entre os dois por layoutId. */
+function LanguageSwitch({ id, className }: { id: string; className?: string }) {
+  const lang = useLang()
+  const setLang = useSetLang()
+  const { idioma } = useConteudo()
+
+  return (
+    <div role="group" aria-label={idioma.grupoAria} className={cx('flex items-center', className)}>
+      {idioma.opcoes.map((opcao) => {
+        const codigo = opcao.id
+        if (!isLang(codigo)) return null
+        const ativo = codigo === lang
+        return (
+          <button
+            key={codigo}
+            type="button"
+            lang={LANG_HTML[codigo]}
+            aria-pressed={ativo}
+            aria-label={`${opcao.rotulo}: ${opcao.nome}`}
+            onClick={() => setLang(codigo)}
+            className={cx(
+              'relative h-9 rounded-[4px] px-2.5 font-mono text-[13px] tracking-[0.06em] transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber',
+              ativo ? 'font-[680] text-paper' : 'font-[440] text-silver hover:text-paper',
+            )}
+          >
+            {opcao.rotulo}
+            {ativo ? (
+              <motion.span
+                layoutId={`idioma-barra-${id}`}
+                aria-hidden="true"
+                className="absolute inset-x-2.5 bottom-1 h-px bg-orange"
+                transition={{ type: 'spring', stiffness: 520, damping: 40 }}
+              />
+            ) : null}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 /** Header fixo com vidro (10.11). A borda inferior só aparece depois de 40px de rolagem. */
 export function Header() {
+  const { site } = useConteudo()
   const [rolou, setRolou] = useState(() => window.scrollY > 40)
   const [aberto, setAberto] = useState(false)
   const [desenho, setDesenho] = useState(0)
@@ -72,7 +115,8 @@ export function Header() {
           </ul>
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 lg:gap-4">
+          <LanguageSwitch id="desktop" className="hidden lg:flex" />
           <Button to="/cadastro" size="sm" className="hidden sm:inline-flex">
             {site.criarConta}
           </Button>
@@ -111,8 +155,9 @@ export function Header() {
                   </NavLink>
                 </li>
               ))}
-              <li className="pt-5 sm:hidden">
-                <Button to="/cadastro" className="w-full">
+              <li className="flex items-center justify-between gap-4 pt-5">
+                <LanguageSwitch id="mobile" className="-ml-2.5" />
+                <Button to="/cadastro" className="sm:hidden">
                   {site.criarConta}
                 </Button>
               </li>

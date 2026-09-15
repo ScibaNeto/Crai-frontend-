@@ -1,14 +1,14 @@
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion'
 import { IconBolt, IconForecast, IconPlug, IconScale } from '../components/icons/Icons'
 import { ScrollytellingSection } from '../components/motion/ScrollytellingSection'
-import { home } from '../data/conteudo'
+import { useConteudo } from '../lib/i18n'
 import { cx } from '../lib/cx'
 import { EASE_EXPO } from '../lib/intro'
 
 const ICONES = [IconPlug, IconForecast, IconBolt, IconScale]
 
 function Ilustracao({ ativo }: { ativo: number }) {
-  const { passos } = home.comoFunciona
+  const { passos } = useConteudo().home.comoFunciona
   return (
     <div aria-hidden="true" className="rounded-[14px] border border-line bg-slate p-4 md:p-6">
       <LayoutGroup id="como-funciona">
@@ -74,7 +74,7 @@ function Ilustracao({ ativo }: { ativo: number }) {
 }
 
 export function ComoFunciona() {
-  const { comoFunciona } = home
+  const { comoFunciona } = useConteudo().home
   return (
     <section className="section-y" aria-labelledby="como-titulo">
       <div className="container-site">

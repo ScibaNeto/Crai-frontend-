@@ -12,11 +12,11 @@ import { Card } from '../components/ui/Card'
 import { Checkbox, Field } from '../components/ui/Field'
 import { PixQrPlaceholder, type EstadoQr } from '../components/ui/PixQrPlaceholder'
 import { Select } from '../components/ui/Select'
-import { pagamento } from '../data/conteudo'
-import { empresa, operacao } from '../data/mockCadastro'
-import { autorizacao } from '../data/mockPagamento'
+import { empresaBase, operacaoBase } from '../data/mockCadastro'
+import { mockPagamento } from '../data/mockPagamento'
 import { interpolar } from '../lib/cx'
-import { formatBRL, formatDocumento, parseMoeda, somenteDigitos } from '../lib/format'
+import { formatDocumento, parseMoeda, somenteDigitos } from '../lib/format'
+import { useConteudo, useFormato, useLang } from '../lib/i18n'
 import { simular } from '../lib/simulador'
 import { useReducedMotion } from '../lib/useReducedMotion'
 
@@ -24,6 +24,7 @@ const ALTURA_FAIXA = 52
 
 /** Sobreposição com o QR se formando (10.13). Monta em "ocioso" e só então muda, para as transições rodarem. */
 function CarregandoPix({ estado }: { estado: EstadoQr }) {
+  const { pagamento } = useConteudo()
   const [visivel, setVisivel] = useState<EstadoQr>('ocioso')
 
   useEffect(() => {
@@ -55,12 +56,21 @@ function CarregandoPix({ estado }: { estado: EstadoQr }) {
   )
 }
 
+/** Remonta o formulário ao trocar de idioma: o pré-preenchimento de demonstração é refeito no idioma novo. */
 export function Pagamento() {
+  const lang = useLang()
+  return <PagamentoForm key={lang} />
+}
+
+function PagamentoForm() {
   const navigate = useNavigate()
   const reduced = useReducedMotion()
-  const [form, setForm] = useState(autorizacao)
+  const conteudo = useConteudo()
+  const { pagamento } = conteudo
+  const f = useFormato()
+  const [form, setForm] = useState(() => mockPagamento(conteudo))
   const [estado, setEstado] = useState<EstadoQr>('ocioso')
-  const estimativa = simular(empresa.mrr, operacao.plano)
+  const estimativa = simular(empresaBase.mrr, operacaoBase.plano)
   const c = pagamento.campos
 
   // Faixa fixa no rodapé: reserva o espaço para não cobrir o fim da página.
@@ -154,7 +164,7 @@ export function Pagamento() {
                 label={c.limite}
                 inputMode="numeric"
                 className="tabular"
-                value={formatBRL(form.limitePorCobranca)}
+                value={f.brl(form.limitePorCobranca)}
                 onChange={(e) => setForm({ ...form, limitePorCobranca: parseMoeda(e.target.value) })}
                 hint={c.limiteDica}
               />
@@ -201,14 +211,14 @@ export function Pagamento() {
               <div className="mt-8 border-t border-line pt-6">
                 <p className="t-apoio text-silver">{pagamento.resumo.estimativa}</p>
                 <p className="t-number-sm mt-2 text-paper">
-                  <CountUp value={estimativa.taxaCrai} format={formatBRL} />
+                  <CountUp value={estimativa.taxaCrai} format={f.brl} />
                 </p>
                 <p className="t-apoio mt-2 text-silver">{pagamento.resumo.estimativaNota}</p>
               </div>
 
               <div className="mt-6 flex items-baseline justify-between gap-4 border-t-[3px] border-double border-silver/30 pt-6">
                 <span className="font-[560] text-paper">{pagamento.resumo.totalHoje}</span>
-                <span className="t-number text-paper">{formatBRL(0)}</span>
+                <span className="t-number text-paper">{f.brl(0)}</span>
               </div>
             </div>
           </TiltCard>

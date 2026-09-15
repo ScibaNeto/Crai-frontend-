@@ -2,7 +2,7 @@ import { IconCardOff, IconFile, IconShield, IconSwap } from '../components/icons
 import { PageShell } from '../components/layout/PageShell'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
-import { produto } from '../data/conteudo'
+import { useConteudo } from '../lib/i18n'
 import { serieReferencia } from '../data/mockPainel'
 import { ControleChart } from '../sections/ControleChart'
 import { FluxoRecuperacao } from '../sections/FluxoRecuperacao'
@@ -18,6 +18,7 @@ const ICONES_DADOS = {
 }
 
 export function Produto() {
+  const { produto } = useConteudo()
   const { recuperacao, liquidez, retencao, medicao, painel, dados } = produto
 
   return (
