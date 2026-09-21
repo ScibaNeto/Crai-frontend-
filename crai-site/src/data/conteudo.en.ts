@@ -563,9 +563,9 @@ export const conteudoEn: Conteudo = {
     time: {
       titulo: 'Team',
       pessoas: [
-        { nome: 'José Scibarauskas Neto', cargo: 'Product Owner' },
-        { nome: 'João Vitor Gava', cargo: 'Tech Lead' },
-        { nome: 'Gabriel de Frias Ramirez', cargo: 'Development and Finance' },
+        { nome: 'José Scibarauskas Neto', cargo: 'Product Owner and Frontend/Backend Dev', foto: '/time/jose.jpg' },
+        { nome: 'João Vitor Gava', cargo: 'Tech Lead', foto: '/time/joao.jpg' },
+        { nome: 'Gabriel de Frias Ramirez', cargo: 'Strategic Planning and Finance', foto: '/time/gabriel.jpg' },
       ],
     },
     origem: {
