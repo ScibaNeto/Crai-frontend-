@@ -593,9 +593,9 @@ export const conteudoPt = {
     time: {
       titulo: 'Time',
       pessoas: [
-        { nome: 'José Scibarauskas Neto', cargo: 'Product Owner' },
-        { nome: 'João Vitor Gava', cargo: 'Tech Lead' },
-        { nome: 'Gabriel de Frias Ramirez', cargo: 'Desenvolvimento e Gestão Financeira' },
+        { nome: 'José Scibarauskas Neto', cargo: 'Product Owner e Dev Frontend/Backend', foto: '/time/jose.jpg' },
+        { nome: 'João Vitor Gava', cargo: 'Tech Lead', foto: '/time/joao.jpg' },
+        { nome: 'Gabriel de Frias Ramirez', cargo: 'Planejamento Estratégico e Gestão Financeira', foto: '/time/gabriel.jpg' },
       ],
     },
     origem: {

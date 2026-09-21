@@ -2,11 +2,6 @@ import { PageShell } from '../components/layout/PageShell'
 import { Card } from '../components/ui/Card'
 import { useConteudo } from '../lib/i18n'
 
-function iniciais(nome: string) {
-  const partes = nome.split(' ').filter((p) => p.length > 2)
-  return `${partes[0]?.[0] ?? ''}${partes[partes.length - 1]?.[0] ?? ''}`
-}
-
 export function Empresa() {
   const { empresaPagina } = useConteudo()
   const { proposito, operacao, time, origem } = empresaPagina
@@ -45,12 +40,20 @@ export function Empresa() {
           </h2>
           <ul className="mt-10 grid gap-4 md:grid-cols-3 md:gap-6">
             {time.pessoas.map((pessoa) => (
-              <Card as="li" key={pessoa.nome} className="flex flex-col p-6 md:p-8">
-                <span aria-hidden="true" className="font-display text-[56px] leading-none tracking-[-0.03em] text-silver">
-                  {iniciais(pessoa.nome)}
-                </span>
-                <h3 className="t-h3 mt-10">{pessoa.nome}</h3>
-                <p className="t-apoio mt-2 text-silver">{pessoa.cargo}</p>
+              <Card as="li" key={pessoa.nome} className="flex flex-col overflow-hidden">
+                <img
+                  src={pessoa.foto}
+                  alt={pessoa.nome}
+                  width={800}
+                  height={1000}
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-[4/5] w-full object-cover object-top"
+                />
+                <div className="p-6 md:p-8">
+                  <h3 className="t-h3">{pessoa.nome}</h3>
+                  <p className="t-apoio mt-2 text-silver">{pessoa.cargo}</p>
+                </div>
               </Card>
             ))}
           </ul>

@@ -1,0 +1,282 @@
+[
+  {
+    "arquivo": "home-pt-desktop.png",
+    "altura": 6777,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "CRAI — Recuperação de receita para SaaS"
+  },
+  {
+    "arquivo": "produto-pt-desktop.png",
+    "altura": 5770,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "Como a CRAI funciona — CRAI"
+  },
+  {
+    "arquivo": "planos-pt-desktop.png",
+    "altura": 3890,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "Planos e simulador — CRAI"
+  },
+  {
+    "arquivo": "painel-pt-desktop.png",
+    "altura": 3662,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "Painel (demo) — CRAI"
+  },
+  {
+    "arquivo": "cadastro-pt-desktop.png",
+    "altura": 2238,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "Criar conta — CRAI"
+  },
+  {
+    "arquivo": "pagamento-pt-desktop.png",
+    "altura": 2370,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "Autorização de cobrança — CRAI"
+  },
+  {
+    "arquivo": "confirmacao-pt-desktop.png",
+    "altura": 1672,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "Autorização registrada — CRAI"
+  },
+  {
+    "arquivo": "empresa-pt-desktop.png",
+    "altura": 3347,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "Sobre a CRAI — CRAI"
+  },
+  {
+    "arquivo": "contato-pt-desktop.png",
+    "altura": 2057,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "Contato — CRAI"
+  },
+  {
+    "arquivo": "404-pt-desktop.png",
+    "altura": 1741,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "Página não encontrada — CRAI"
+  },
+  {
+    "arquivo": "home-pt-375.png",
+    "altura": 6372,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "CRAI — Recuperação de receita para SaaS"
+  },
+  {
+    "arquivo": "produto-pt-375.png",
+    "altura": 7451,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "Como a CRAI funciona — CRAI"
+  },
+  {
+    "arquivo": "planos-pt-375.png",
+    "altura": 5048,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "Planos e simulador — CRAI"
+  },
+  {
+    "arquivo": "painel-pt-375.png",
+    "altura": 4051,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "Painel (demo) — CRAI"
+  },
+  {
+    "arquivo": "cadastro-pt-375.png",
+    "altura": 2238,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "Criar conta — CRAI"
+  },
+  {
+    "arquivo": "pagamento-pt-375.png",
+    "altura": 3043,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "Autorização de cobrança — CRAI"
+  },
+  {
+    "arquivo": "confirmacao-pt-375.png",
+    "altura": 1511,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "Autorização registrada — CRAI"
+  },
+  {
+    "arquivo": "empresa-pt-375.png",
+    "altura": 3755,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "Sobre a CRAI — CRAI"
+  },
+  {
+    "arquivo": "contato-pt-375.png",
+    "altura": 2265,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "Contato — CRAI"
+  },
+  {
+    "arquivo": "404-pt-375.png",
+    "altura": 1468,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "Página não encontrada — CRAI"
+  },
+  {
+    "arquivo": "home-en-desktop.png",
+    "altura": 6749,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "CRAI — Revenue recovery for SaaS"
+  },
+  {
+    "arquivo": "produto-en-desktop.png",
+    "altura": 5689,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "How CRAI works — CRAI"
+  },
+  {
+    "arquivo": "planos-en-desktop.png",
+    "altura": 3869,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "Plans and simulator — CRAI"
+  },
+  {
+    "arquivo": "painel-en-desktop.png",
+    "altura": 3662,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "Dashboard (demo) — CRAI"
+  },
+  {
+    "arquivo": "cadastro-en-desktop.png",
+    "altura": 2238,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "Create account — CRAI"
+  },
+  {
+    "arquivo": "pagamento-en-desktop.png",
+    "altura": 2370,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "Billing authorization — CRAI"
+  },
+  {
+    "arquivo": "confirmacao-en-desktop.png",
+    "altura": 1672,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "Authorization recorded — CRAI"
+  },
+  {
+    "arquivo": "empresa-en-desktop.png",
+    "altura": 3278,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "About CRAI — CRAI"
+  },
+  {
+    "arquivo": "contato-en-desktop.png",
+    "altura": 2030,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "Contact — CRAI"
+  },
+  {
+    "arquivo": "404-en-desktop.png",
+    "altura": 1741,
+    "rolagemHorizontal": false,
+    "scrollWidth": 1440,
+    "titulo": "Page not found — CRAI"
+  },
+  {
+    "arquivo": "home-en-375.png",
+    "altura": 6362,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "CRAI — Revenue recovery for SaaS"
+  },
+  {
+    "arquivo": "produto-en-375.png",
+    "altura": 7286,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "How CRAI works — CRAI"
+  },
+  {
+    "arquivo": "planos-en-375.png",
+    "altura": 5021,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "Plans and simulator — CRAI"
+  },
+  {
+    "arquivo": "painel-en-375.png",
+    "altura": 3966,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "Dashboard (demo) — CRAI"
+  },
+  {
+    "arquivo": "cadastro-en-375.png",
+    "altura": 2191,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "Create account — CRAI"
+  },
+  {
+    "arquivo": "pagamento-en-375.png",
+    "altura": 2952,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "Billing authorization — CRAI"
+  },
+  {
+    "arquivo": "confirmacao-en-375.png",
+    "altura": 1478,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "Authorization recorded — CRAI"
+  },
+  {
+    "arquivo": "empresa-en-375.png",
+    "altura": 3734,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "About CRAI — CRAI"
+  },
+  {
+    "arquivo": "contato-en-375.png",
+    "altura": 2218,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "Contact — CRAI"
+  },
+  {
+    "arquivo": "404-en-375.png",
+    "altura": 1447,
+    "rolagemHorizontal": false,
+    "scrollWidth": 375,
+    "titulo": "Page not found — CRAI"
+  }
+]
