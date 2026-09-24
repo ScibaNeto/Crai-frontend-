@@ -528,6 +528,56 @@
     -moz-appearance: textfield;
   }
 
+  /* ---------- Fluxo de recuperação (Produto) ---------- */
+
+  /* Trilho que liga as etapas; o pulso laranja percorre o caminho no sentido do fluxo. */
+  .flow-rail-x,
+  .flow-rail-y {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: rgba(166, 170, 173, 0.22);
+  }
+  .flow-rail-x {
+    height: 1px;
+    width: 100%;
+    min-width: 18px;
+  }
+  .flow-rail-y {
+    width: 1px;
+    height: 26px;
+  }
+  .flow-rail-x::after,
+  .flow-rail-y::after {
+    content: '';
+    position: absolute;
+    animation-duration: 3.6s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-delay: var(--pulse-delay, 0s);
+  }
+  .flow-rail-x::after {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 55%;
+    background: linear-gradient(to right, transparent, var(--color-orange), transparent);
+    animation-name: flow-pulse-x;
+  }
+  .flow-rail-y::after {
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 55%;
+    background: linear-gradient(to bottom, transparent, var(--color-orange), transparent);
+    animation-name: flow-pulse-y;
+  }
+
+  /* Ícone de ciclo do bloco que reprocessa a janela. */
+  .flow-cycle {
+    animation: flow-spin 9s linear infinite;
+  }
+
   /* Rolagem horizontal sem barra pesada */
   .rail {
     scrollbar-width: none;
@@ -562,6 +612,48 @@
   }
 }
 
+@keyframes flow-pulse-x {
+  0% {
+    transform: translateX(-110%);
+    opacity: 0;
+  }
+  14% {
+    opacity: 1;
+  }
+  44% {
+    transform: translateX(210%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(210%);
+    opacity: 0;
+  }
+}
+
+@keyframes flow-pulse-y {
+  0% {
+    transform: translateY(-110%);
+    opacity: 0;
+  }
+  14% {
+    opacity: 1;
+  }
+  44% {
+    transform: translateY(210%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(210%);
+    opacity: 0;
+  }
+}
+
+@keyframes flow-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* ---------- Movimento reduzido (10.17) ---------- */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -590,5 +682,14 @@
 
   .icon-slide {
     transform: none !important;
+  }
+
+  /* O trilho continua visível; só o pulso e o giro do ciclo somem. */
+  .flow-cycle {
+    animation: none !important;
+  }
+  .flow-rail-x::after,
+  .flow-rail-y::after {
+    display: none !important;
   }
 }
