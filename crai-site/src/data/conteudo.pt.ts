@@ -194,13 +194,37 @@ export const conteudoPt = {
         titulo: 'Fluxo de recuperação de uma cobrança que falhou',
         descricao:
           'Cobrança falha, classificação do motivo, janela de liquidez estimada, nova tentativa por Pix Automático e, por fim, confirmação ou nova rota.',
-        nos: {
-          falha: ['Cobrança', 'falha'],
-          motivo: ['Classificação', 'do motivo'],
-          janela: ['Janela de liquidez', 'estimada'],
-          tentativa: ['Nova tentativa por', 'Pix Automático'],
-          confirmacao: ['Confirmação'],
-          rota: ['Nova rota'],
+        etapas: [
+          {
+            n: '01',
+            titulo: 'Cobrança falha',
+            texto: 'O Pix Automático não é liquidado e a receita entra em risco.',
+          },
+          {
+            n: '02',
+            titulo: 'Classificação do motivo',
+            texto: 'Saldo, limite, autorização ou erro técnico — cada um pede outra resposta.',
+          },
+          {
+            n: '03',
+            titulo: 'Janela de liquidez estimada',
+            texto: 'O histórico do assinante aponta quando a conta deve ter saldo.',
+          },
+          {
+            n: '04',
+            titulo: 'Nova tentativa por Pix Automático',
+            texto: 'A cobrança volta na janela estimada, não em horário fixo.',
+          },
+        ],
+        ciclo: {
+          rotulo: 'Ciclo',
+          texto: 'Nova rota: se não confirma, reprocessa até encontrar a melhor janela.',
+        },
+        resultado: {
+          rotulo: 'Resultado',
+          titulo: 'Confirmação',
+          texto: 'A cobrança é liquidada e a assinatura segue ativa, sem passar por cobrança manual.',
+          selo: 'Receita recuperada',
         },
       },
       morph: {

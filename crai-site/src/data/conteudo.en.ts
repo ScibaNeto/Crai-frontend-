@@ -190,13 +190,37 @@ export const conteudoEn: Conteudo = {
       fluxo: {
         titulo: 'Recovery flow for a failed charge',
         descricao: 'Failed charge, reason classification, estimated liquidity window, new Pix Automático attempt and, finally, confirmation or a new route.',
-        nos: {
-          falha: ['Failed', 'charge'],
-          motivo: ['Reason', 'classification'],
-          janela: ['Estimated', 'liquidity window'],
-          tentativa: ['New attempt via', 'Pix Automático'],
-          confirmacao: ['Confirmed'],
-          rota: ['New route'],
+        etapas: [
+          {
+            n: '01',
+            titulo: 'Charge fails',
+            texto: 'The Pix Automático charge does not clear and revenue is at risk.',
+          },
+          {
+            n: '02',
+            titulo: 'Reason classification',
+            texto: 'Balance, limit, authorization or technical error — each needs a different answer.',
+          },
+          {
+            n: '03',
+            titulo: 'Estimated liquidity window',
+            texto: 'The subscriber’s history points to when the account should have balance.',
+          },
+          {
+            n: '04',
+            titulo: 'New attempt via Pix Automático',
+            texto: 'The charge returns inside that window, not at a fixed time of day.',
+          },
+        ],
+        ciclo: {
+          rotulo: 'Cycle',
+          texto: 'New route: if it does not clear, it reprocesses until it finds the best window.',
+        },
+        resultado: {
+          rotulo: 'Result',
+          titulo: 'Confirmed',
+          texto: 'The charge clears and the subscription stays active, with no manual collections.',
+          selo: 'Revenue recovered',
         },
       },
       morph: {
