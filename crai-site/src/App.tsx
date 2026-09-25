@@ -9,16 +9,19 @@ import type { Conteudo } from './data/conteudo.pt'
 import { LanguageProvider, useConteudo } from './lib/i18n'
 import { IntroContext } from './lib/intro'
 import { deveMostrarPreloader, marcarPreloaderVisto } from './lib/preloader'
+import { SessaoProvider } from './lib/SessaoProvider'
 import { Cadastro } from './routes/Cadastro'
 import { Confirmacao } from './routes/Confirmacao'
 import { Contato } from './routes/Contato'
 import { Empresa } from './routes/Empresa'
+import { Entrar } from './routes/Entrar'
 import { Home } from './routes/Home'
 import { NotFound } from './routes/NotFound'
 import { Pagamento } from './routes/Pagamento'
 import { Painel } from './routes/Painel'
 import { Planos } from './routes/Planos'
 import { Produto } from './routes/Produto'
+import { RedefinirSenha } from './routes/RedefinirSenha'
 
 /** `<title>` de cada rota, pela chave em `conteudo.titulos`. Rota desconhecida cai no 404. */
 const TITULO_POR_ROTA: Record<string, keyof Conteudo['titulos']> = {
@@ -31,6 +34,8 @@ const TITULO_POR_ROTA: Record<string, keyof Conteudo['titulos']> = {
   '/confirmacao': 'confirmacao',
   '/empresa': 'empresa',
   '/contato': 'contato',
+  '/entrar': 'entrar',
+  '/redefinir-senha': 'redefinirSenha',
 }
 
 /** Congela o outlet da página que está saindo, para a animação de saída não trocar de conteúdo no meio. */
@@ -93,6 +98,8 @@ const router = createBrowserRouter(
         { path: 'confirmacao', element: <Confirmacao /> },
         { path: 'empresa', element: <Empresa /> },
         { path: 'contato', element: <Contato /> },
+        { path: 'entrar', element: <Entrar /> },
+        { path: 'redefinir-senha', element: <RedefinirSenha /> },
         { path: '*', element: <NotFound /> },
       ],
     },
@@ -111,7 +118,9 @@ const router = createBrowserRouter(
 export default function App() {
   return (
     <LanguageProvider>
-      <RouterProvider router={router} future={{ v7_startTransition: true }} />
+      <SessaoProvider>
+        <RouterProvider router={router} future={{ v7_startTransition: true }} />
+      </SessaoProvider>
     </LanguageProvider>
   )
 }

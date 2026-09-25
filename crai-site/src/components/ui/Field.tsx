@@ -20,21 +20,40 @@ interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
   hint?: ReactNode
   wrapperClassName?: string
   suffix?: ReactNode
+  /** Mensagem de validação. Quando presente, substitui a dica e marca o campo como inválido. */
+  error?: string
 }
 
-export function Field({ id, label, hint, wrapperClassName, className, suffix, ...rest }: FieldProps) {
-  const hintId = hint ? `${id}-dica` : undefined
+/** Mensagem de erro de campo, ligada ao controle por aria-describedby. */
+function ErroCampo({ id, children }: { id: string; children: ReactNode }) {
+  return (
+    <p id={id} role="alert" className="t-apoio mt-2 text-amber">
+      {children}
+    </p>
+  )
+}
+
+export function Field({ id, label, hint, wrapperClassName, className, suffix, error, ...rest }: FieldProps) {
+  const hintId = error ? `${id}-erro` : hint ? `${id}-dica` : undefined
   return (
     <div className={cx('flex flex-col', wrapperClassName)}>
       <label htmlFor={id} className="t-apoio mb-2 text-silver">
         {label}
       </label>
       <div className="relative">
-        <input id={id} aria-describedby={hintId} className={cx(controle, suffix ? 'pr-10' : undefined, className)} {...rest} />
+        <input
+          id={id}
+          aria-describedby={hintId}
+          aria-invalid={error ? true : undefined}
+          className={cx(controle, suffix ? 'pr-10' : undefined, error ? 'border-amber hover:border-amber' : undefined, className)}
+          {...rest}
+        />
         <FocusLine />
         {suffix ? <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-silver">{suffix}</span> : null}
       </div>
-      {hint ? (
+      {error ? (
+        <ErroCampo id={`${id}-erro`}>{error}</ErroCampo>
+      ) : hint ? (
         <p id={hintId} className="t-apoio mt-2 text-silver">
           {hint}
         </p>
@@ -75,10 +94,11 @@ interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'typ
   label: ReactNode
   hint?: ReactNode
   wrapperClassName?: string
+  error?: string
 }
 
-export function Checkbox({ id, label, hint, wrapperClassName, ...rest }: CheckboxProps) {
-  const hintId = hint ? `${id}-dica` : undefined
+export function Checkbox({ id, label, hint, wrapperClassName, error, ...rest }: CheckboxProps) {
+  const hintId = error ? `${id}-erro` : hint ? `${id}-dica` : undefined
   return (
     <div className={cx('flex items-start gap-3', wrapperClassName)}>
       <span className="relative mt-[3px] inline-flex h-5 w-5 shrink-0">
@@ -86,6 +106,7 @@ export function Checkbox({ id, label, hint, wrapperClassName, ...rest }: Checkbo
           id={id}
           type="checkbox"
           aria-describedby={hintId}
+          aria-invalid={error ? true : undefined}
           className="peer h-5 w-5 cursor-pointer appearance-none rounded-[4px] border border-silver/60 bg-transparent transition-colors checked:border-paper checked:bg-paper hover:border-silver focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber"
           {...rest}
         />
@@ -106,7 +127,11 @@ export function Checkbox({ id, label, hint, wrapperClassName, ...rest }: Checkbo
         <label htmlFor={id} className="cursor-pointer text-[15px] leading-[1.5] text-paper">
           {label}
         </label>
-        {hint ? (
+        {error ? (
+          <span id={hintId} role="alert" className="t-apoio text-amber">
+            {error}
+          </span>
+        ) : hint ? (
           <span id={hintId} className="t-apoio text-silver">
             {hint}
           </span>

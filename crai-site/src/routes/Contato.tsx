@@ -7,7 +7,7 @@ import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Field, TextArea } from '../components/ui/Field'
 import { Select } from '../components/ui/Select'
-import { mockCadastro } from '../data/mockCadastro'
+import { mockContato } from '../data/mockCadastro'
 import { useConteudo, useLang } from '../lib/i18n'
 
 type Estado = 'editando' | 'enviando' | 'enviado'
@@ -21,7 +21,7 @@ export function Contato() {
 function ContatoForm() {
   const conteudo = useConteudo()
   const { contatoPagina } = conteudo
-  const [form, setForm] = useState(() => mockCadastro(conteudo).contato)
+  const [form, setForm] = useState(() => mockContato(conteudo))
   const [estado, setEstado] = useState<Estado>('editando')
   const sucessoRef = useRef<HTMLHeadingElement>(null)
   const c = contatoPagina.campos
@@ -34,7 +34,7 @@ function ContatoForm() {
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    console.log('[demo] contato', form)
+    // Demonstração: nada é enviado nem registrado (nem no console, por ser dado pessoal).
     setEstado('enviando')
   }
 

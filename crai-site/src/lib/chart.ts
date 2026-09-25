@@ -11,9 +11,11 @@ interface Escala {
 
 export function escalarSerie(valores: number[], { largura, altura, min, max, margemX = 0, margemY = 0 }: Escala): Ponto[] {
   const passo = valores.length > 1 ? (largura - margemX * 2) / (valores.length - 1) : 0
+  // Série constante (max === min) dividiria por zero e geraria NaN no SVG.
+  const faixa = max - min || 1
   return valores.map((v, i) => [
     margemX + i * passo,
-    margemY + (1 - (v - min) / (max - min)) * (altura - margemY * 2),
+    margemY + (1 - (v - min) / faixa) * (altura - margemY * 2),
   ])
 }
 

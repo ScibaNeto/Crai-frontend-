@@ -5,9 +5,12 @@ import { PageShell } from '../components/layout/PageShell'
 import { CountUp } from '../components/motion/CountUp'
 import { Skeleton } from '../components/motion/Skeleton'
 import { Badge } from '../components/ui/Badge'
+import { Button } from '../components/ui/Button'
 import { cobrancas, empresaPainel, ordemPeriodos, periodos, riscosCancelamento, type Periodo } from '../data/mockPainel'
 import { cx, interpolar } from '../lib/cx'
+import { nomeExibicao } from '../lib/empresa'
 import { useConteudo, useFormato } from '../lib/i18n'
+import { useSessao } from '../lib/useSessao'
 import { ControleChart } from '../sections/ControleChart'
 import { StatusCobrancaTag } from '../sections/StatusCobrancaTag'
 
@@ -82,7 +85,7 @@ function SkeletonRetencao() {
   )
 }
 
-function Recuperacao({ periodo }: { periodo: Periodo }) {
+function Recuperacao({ periodo, somenteRecuperacao }: { periodo: Periodo; somenteRecuperacao: boolean }) {
   const { painel } = useConteudo()
   const f = useFormato()
   const { indicadores: ind, serie } = periodos[periodo]
@@ -94,8 +97,11 @@ function Recuperacao({ periodo }: { periodo: Periodo }) {
     {
       id: 'taxa',
       rotulo: t.taxa,
-      valor: ind.taxaCrai,
-      detalhe: interpolar(t.taxaDetalhe, { rec: f.brl(ind.taxaRecuperacao), ret: f.brl(ind.taxaRetencao) }),
+      // Standard só paga a taxa da recuperação.
+      valor: somenteRecuperacao ? ind.taxaRecuperacao : ind.taxaCrai,
+      detalhe: somenteRecuperacao
+        ? t.taxaDetalheStandard
+        : interpolar(t.taxaDetalhe, { rec: f.brl(ind.taxaRecuperacao), ret: f.brl(ind.taxaRetencao) }),
       formato: f.brl,
       destaque: false,
     },
@@ -216,8 +222,28 @@ function Retencao() {
   )
 }
 
+/** Plano Standard: a aba de retenção explica o que falta em vez de mostrar dados que o plano não cobre. */
+function RetencaoPremium() {
+  const { painel } = useConteudo()
+  const r = painel.retencaoPremium
+  return (
+    <section className={cx(bloco, 'flex flex-col items-start gap-4 p-5 md:p-8')}>
+      <IconUserSignal size={24} className="text-silver" />
+      <h2 className="t-h3">{r.titulo}</h2>
+      <p className="t-body measure text-silver">{r.texto}</p>
+      <Button to="/planos" variant="ghost" size="sm">
+        {r.acao}
+      </Button>
+    </section>
+  )
+}
+
 export function Painel() {
   const { painel } = useConteudo()
+  const { empresa } = useSessao()
+  // Logado com empresa: o cabeçalho é da empresa real; os números seguem de demonstração até a integração.
+  const nomeEmpresa = empresa ? nomeExibicao(empresa) : empresaPainel
+  const retencaoBloqueada = empresa?.plano === 'standard'
   const [periodo, setPeriodo] = useState<Periodo>('30d')
   const [aba, setAba] = useState<Aba>('recuperacao')
   const [carregando, setCarregando] = useState(true)
@@ -262,7 +288,7 @@ export function Painel() {
   }
 
   return (
-    <PageShell titulo={painel.titulo} badge={<Badge tone="beta">{painel.badge}</Badge>} lead={painel.lead}>
+    <PageShell titulo={painel.titulo} badge={<Badge tone="beta">{painel.badge}</Badge>} lead={empresa ? painel.leadConta : painel.lead}>
       <div className="container-site pb-24 md:pb-32">
         <div className="overflow-hidden rounded-[14px] border border-line bg-slate/50 lg:grid lg:grid-cols-[96px_minmax(0,1fr)]">
           <aside className="border-b border-line bg-ink/40 lg:border-r lg:border-b-0">
@@ -309,7 +335,7 @@ export function Painel() {
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="t-apoio text-silver">{abaAtual.rotulo}</p>
-                <p className="t-h3 mt-0.5">{empresaPainel}</p>
+                <p className="t-h3 mt-0.5">{nomeEmpresa}</p>
               </div>
               <div
                 role="radiogroup"
@@ -366,7 +392,7 @@ export function Painel() {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.22 }}
                   >
-                    {aba === 'recuperacao' ? <Recuperacao periodo={periodo} /> : <Retencao />}
+                    {aba === 'recuperacao' ? <Recuperacao periodo={periodo} somenteRecuperacao={retencaoBloqueada} /> : retencaoBloqueada ? <RetencaoPremium /> : <Retencao />}
                   </motion.div>
                 )}
               </AnimatePresence>

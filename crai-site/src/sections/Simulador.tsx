@@ -5,11 +5,13 @@ import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Field } from '../components/ui/Field'
 import { Toggle } from '../components/ui/Toggle'
-import { empresaBase } from '../data/mockCadastro'
+import { MRR_EXEMPLO } from '../data/mockCadastro'
 import { interpolar } from '../lib/cx'
+import { mrrEstimado } from '../lib/empresa'
 import { somenteDigitos } from '../lib/format'
 import { useConteudo, useFormato } from '../lib/i18n'
 import { simular, type Plano } from '../lib/simulador'
+import { useSessao } from '../lib/useSessao'
 
 const MIN = 10_000
 const MAX = 700_000
@@ -18,8 +20,10 @@ const PASSO = 1_000
 export function Simulador() {
   const { simuladorCopy: s } = useConteudo()
   const f = useFormato()
-  const [mrr, setMrr] = useState(empresaBase.mrr)
-  const [plano, setPlano] = useState<Plano>('standard')
+  const { empresa } = useSessao()
+  // Logado: parte da faixa de MRR e do plano da empresa; visitante: exemplo neutro.
+  const [mrr, setMrr] = useState(() => (empresa ? mrrEstimado(empresa.faixa_mrr) : MRR_EXEMPLO))
+  const [plano, setPlano] = useState<Plano>(() => empresa?.plano ?? 'standard')
   const r = simular(mrr, plano)
 
   const opcoesPlano = s.planos as { value: Plano; label: string }[]

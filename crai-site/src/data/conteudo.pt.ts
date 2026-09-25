@@ -21,6 +21,8 @@ export const conteudoPt = {
     empresa: 'Sobre a CRAI — CRAI',
     contato: 'Contato — CRAI',
     naoEncontrada: 'Página não encontrada — CRAI',
+    entrar: 'Entrar — CRAI',
+    redefinirSenha: 'Nova senha — CRAI',
   },
   metaDescricao:
     'A CRAI recupera receita que empresas de SaaS perdem por churn, por Pix Automático, e cobra só sobre o que recupera.',
@@ -38,6 +40,8 @@ export const conteudoPt = {
       { rotulo: 'Contato', para: '/contato' },
     ],
     criarConta: 'Criar conta',
+    entrar: 'Entrar',
+    sair: 'Sair',
     abrirMenu: 'Abrir menu',
     fecharMenu: 'Fechar menu',
     rodape: {
@@ -62,9 +66,10 @@ export const conteudoPt = {
           ],
         },
       ],
-      aviso: 'Site demonstrativo — nenhum pagamento é processado.',
+      aviso: 'Versão beta — nenhum pagamento é processado.',
       lgpd: 'Dados tratados conforme a LGPD, com coleta mínima e finalidade declarada.',
-      legal: '© 2026 CRAI. Site demonstrativo, sem coleta real de dados.',
+      legal: '© 2026 CRAI. Versão beta.',
+      marca: 'Recuperação e retenção de receita para SaaS brasileiro, cobrada só pelo que volta.',
     },
   },
 
@@ -270,16 +275,35 @@ export const conteudoPt = {
     },
     medicao: {
       titulo: 'Medição contra grupo de controle',
-      texto:
-        'Uma parte dos assinantes com cobrança falha fica fora da ação da CRAI e segue só com as retentativas obrigatórias. A outra parte recebe a ação. Todo mês, a diferença de recuperação entre os dois grupos é apurada e aparece no painel.',
-      legenda: 'A conta da CRAI é a área entre as duas linhas.',
-      grafico: {
-        titulo: 'Taxa de recuperação do grupo de controle e do grupo tratado em 12 meses',
-        descricao:
-          'As duas linhas começam próximas e se afastam ao longo dos meses. A área entre elas é o ganho incremental.',
+      texto: 'Você só paga pelo que a CRAI recuperou além do que a sua empresa recuperaria sozinha.',
+      passos: [
+        {
+          titulo: 'Uma parte fica de fora',
+          texto: 'Um grupo dos assinantes com cobrança falha não recebe a ação da CRAI e segue só com as retentativas obrigatórias.',
+        },
+        {
+          titulo: 'A CRAI age no restante',
+          texto: 'O outro grupo recebe reagendamento e comunicação no melhor momento para pagar.',
+        },
+        {
+          titulo: 'A diferença é apurada todo mês',
+          texto: 'O que o grupo tratado recuperou acima do controle é o ganho incremental, e aparece no painel.',
+        },
+      ],
+      legenda: 'A CRAI só cobra do que passa da linha.',
+      exemplo: {
+        titulo: 'Um mês do cliente de referência',
+        emRisco: '{valor} em cobranças que falharam',
         controle: 'Grupo de controle',
-        tratado: 'Grupo tratado',
-        ganho: 'Ganho incremental',
+        tratado: 'Grupo tratado pela CRAI',
+        recuperado: '{pct} recuperado, {valor}',
+        ganhoChave: '+ {valor} de ganho incremental',
+        legendaLinha: 'O que o grupo de controle recuperou sozinho',
+        legendaBase: 'Base da taxa da CRAI',
+        contaGanho: 'Ganho incremental',
+        contaTaxa: 'Taxa da CRAI ({pct})',
+        contaFica: 'Fica com você',
+        nota: 'Exemplo ilustrativo com o cliente de referência do modelo: MRR de R$ 50 mil e 10% das cobranças falhando. O resultado real é apurado contra o grupo de controle da sua base.',
       },
     },
     painel: {
@@ -325,7 +349,8 @@ export const conteudoPt = {
     titulo: 'Taxa de sucesso e mais nada',
     lead: 'Sem mensalidade e sem taxa de implantação. Você paga uma parte do que a CRAI recupera, medida contra grupo de controle.',
     standardIncluido: 'Tudo do Standard',
-    premiumSoma: 'E soma',
+    selecionado: 'Selecionado',
+    selecionarAria: 'Selecionar plano {plano}',
     nota: 'As duas taxas do Premium são somadas: 25% sobre o ganho incremental da recuperação e 20% sobre a receita preservada. Estorno em até 90 dias devolve a taxa correspondente.',
     faixa: 'A CRAI atende SaaS com MRR entre R$ 25 mil e R$ 500 mil.',
     faq: {
@@ -418,6 +443,14 @@ export const conteudoPt = {
     titulo: 'Painel',
     badge: 'beta',
     lead: 'Prévia navegável do painel do cliente, com dados fictícios de uma empresa de demonstração.',
+    leadConta:
+      'Painel da sua empresa, em beta. Os números abaixo ainda são de demonstração até a integração com a sua cobrança.',
+    retencaoPremium: {
+      titulo: 'A retenção faz parte do Premium',
+      texto:
+        'Seu plano atual é o Standard, focado em recuperar cobranças que falharam. A leitura de assinantes com risco de cancelamento entra no Premium.',
+      acao: 'Ver os planos',
+    },
     navAria: 'Seções do painel',
     abas: [
       { id: 'recuperacao', rotulo: 'Recuperação' },
@@ -435,6 +468,7 @@ export const conteudoPt = {
       ganhoDetalhe: 'Acima do grupo de controle',
       taxa: 'Taxa da CRAI no período',
       taxaDetalhe: 'Recuperação {rec} · Retenção {ret}',
+      taxaDetalheStandard: '25% sobre o ganho incremental',
     },
     grafico: {
       titulo: 'Taxa de recuperação: controle × tratado',
@@ -488,7 +522,7 @@ export const conteudoPt = {
 
   cadastro: {
     titulo: 'Criar conta',
-    lead: 'Os campos já vêm preenchidos com uma empresa de demonstração. Revise se quiser e avance.',
+    lead: 'Preencha os dados da empresa e de quem vai administrar a conta. Leva cerca de dois minutos.',
     stepperAria: 'Etapas do cadastro',
     etapaDe: 'Etapa {n} de {total}',
     etapas: ['Empresa', 'Responsável', 'Operação'],
@@ -523,7 +557,7 @@ export const conteudoPt = {
       email: 'E-mail',
       telefone: 'Telefone',
       senha: 'Senha',
-      senhaDica: 'Senha de demonstração. Nada é salvo.',
+      senhaDica: 'Mínimo de 8 caracteres.',
     },
     operacao: {
       titulo: 'Operação',
@@ -542,18 +576,98 @@ export const conteudoPt = {
     voltar: 'Voltar',
     continuar: 'Continuar',
     finalizar: 'Ir para o pagamento',
+    enviando: 'Criando conta…',
+    concluindo: 'Concluindo seu cadastro…',
+    temConta: 'Já tem conta?',
+    entrar: 'Entrar',
+    jaTemConta: {
+      titulo: 'Sua conta já está criada',
+      texto: 'Você está conectado como {email}.',
+      painel: 'Ir para o painel',
+      sair: 'Sair',
+    },
+    validacao: {
+      obrigatorio: 'Campo obrigatório.',
+      cnpj: 'CNPJ inválido. Confira os números.',
+      email: 'Informe um e-mail válido.',
+      senha: 'A senha precisa ter pelo menos 8 caracteres.',
+      telefone: 'Telefone incompleto. Inclua o DDD.',
+      termos: 'Para criar a conta, aceite os termos de uso e a política de privacidade.',
+    },
+    erros: {
+      config: 'O cadastro está indisponível no momento. Tente novamente mais tarde.',
+      email_existente: 'Já existe uma conta com este e-mail.',
+      cnpj_existente: 'Este CNPJ já está cadastrado na CRAI. Peça um convite a quem administra a conta da empresa.',
+      cnpj_invalido: 'CNPJ inválido. Confira os números.',
+      senha_fraca: 'Senha fraca. Use pelo menos 8 caracteres, misturando letras e números.',
+      email_invalido: 'Este e-mail não foi aceito. Confira o endereço.',
+      limite: 'Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente de novo.',
+      rede: 'Não foi possível conectar ao servidor. Verifique sua internet e tente de novo.',
+      desconhecido: 'Não foi possível concluir o cadastro. Tente novamente.',
+    },
+    confirmarEmail: {
+      titulo: 'Confirme seu e-mail',
+      texto: 'Enviamos um link de confirmação para {email}. Abra o link neste mesmo navegador para concluir o cadastro e seguir para o pagamento.',
+      voltar: 'Voltar ao início',
+    },
     // Valores de demonstração que dependem do idioma (o resto vive em mockCadastro.ts).
     mock: {
-      cargo: 'Head de Receita',
       cobranca: 'Pix Automático',
       mensagem:
         'Olá, time da CRAI. Temos cerca de 500 assinantes e queremos entender como funciona a apuração da receita preservada no Premium e quanto tempo leva a integração.',
     },
   },
 
+  entrar: {
+    titulo: 'Entrar',
+    lead: 'Acesse a conta da sua empresa na CRAI.',
+    email: 'E-mail',
+    senha: 'Senha',
+    entrar: 'Entrar',
+    entrando: 'Entrando…',
+    esqueci: 'Esqueci minha senha',
+    semConta: 'Ainda não tem conta?',
+    criarConta: 'Criar conta',
+    validacao: {
+      email: 'Informe um e-mail válido.',
+      senha: 'Informe a senha.',
+    },
+    erros: {
+      config: 'O login está indisponível no momento. Tente novamente mais tarde.',
+      credenciais: 'E-mail ou senha incorretos.',
+      nao_confirmado: 'Confirme seu e-mail antes de entrar. O link está na sua caixa de entrada.',
+      senha_fraca: 'Senha fraca.',
+      mesma_senha: 'A nova senha precisa ser diferente da atual.',
+      limite: 'Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente de novo.',
+      rede: 'Não foi possível conectar ao servidor. Verifique sua internet e tente de novo.',
+      desconhecido: 'Não foi possível entrar. Tente novamente.',
+    },
+    recuperar: {
+      titulo: 'Recuperar senha',
+      texto: 'Informe o e-mail da conta. Enviaremos um link para você criar uma nova senha.',
+      enviar: 'Enviar link',
+      enviando: 'Enviando…',
+      enviado: 'Se existir uma conta com {email}, você vai receber um link para criar uma nova senha.',
+      voltar: 'Voltar para o login',
+    },
+  },
+  redefinirSenha: {
+    titulo: 'Nova senha',
+    lead: 'Escolha uma nova senha para a sua conta.',
+    senha: 'Nova senha',
+    dica: 'Mínimo de 8 caracteres.',
+    salvar: 'Salvar nova senha',
+    salvando: 'Salvando…',
+    curta: 'A senha precisa ter pelo menos 8 caracteres.',
+    sucesso: 'Senha alterada. Você já está conectado.',
+    irPainel: 'Ir para o painel',
+    linkInvalido: 'Este link expirou ou já foi usado. Peça um novo na tela de login.',
+    irEntrar: 'Ir para o login',
+  },
   pagamento: {
     titulo: 'Autorização de cobrança',
-    lead: 'A taxa de sucesso é cobrada por Pix Automático, só sobre resultado apurado. Os campos já vêm preenchidos.',
+    lead: 'A taxa de sucesso é cobrada por Pix Automático, só sobre resultado apurado. Os dados da empresa vêm do seu cadastro.',
+    carregando: 'Carregando os dados da empresa…',
     formTitulo: 'Autorização de cobrança por Pix Automático',
     campos: {
       titular: 'Titular da conta',
@@ -566,13 +680,14 @@ export const conteudoPt = {
       limite: 'Limite máximo por cobrança',
       limiteDica: 'O Pix Automático exige um teto autorizado por cobrança. Você pode alterar depois.',
       autorizo: 'Autorizo a CRAI a cobrar a taxa de sucesso apurada',
+      autorizoErro: 'Marque a autorização para continuar.',
     },
     instituicoes: ['Banco de demonstração', 'Cooperativa de demonstração', 'Instituição fictícia S.A.'],
     dias: [5, 10, 15],
     diaRotulo: 'Todo dia {n}',
     resumo: {
       titulo: 'Resumo',
-      plano: 'Plano Premium',
+      plano: 'Plano {nome}',
       linhas: ['25% sobre o ganho incremental da recuperação', '20% sobre a receita preservada na retenção (6 meses)'],
       selos: ['Sem mensalidade', 'Sem taxa de implantação'],
       estimativa: 'Estimativa da 1ª apuração',

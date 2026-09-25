@@ -1,55 +1,18 @@
 import type { Conteudo } from './conteudo.pt'
 
-// Dados 100% fictícios para pré-preenchimento. Não usar CNPJ, banco ou chave reais.
-// O que depende de idioma (segmento, faixa, cargo, forma de cobrança, assunto, mensagem)
-// é lido do copy em `mockCadastro(c)`; o resto é neutro e fica nas constantes abaixo.
+// Dados 100% fictícios (empresa NimbusFlow). Usados só no MRR inicial do simulador e no formulário
+// de contato, que é de demonstração. O cadastro e o pagamento usam os dados reais do Supabase.
 
-export const empresaBase = {
-  razaoSocial: 'NimbusFlow Tecnologia Ltda',
-  nomeFantasia: 'NimbusFlow',
-  cnpj: '12.345.678/0001-90',
-  site: 'nimbusflow.com.br',
-  mrr: 50000,
-  assinantes: 500,
-}
+/** MRR inicial do simulador para quem não está logado. */
+export const MRR_EXEMPLO = 50_000
 
-export const responsavelBase = {
+const contatoBase = {
   nome: 'Ana Ribeiro',
   email: 'ana.ribeiro@nimbusflow.com.br',
-  telefone: '(11) 98888-1200',
-  senha: 'demonstracao', // campo password, nunca exibir em claro
+  empresa: 'NimbusFlow',
 }
 
-export const operacaoBase = {
-  plano: 'premium' as const,
-  inicio: '2026-10-01',
-  aceitouTermos: true,
-  aceitouComunicacao: false,
-}
-
-/** Formulários pré-preenchidos no idioma do copy recebido. */
-export function mockCadastro(c: Conteudo) {
-  return {
-    empresa: {
-      ...empresaBase,
-      segmento: c.cadastro.empresa.segmentos[0],
-      mrrFaixa: c.cadastro.empresa.faixas[1],
-    },
-    responsavel: {
-      ...responsavelBase,
-      cargo: c.cadastro.mock.cargo,
-    },
-    operacao: {
-      ...operacaoBase,
-      cobranca: c.cadastro.mock.cobranca,
-    },
-    // Pré-preenchimento do formulário de contato, derivado do mesmo responsável fictício.
-    contato: {
-      nome: responsavelBase.nome,
-      email: responsavelBase.email,
-      empresa: empresaBase.nomeFantasia,
-      assunto: c.contatoPagina.assuntos[0],
-      mensagem: c.cadastro.mock.mensagem,
-    },
-  }
+/** Formulário de contato pré-preenchido no idioma do copy recebido. */
+export function mockContato(c: Conteudo) {
+  return { ...contatoBase, assunto: c.contatoPagina.assuntos[0], mensagem: c.cadastro.mock.mensagem }
 }

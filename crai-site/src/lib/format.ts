@@ -78,18 +78,19 @@ function aplicarMascara(digitos: string, padrao: string) {
   return saida
 }
 
+/** Aceita também o CNPJ alfanumérico (letras nas 12 primeiras posições, em maiúsculas). */
 export function formatCNPJ(valor: string) {
-  return aplicarMascara(somenteDigitos(valor).slice(0, 14), '##.###.###/####-##')
+  return aplicarMascara(valor.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 14), '##.###.###/####-##')
 }
 
 export function formatCPF(valor: string) {
   return aplicarMascara(somenteDigitos(valor).slice(0, 11), '###.###.###-##')
 }
 
-/** CPF até 11 dígitos, CNPJ acima disso. */
+/** CPF até 11 dígitos; CNPJ acima disso ou quando há letras (CNPJ alfanumérico). */
 export function formatDocumento(valor: string) {
-  const d = somenteDigitos(valor)
-  return d.length <= 11 ? formatCPF(d) : formatCNPJ(d)
+  const bruto = valor.replace(/[^A-Za-z0-9]/g, '')
+  return bruto.length > 11 || /[A-Za-z]/.test(bruto) ? formatCNPJ(bruto) : formatCPF(bruto)
 }
 
 export function formatTelefone(valor: string) {

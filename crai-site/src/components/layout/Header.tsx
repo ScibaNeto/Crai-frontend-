@@ -1,10 +1,12 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { cx } from '../../lib/cx'
+import { nomeExibicao } from '../../lib/empresa'
 import { useConteudo, useLang, useSetLang } from '../../lib/i18n'
 import { EASE_EXPO } from '../../lib/intro'
 import { isLang, LANG_HTML } from '../../lib/lang'
+import { useSessao } from '../../lib/useSessao'
 import { IconClose, IconMenu } from '../icons/Icons'
 import { Button } from '../ui/Button'
 import { Wordmark } from '../ui/Wordmark'
@@ -53,6 +55,8 @@ function LanguageSwitch({ id, className }: { id: string; className?: string }) {
 /** Header fixo com vidro (10.11). A borda inferior só aparece depois de 40px de rolagem. */
 export function Header() {
   const { site } = useConteudo()
+  const { sessao, empresa, sair } = useSessao()
+  const navigate = useNavigate()
   const [rolou, setRolou] = useState(() => window.scrollY > 40)
   const [aberto, setAberto] = useState(false)
   const [desenho, setDesenho] = useState(0)
@@ -79,6 +83,11 @@ export function Header() {
   }, [aberto])
 
   const redesenhar = () => setDesenho((n) => n + 1)
+
+  async function onSair() {
+    await sair()
+    navigate('/')
+  }
 
   return (
     <header
@@ -117,9 +126,27 @@ export function Header() {
 
         <div className="flex items-center gap-2 lg:gap-4">
           <LanguageSwitch id="desktop" className="hidden lg:flex" />
-          <Button to="/cadastro" size="sm" className="hidden sm:inline-flex">
-            {site.criarConta}
-          </Button>
+          {sessao ? (
+            <>
+              {empresa ? (
+                <span className="t-apoio hidden max-w-[16ch] truncate text-silver xl:inline" title={nomeExibicao(empresa)}>
+                  {nomeExibicao(empresa)}
+                </span>
+              ) : null}
+              <Button variant="ghost" size="sm" className="hidden sm:inline-flex" onClick={onSair}>
+                {site.sair}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button to="/entrar" variant="ghost" size="sm" className="hidden sm:inline-flex">
+                {site.entrar}
+              </Button>
+              <Button to="/cadastro" size="sm" className="hidden sm:inline-flex">
+                {site.criarConta}
+              </Button>
+            </>
+          )}
           <button
             type="button"
             className="inline-flex h-10 w-10 items-center justify-center rounded-[4px] text-paper hover:bg-paper/5 lg:hidden"
@@ -157,9 +184,18 @@ export function Header() {
               ))}
               <li className="flex items-center justify-between gap-4 pt-5">
                 <LanguageSwitch id="mobile" className="-ml-2.5" />
-                <Button to="/cadastro" className="sm:hidden">
-                  {site.criarConta}
-                </Button>
+                {sessao ? (
+                  <Button variant="ghost" className="sm:hidden" onClick={onSair}>
+                    {site.sair}
+                  </Button>
+                ) : (
+                  <span className="flex gap-2 sm:hidden">
+                    <Button to="/entrar" variant="ghost">
+                      {site.entrar}
+                    </Button>
+                    <Button to="/cadastro">{site.criarConta}</Button>
+                  </span>
+                )}
               </li>
             </ul>
           </motion.nav>
