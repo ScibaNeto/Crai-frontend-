@@ -1,6 +1,6 @@
 import { AnimatePresence, motion, type Variants } from 'framer-motion'
-import { useRef, useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { PageShell } from '../components/layout/PageShell'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
@@ -8,43 +8,125 @@ import { Checkbox, Field } from '../components/ui/Field'
 import { Select } from '../components/ui/Select'
 import { Stepper } from '../components/ui/Stepper'
 import { Toggle } from '../components/ui/Toggle'
-import { mockCadastro } from '../data/mockCadastro'
+import {
+  FAIXAS_MRR,
+  SEGMENTOS,
+  cadastrar,
+  codigoDoErro,
+  concluirCadastroPendente,
+  concluirComDados,
+  temCadastroPendente,
+  type CodigoErroCadastro,
+  type DadosCadastro,
+} from '../lib/cadastro'
+import { cnpjValido } from '../lib/cnpj'
 import { interpolar } from '../lib/cx'
 import { formatCNPJ, formatTelefone, somenteDigitos } from '../lib/format'
-import { useConteudo, useLang } from '../lib/i18n'
+import { useConteudo } from '../lib/i18n'
 import { EASE_EXPO } from '../lib/intro'
+import { useSessao } from '../lib/useSessao'
 import type { Plano } from '../lib/simulador'
 import { useReducedMotion } from '../lib/useReducedMotion'
 
 interface DadosOperacao {
   plano: Plano
-  cobranca: string
   inicio: string
   aceitouTermos: boolean
   aceitouComunicacao: boolean
 }
 
-/** Remonta o formulário ao trocar de idioma: o pré-preenchimento de demonstração é refeito no idioma novo. */
-export function Cadastro() {
-  const lang = useLang()
-  return <CadastroForm key={lang} />
+type Erros = Partial<Record<string, string>>
+
+const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+
+/** Data de hoje no fuso local, no formato do input date (AAAA-MM-DD). */
+function hojeISO() {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-function CadastroForm() {
+/** Campos de cada etapa, para voltar à etapa certa quando a validação final falha. */
+const CAMPOS_POR_ETAPA = [
+  ['razao-social', 'cnpj'],
+  ['resp-nome', 'resp-email', 'resp-telefone', 'resp-senha'],
+  ['termos'],
+]
+
+export function Cadastro() {
   const navigate = useNavigate()
   const reduced = useReducedMotion()
   const conteudo = useConteudo()
   const { cadastro, simuladorCopy } = conteudo
+  const { sessao, perfil, empresa, recarregar, sair } = useSessao()
   const [etapa, setEtapa] = useState(0)
   const [direcao, setDirecao] = useState(1)
-  const [dadosEmpresa, setDadosEmpresa] = useState(() => {
-    const { empresa } = mockCadastro(conteudo)
-    return { ...empresa, assinantes: String(empresa.assinantes) }
+  // Segmento e faixa guardam o índice da opção, para o que foi digitado sobreviver à troca de idioma.
+  const [dadosEmpresa, setDadosEmpresa] = useState({
+    razaoSocial: '',
+    nomeFantasia: '',
+    cnpj: '',
+    site: '',
+    segmento: '0',
+    mrrFaixa: '0',
+    assinantes: '',
   })
-  const [dadosResp, setDadosResp] = useState(() => mockCadastro(conteudo).responsavel)
-  const [dadosOp, setDadosOp] = useState<DadosOperacao>(() => mockCadastro(conteudo).operacao)
+  const [dadosResp, setDadosResp] = useState({ nome: '', cargo: '', email: '', telefone: '', senha: '' })
+  const [params] = useSearchParams()
+  // O botão de cada plano em /planos chega com ?plano=standard|premium.
+  const [dadosOp, setDadosOp] = useState<DadosOperacao>({
+    plano: params.get('plano') === 'premium' ? 'premium' : 'standard',
+    inicio: '',
+    aceitouTermos: false,
+    aceitouComunicacao: false,
+  })
+  const [erros, setErros] = useState<Erros>({})
+  const [erroGeral, setErroGeral] = useState<CodigoErroCadastro | null>(null)
+  const [enviando, setEnviando] = useState(false)
+  const [concluindo, setConcluindo] = useState(false)
+  const [contaExistente, setContaExistente] = useState(false)
+  const [confirmarEmail, setConfirmarEmail] = useState<string | null>(null)
+  // true entre o fim do cadastro e a troca de rota, para não piscar o aviso de "conta já criada".
+  const [saindo, setSaindo] = useState(false)
+  // Logado sem empresa (cadastro interrompido): o formulário só completa a empresa, sem criar outra conta.
+  const semEmpresa = Boolean(sessao) && !empresa
+  const modoConta = contaExistente || semEmpresa
+  const emailDaConta = sessao?.user.email ?? ''
   const tituloRef = useRef<HTMLHeadingElement>(null)
   const precisaFoco = useRef(false)
+
+  // Volta do link de confirmação (ou sessão com cadastro incompleto): grava perfil e empresa pendentes.
+  useEffect(() => {
+    let ativo = true
+    temCadastroPendente()
+      .then((pendente) => {
+        if (!pendente || !ativo) return
+        setConcluindo(true)
+        setSaindo(true)
+        return concluirCadastroPendente()
+          .then(() => recarregar())
+          .then(() => {
+            if (ativo) navigate('/pagamento')
+          })
+      })
+      .catch((erro: unknown) => {
+        if (!ativo) return
+        setSaindo(false)
+        setConcluindo(false)
+        setContaExistente(true)
+        setErroGeral(codigoDoErro(erro))
+      })
+    return () => {
+      ativo = false
+    }
+  }, [navigate, recarregar])
+
+  // Nome do perfil já existente entra no formulário quando só falta a empresa
+  // (ajuste de estado durante o render, uma vez só, sem effect).
+  const [nomeDoPerfilAplicado, setNomeDoPerfilAplicado] = useState(false)
+  if (semEmpresa && perfil && !nomeDoPerfilAplicado) {
+    setNomeDoPerfilAplicado(true)
+    if (!dadosResp.nome) setDadosResp({ ...dadosResp, nome: perfil.nome_completo })
+  }
 
   const opcoesPlano = simuladorCopy.planos as { value: Plano; label: string }[]
   const total = cadastro.etapas.length
@@ -57,19 +139,118 @@ function CadastroForm() {
     setEtapa(n)
   }
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  function validarEtapa(n: number): Erros {
+    const v = cadastro.validacao
+    const novos: Erros = {}
+    if (n === 0) {
+      if (dadosEmpresa.razaoSocial.trim().length < 2) novos['razao-social'] = v.obrigatorio
+      if (!dadosEmpresa.cnpj.trim()) novos.cnpj = v.obrigatorio
+      else if (!cnpjValido(dadosEmpresa.cnpj)) novos.cnpj = v.cnpj
+    }
+    if (n === 1) {
+      if (!dadosResp.nome.trim()) novos['resp-nome'] = v.obrigatorio
+      if (!modoConta && !EMAIL_VALIDO.test(dadosResp.email.trim())) novos['resp-email'] = v.email
+      const tel = somenteDigitos(dadosResp.telefone)
+      if (tel && tel.length < 10) novos['resp-telefone'] = v.telefone
+      if (!modoConta && dadosResp.senha.length < 8) novos['resp-senha'] = v.senha
+    }
+    if (n === 2 && !dadosOp.aceitouTermos) novos.termos = v.termos
+    return novos
+  }
+
+  /** Leva o foco (e a rolagem) ao primeiro campo com erro, para a mensagem não ficar fora da tela. */
+  function focarCampo(id: string | undefined) {
+    if (!id) return
+    requestAnimationFrame(() => {
+      const campo = document.getElementById(id)
+      campo?.focus({ preventScroll: true })
+      campo?.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' })
+    })
+  }
+
+  /** Atualiza o campo e some com o erro dele. */
+  function limparErro(id: string) {
+    if (erros[id]) setErros((atual) => ({ ...atual, [id]: undefined }))
+    if (erroGeral) setErroGeral(null)
+  }
+
+  function montarDados(): DadosCadastro {
+    return {
+      responsavel: {
+        nome: dadosResp.nome,
+        email: modoConta && emailDaConta ? emailDaConta : dadosResp.email,
+        senha: dadosResp.senha,
+        cargo: dadosResp.cargo,
+        telefone: dadosResp.telefone,
+      },
+      empresa: {
+        razaoSocial: dadosEmpresa.razaoSocial,
+        nomeFantasia: dadosEmpresa.nomeFantasia,
+        cnpj: dadosEmpresa.cnpj,
+        site: dadosEmpresa.site,
+        segmento: SEGMENTOS[Number(dadosEmpresa.segmento)] ?? '',
+        faixaMrr: FAIXAS_MRR[Number(dadosEmpresa.mrrFaixa)] ?? null,
+        assinantes: dadosEmpresa.assinantes,
+      },
+      operacao: dadosOp,
+    }
+  }
+
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    if (enviando) return
+
+    const errosEtapa = validarEtapa(etapa)
+    if (Object.keys(errosEtapa).length) {
+      setErros((atual) => ({ ...atual, ...errosEtapa }))
+      focarCampo(Object.keys(errosEtapa)[0])
+      return
+    }
     if (!ultima) {
       irPara(etapa + 1)
       return
     }
-    // Senha nunca vai para o log.
-    console.log('[demo] cadastro', {
-      empresa: dadosEmpresa,
-      responsavel: { nome: dadosResp.nome, cargo: dadosResp.cargo, email: dadosResp.email, telefone: dadosResp.telefone },
-      operacao: dadosOp,
-    })
-    navigate('/pagamento')
+
+    // Revalida tudo antes de enviar e volta para a primeira etapa com problema.
+    const todos: Erros = { ...validarEtapa(0), ...validarEtapa(1), ...validarEtapa(2) }
+    if (Object.keys(todos).length) {
+      setErros(todos)
+      const etapaComErro = CAMPOS_POR_ETAPA.findIndex((campos) => campos.some((c) => todos[c]))
+      if (etapaComErro >= 0) irPara(etapaComErro)
+      return
+    }
+
+    setEnviando(true)
+    setErroGeral(null)
+    try {
+      const dados = montarDados()
+      const resultado = modoConta ? await concluirComDados(dados) : await cadastrar(dados)
+      if (resultado.status === 'confirmar_email') {
+        setConfirmarEmail(resultado.email)
+      } else {
+        setSaindo(true)
+        await recarregar()
+        navigate('/pagamento')
+      }
+    } catch (erro) {
+      setSaindo(false)
+      const codigo = codigoDoErro(erro)
+      setErroGeral(codigo)
+      if (codigo === 'cnpj_existente' || codigo === 'cnpj_invalido') {
+        // A conta pode já ter sido criada; a próxima tentativa só corrige a empresa.
+        setContaExistente(await temCadastroPendente().catch(() => false))
+        setErros((atual) => ({ ...atual, cnpj: cadastro.erros[codigo] }))
+        irPara(0)
+      } else if (codigo === 'email_existente' || codigo === 'email_invalido') {
+        setErros((atual) => ({ ...atual, 'resp-email': cadastro.erros[codigo] }))
+        irPara(1)
+      } else if (codigo === 'senha_fraca') {
+        setErros((atual) => ({ ...atual, 'resp-senha': cadastro.erros[codigo] }))
+        irPara(1)
+      }
+    } finally {
+      setEnviando(false)
+    }
   }
 
   const variants: Variants = {
@@ -81,6 +262,58 @@ function CadastroForm() {
   const e = cadastro.empresa
   const r = cadastro.responsavel
   const o = cadastro.operacao
+
+  if (sessao && empresa && !saindo && !enviando && !concluindo) {
+    const j = cadastro.jaTemConta
+    return (
+      <PageShell titulo={cadastro.titulo} lead={cadastro.lead}>
+        <div className="container-site pb-24 md:pb-32">
+          <Card className="max-w-[820px] p-5 sm:p-8 md:p-10">
+            <h2 className="t-h2">{j.titulo}</h2>
+            <p className="t-body measure mt-4 text-silver">{interpolar(j.texto, { email: emailDaConta })}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button to="/painel">{j.painel}</Button>
+              <Button variant="ghost" onClick={() => void sair()}>
+                {j.sair}
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </PageShell>
+    )
+  }
+
+  if (confirmarEmail) {
+    return (
+      <PageShell titulo={cadastro.titulo} lead={cadastro.lead}>
+        <div className="container-site pb-24 md:pb-32">
+          <Card className="max-w-[820px] p-5 sm:p-8 md:p-10" role="status" aria-live="polite">
+            <h2 className="t-h2">{cadastro.confirmarEmail.titulo}</h2>
+            <p className="t-body measure mt-4 text-silver">
+              {interpolar(cadastro.confirmarEmail.texto, { email: confirmarEmail })}
+            </p>
+            <div className="mt-8">
+              <Button to="/" variant="ghost">
+                {cadastro.confirmarEmail.voltar}
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </PageShell>
+    )
+  }
+
+  if (concluindo) {
+    return (
+      <PageShell titulo={cadastro.titulo} lead={cadastro.lead}>
+        <div className="container-site pb-24 md:pb-32">
+          <Card className="max-w-[820px] p-5 sm:p-8 md:p-10" role="status" aria-live="polite">
+            <p className="t-body text-silver">{cadastro.concluindo}</p>
+          </Card>
+        </div>
+      </PageShell>
+    )
+  }
 
   return (
     <PageShell titulo={cadastro.titulo} lead={cadastro.lead}>
@@ -119,8 +352,13 @@ function CadastroForm() {
                         id="razao-social"
                         label={e.razaoSocial}
                         autoComplete="organization"
+                        required
+                        error={erros['razao-social']}
                         value={dadosEmpresa.razaoSocial}
-                        onChange={(ev) => setDadosEmpresa({ ...dadosEmpresa, razaoSocial: ev.target.value })}
+                        onChange={(ev) => {
+                          limparErro('razao-social')
+                          setDadosEmpresa({ ...dadosEmpresa, razaoSocial: ev.target.value })
+                        }}
                         wrapperClassName="sm:col-span-2"
                       />
                       <Field
@@ -132,10 +370,15 @@ function CadastroForm() {
                       <Field
                         id="cnpj"
                         label={e.cnpj}
-                        inputMode="numeric"
-                        className="tabular"
+                        className="tabular uppercase"
+                        required
+                        placeholder="00.000.000/0000-00"
+                        error={erros.cnpj}
                         value={dadosEmpresa.cnpj}
-                        onChange={(ev) => setDadosEmpresa({ ...dadosEmpresa, cnpj: formatCNPJ(ev.target.value) })}
+                        onChange={(ev) => {
+                          limparErro('cnpj')
+                          setDadosEmpresa({ ...dadosEmpresa, cnpj: formatCNPJ(ev.target.value) })
+                        }}
                       />
                       <Field
                         id="site"
@@ -148,14 +391,14 @@ function CadastroForm() {
                       <Select
                         id="segmento"
                         label={e.segmento}
-                        options={e.segmentos}
+                        options={e.segmentos.map((label, i) => ({ value: String(i), label }))}
                         value={dadosEmpresa.segmento}
                         onChange={(ev) => setDadosEmpresa({ ...dadosEmpresa, segmento: ev.target.value })}
                       />
                       <Select
                         id="mrr-faixa"
                         label={e.mrrFaixa}
-                        options={e.faixas}
+                        options={e.faixas.map((label, i) => ({ value: String(i), label }))}
                         value={dadosEmpresa.mrrFaixa}
                         onChange={(ev) => setDadosEmpresa({ ...dadosEmpresa, mrrFaixa: ev.target.value })}
                       />
@@ -183,8 +426,13 @@ function CadastroForm() {
                         id="resp-nome"
                         label={r.nome}
                         autoComplete="name"
+                        required
+                        error={erros['resp-nome']}
                         value={dadosResp.nome}
-                        onChange={(ev) => setDadosResp({ ...dadosResp, nome: ev.target.value })}
+                        onChange={(ev) => {
+                          limparErro('resp-nome')
+                          setDadosResp({ ...dadosResp, nome: ev.target.value })
+                        }}
                       />
                       <Field
                         id="resp-cargo"
@@ -198,8 +446,14 @@ function CadastroForm() {
                         type="email"
                         label={r.email}
                         autoComplete="email"
-                        value={dadosResp.email}
-                        onChange={(ev) => setDadosResp({ ...dadosResp, email: ev.target.value })}
+                        required
+                        disabled={modoConta}
+                        error={erros['resp-email']}
+                        value={modoConta && emailDaConta ? emailDaConta : dadosResp.email}
+                        onChange={(ev) => {
+                          limparErro('resp-email')
+                          setDadosResp({ ...dadosResp, email: ev.target.value })
+                        }}
                       />
                       <Field
                         id="resp-telefone"
@@ -207,19 +461,31 @@ function CadastroForm() {
                         label={r.telefone}
                         autoComplete="tel"
                         className="tabular"
+                        error={erros['resp-telefone']}
                         value={dadosResp.telefone}
-                        onChange={(ev) => setDadosResp({ ...dadosResp, telefone: formatTelefone(ev.target.value) })}
+                        onChange={(ev) => {
+                          limparErro('resp-telefone')
+                          setDadosResp({ ...dadosResp, telefone: formatTelefone(ev.target.value) })
+                        }}
                       />
-                      <Field
-                        id="resp-senha"
-                        type="password"
-                        label={r.senha}
-                        hint={r.senhaDica}
-                        autoComplete="new-password"
-                        value={dadosResp.senha}
-                        onChange={(ev) => setDadosResp({ ...dadosResp, senha: ev.target.value })}
-                        wrapperClassName="sm:col-span-2 sm:max-w-[calc(50%-12px)]"
-                      />
+                      {modoConta ? null : (
+                        <Field
+                          id="resp-senha"
+                          type="password"
+                          label={r.senha}
+                          hint={r.senhaDica}
+                          autoComplete="new-password"
+                          required
+                          minLength={8}
+                          error={erros['resp-senha']}
+                          value={dadosResp.senha}
+                          onChange={(ev) => {
+                            limparErro('resp-senha')
+                            setDadosResp({ ...dadosResp, senha: ev.target.value })
+                          }}
+                          wrapperClassName="sm:col-span-2 sm:max-w-[calc(50%-12px)]"
+                        />
+                      )}
                     </div>
                   </fieldset>
                 ) : null}
@@ -241,11 +507,12 @@ function CadastroForm() {
                         hint={o.planoDica[dadosOp.plano]}
                         className="sm:col-span-2 sm:max-w-[420px]"
                       />
-                      <Field id="cobranca" label={o.cobranca} value={dadosOp.cobranca} hint={o.cobrancaDica} disabled readOnly />
+                      <Field id="cobranca" label={o.cobranca} value={cadastro.mock.cobranca} hint={o.cobrancaDica} disabled readOnly />
                       <Field
                         id="inicio"
                         type="date"
                         label={o.inicio}
+                        min={hojeISO()}
                         className="tabular"
                         value={dadosOp.inicio}
                         onChange={(ev) => setDadosOp({ ...dadosOp, inicio: ev.target.value })}
@@ -254,8 +521,13 @@ function CadastroForm() {
                         <Checkbox
                           id="termos"
                           label={o.termos}
+                          required
+                          error={erros.termos}
                           checked={dadosOp.aceitouTermos}
-                          onChange={(ev) => setDadosOp({ ...dadosOp, aceitouTermos: ev.target.checked })}
+                          onChange={(ev) => {
+                            limparErro('termos')
+                            setDadosOp({ ...dadosOp, aceitouTermos: ev.target.checked })
+                          }}
                         />
                         <Checkbox
                           id="comunicacao"
@@ -271,15 +543,29 @@ function CadastroForm() {
               </motion.div>
             </AnimatePresence>
 
+            {erroGeral ? (
+              <p role="alert" className="t-apoio mt-8 text-amber">
+                {cadastro.erros[erroGeral]}
+              </p>
+            ) : null}
+
             <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-6">
-              <Button variant="ghost" onClick={() => irPara(etapa - 1)} disabled={etapa === 0}>
+              <Button variant="ghost" onClick={() => irPara(etapa - 1)} disabled={etapa === 0 || enviando}>
                 {cadastro.voltar}
               </Button>
-              <Button type="submit" size="lg">
-                {ultima ? cadastro.finalizar : cadastro.continuar}
+              <Button type="submit" size="lg" loading={enviando} disabled={enviando}>
+                {enviando ? cadastro.enviando : ultima ? cadastro.finalizar : cadastro.continuar}
               </Button>
             </div>
           </form>
+          {sessao ? null : (
+            <p className="t-apoio mt-6 text-silver">
+              {cadastro.temConta}{' '}
+              <Link to="/entrar?proximo=/pagamento" className="text-link text-paper">
+                {cadastro.entrar}
+              </Link>
+            </p>
+          )}
         </Card>
       </div>
     </PageShell>

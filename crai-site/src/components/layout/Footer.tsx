@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useConteudo } from '../../lib/i18n'
+import { MarcaRodape } from '../../sections/MarcaRodape'
 import { Wordmark } from '../ui/Wordmark'
 
 export function Footer() {
@@ -40,12 +41,7 @@ export function Footer() {
 
       <p className="t-apoio container-site pb-8 text-center text-silver">{rodape.legal}</p>
 
-      {/* Assinatura: wordmark gigante e apagado, cortado pela borda da página. */}
-      <div aria-hidden="true" className="container-site overflow-hidden select-none">
-        <div className="translate-y-[22%] text-[clamp(96px,27vw,340px)] opacity-[0.07]">
-          <Wordmark instant decorative />
-        </div>
-      </div>
+      <MarcaRodape />
     </footer>
   )
 }

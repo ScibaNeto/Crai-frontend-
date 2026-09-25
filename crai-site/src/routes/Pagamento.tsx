@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState, type FormEvent } from 'react'
 import { createPortal } from 'react-dom'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { IconCheck } from '../components/icons/Icons'
 import { PageShell } from '../components/layout/PageShell'
 import { CountUp } from '../components/motion/CountUp'
@@ -12,11 +12,12 @@ import { Card } from '../components/ui/Card'
 import { Checkbox, Field } from '../components/ui/Field'
 import { PixQrPlaceholder, type EstadoQr } from '../components/ui/PixQrPlaceholder'
 import { Select } from '../components/ui/Select'
-import { empresaBase, operacaoBase } from '../data/mockCadastro'
-import { mockPagamento } from '../data/mockPagamento'
+import { getPlanos } from '../data/planos'
 import { interpolar } from '../lib/cx'
-import { formatDocumento, parseMoeda, somenteDigitos } from '../lib/format'
+import { mrrEstimado, type Empresa } from '../lib/empresa'
+import { formatCNPJ, formatDocumento, parseMoeda, somenteDigitos } from '../lib/format'
 import { useConteudo, useFormato, useLang } from '../lib/i18n'
+import { useSessao } from '../lib/useSessao'
 import { simular } from '../lib/simulador'
 import { useReducedMotion } from '../lib/useReducedMotion'
 
@@ -56,21 +57,52 @@ function CarregandoPix({ estado }: { estado: EstadoQr }) {
   )
 }
 
-/** Remonta o formulário ao trocar de idioma: o pré-preenchimento de demonstração é refeito no idioma novo. */
+/** Exige login e empresa cadastrada; remonta o formulário ao trocar de idioma (a instituição vem do copy). */
 export function Pagamento() {
   const lang = useLang()
-  return <PagamentoForm key={lang} />
+  const { pagamento } = useConteudo()
+  const { carregando, sessao, empresa } = useSessao()
+
+  if (carregando) {
+    return (
+      <PageShell titulo={pagamento.titulo} lead={pagamento.lead}>
+        <div className="container-site pb-24 md:pb-32">
+          <Card className="max-w-[820px] p-5 sm:p-8 md:p-10" role="status" aria-live="polite">
+            <p className="t-body text-silver">{pagamento.carregando}</p>
+          </Card>
+        </div>
+      </PageShell>
+    )
+  }
+  if (!sessao) return <Navigate to="/entrar?proximo=/pagamento" replace />
+  if (!empresa) return <Navigate to="/cadastro" replace />
+  return <PagamentoForm key={lang} empresa={empresa} email={sessao.user.email ?? ''} />
 }
 
-function PagamentoForm() {
+function PagamentoForm({ empresa, email }: { empresa: Empresa; email: string }) {
   const navigate = useNavigate()
   const reduced = useReducedMotion()
   const conteudo = useConteudo()
   const { pagamento } = conteudo
   const f = useFormato()
-  const [form, setForm] = useState(() => mockPagamento(conteudo))
+  // A cobrança ainda é simulada (sem PSP): os dados bancários não são enviados nem salvos.
+  const [form, setForm] = useState(() => ({
+    titular: empresa.razao_social,
+    documento: formatCNPJ(empresa.cnpj),
+    instituicao: pagamento.instituicoes[0],
+    agencia: '',
+    conta: '',
+    chavePix: empresa.email_financeiro ?? email,
+    diaApuracao: pagamento.dias[0],
+    limitePorCobranca: 2000,
+    autorizado: false,
+  }))
+  const [erroAutorizo, setErroAutorizo] = useState(false)
   const [estado, setEstado] = useState<EstadoQr>('ocioso')
-  const estimativa = simular(empresaBase.mrr, operacaoBase.plano)
+  const plano = getPlanos(conteudo)[empresa.plano]
+  const estimativa = simular(mrrEstimado(empresa.faixa_mrr), empresa.plano)
+  // Linha 0: taxa da recuperação (os dois planos). Linha 1: taxa da retenção (só Premium).
+  const linhasResumo = empresa.plano === 'premium' ? pagamento.resumo.linhas : pagamento.resumo.linhas.slice(0, 1)
   const c = pagamento.campos
 
   // Faixa fixa no rodapé: reserva o espaço para não cobrir o fim da página.
@@ -93,7 +125,11 @@ function PagamentoForm() {
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (estado !== 'ocioso') return
-    console.log('[demo] autorização Pix Automático', form)
+    if (!form.autorizado) {
+      setErroAutorizo(true)
+      document.getElementById('autorizo')?.focus()
+      return
+    }
     setEstado('formando')
   }
 
@@ -174,8 +210,13 @@ function PagamentoForm() {
               id="autorizo"
               wrapperClassName="mt-8 border-t border-line pt-6"
               label={c.autorizo}
+              required
+              error={erroAutorizo ? c.autorizoErro : undefined}
               checked={form.autorizado}
-              onChange={(e) => setForm({ ...form, autorizado: e.target.checked })}
+              onChange={(e) => {
+                setErroAutorizo(false)
+                setForm({ ...form, autorizado: e.target.checked })
+              }}
             />
 
             <div className="mt-8">
@@ -192,10 +233,10 @@ function PagamentoForm() {
               <h2 id="resumo-titulo" className="t-apoio text-silver">
                 {pagamento.resumo.titulo}
               </h2>
-              <p className="t-h3 mt-1">{pagamento.resumo.plano}</p>
+              <p className="t-h3 mt-1">{interpolar(pagamento.resumo.plano, { nome: plano.nome })}</p>
 
               <ul className="mt-6 flex flex-col gap-3">
-                {pagamento.resumo.linhas.map((linha) => (
+                {linhasResumo.map((linha) => (
                   <li key={linha} className="flex gap-3">
                     <IconCheck size={18} className="mt-1 shrink-0 text-silver" />
                     <span>{linha}</span>

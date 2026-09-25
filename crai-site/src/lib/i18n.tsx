@@ -1,4 +1,4 @@
-/* oxlint-disable react/only-export-components -- provider e hooks no mesmo arquivo por decisão de projeto (CRAI-SITE-ALTERACOES.md, frente 1); só afeta Fast Refresh deste arquivo. */
+/* oxlint-disable react/only-export-components -- provider e hooks no mesmo arquivo por decisão de projeto; só afeta Fast Refresh deste arquivo. */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { conteudoEn } from '../data/conteudo.en'
 import { conteudoPt, type Conteudo } from '../data/conteudo.pt'

@@ -3,9 +3,8 @@ import { PageShell } from '../components/layout/PageShell'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { useConteudo } from '../lib/i18n'
-import { serieReferencia } from '../data/mockPainel'
-import { ControleChart } from '../sections/ControleChart'
 import { FluxoRecuperacao } from '../sections/FluxoRecuperacao'
+import { GrupoControle } from '../sections/GrupoControle'
 import { LiquidezIlustracao } from '../sections/LiquidezIlustracao'
 import { MorphIcon } from '../sections/MorphIcon'
 import { PainelPrints } from '../sections/PainelPrints'
@@ -19,7 +18,7 @@ const ICONES_DADOS = {
 
 export function Produto() {
   const { produto } = useConteudo()
-  const { recuperacao, liquidez, retencao, medicao, painel, dados } = produto
+  const { recuperacao, liquidez, retencao, painel, dados } = produto
 
   return (
     <PageShell titulo={produto.titulo} lead={produto.lead}>
@@ -108,20 +107,7 @@ export function Produto() {
       </section>
 
       {/* 4. Medição */}
-      <section className="section-y border-t border-line" aria-labelledby="medicao-titulo">
-        <div className="container-site grid gap-10 lg:grid-cols-12 lg:gap-8">
-          <div className="lg:col-span-4">
-            <h2 id="medicao-titulo" className="t-h2">
-              {medicao.titulo}
-            </h2>
-            <p className="t-body measure mt-5 text-silver">{medicao.texto}</p>
-          </div>
-          <figure className="rounded-[14px] border border-line bg-slate p-5 md:p-8 lg:col-span-8">
-            <ControleChart serie={serieReferencia} titulo={medicao.grafico.titulo} descricao={medicao.grafico.descricao} rotulos={medicao.grafico} />
-            <figcaption className="t-h2 mt-8 border-t border-line pt-6 text-paper">{medicao.legenda}</figcaption>
-          </figure>
-        </div>
-      </section>
+      <GrupoControle />
 
       {/* 5. Painel */}
       <section className="section-y border-t border-line" aria-labelledby="painel-titulo">

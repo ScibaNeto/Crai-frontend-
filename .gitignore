@@ -1,0 +1,15 @@
+# Regras do site ficam em crai-site/.gitignore. Aqui só o que pode aparecer na raiz.
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+
+# Variáveis de ambiente
+.env
+.env.*
+!.env.example
