@@ -338,7 +338,6 @@ export const conteudoEn: Conteudo = {
   planosPagina: {
     titulo: 'A success fee and nothing else',
     lead: 'No monthly fee, no setup fee. You pay a share of what CRAI recovers, measured against a control group.',
-    standardIncluido: 'Everything in Standard',
     selecionado: 'Selected',
     selecionarAria: 'Select the {plano} plan',
     nota: 'The two Premium fees add up: 25% of the incremental gain from recovery and 20% of preserved revenue. A refund within 90 days returns the matching fee.',
@@ -375,9 +374,12 @@ export const conteudoEn: Conteudo = {
   planos: {
     standard: {
       nome: 'Standard',
-      taxa: '25%',
-      base: 'of the incremental gain',
+      titulo: 'Recover what failed',
       resumo: 'Recovery of failed charges, billed only on what came in above the control group.',
+      valor: '25%',
+      base: 'of the incremental gain',
+      detalhe: '',
+      inclui: "What's included:",
       itens: [
         'Recovery of failed charges',
         'Liquidity inference and rescheduling',
@@ -389,9 +391,12 @@ export const conteudoEn: Conteudo = {
     },
     premium: {
       nome: 'Premium',
-      taxa: '+ 20%',
-      base: 'of preserved revenue',
-      resumo: 'Everything in Standard, plus retention of those signalling they will leave.',
+      titulo: 'Recover and retain',
+      resumo: 'Recovery of failed charges combined with retention of those signalling they will leave.',
+      valor: '45%',
+      base: '',
+      detalhe: '25% of the incremental gain + 20% of preserved revenue',
+      inclui: 'Everything in Standard, plus:',
       itens: [
         'Cancellation risk signals',
         'Retention action with no friction on cancellation',

@@ -1,135 +1,45 @@
-import { motion } from 'framer-motion'
-import { useState } from 'react'
+import type { ComponentType } from 'react'
 import { Link } from 'react-router-dom'
-import { IconCheck } from '../components/icons/Icons'
-import { getPlanos } from '../data/planos'
-import { cx, interpolar } from '../lib/cx'
+import {
+  IconActivity,
+  IconCalendar,
+  IconChart,
+  IconCheck,
+  IconClock,
+  IconCode,
+  IconCompare,
+  IconMessage,
+  IconRefresh,
+  IconShield,
+  type IconProps,
+} from '../components/icons/Icons'
+import { getPlanos, type PlanoInfo } from '../data/planos'
+import { cx } from '../lib/cx'
 import { useConteudo } from '../lib/i18n'
 import type { Plano } from '../lib/simulador'
-import { useReducedMotion } from '../lib/useReducedMotion'
 
-interface CardPlano {
-  id: Plano
-  nome: string
-  taxas: { valor: string; base: string }[]
-  resumo: string
-  itens: string[]
-  cta: string
-  destino: string
+/** Um ícone por item da lista, na ordem do copy. Item a mais no copy cai no check. */
+const ICONES: Record<Plano, ComponentType<IconProps>[]> = {
+  standard: [IconRefresh, IconCalendar, IconMessage, IconCompare, IconChart],
+  premium: [IconActivity, IconShield, IconClock, IconCode],
 }
 
-/** Standard e Premium lado a lado, com o mesmo tamanho. Passar o mouse destaca; clicar seleciona. Nenhum preço mensal. */
+const DESTINO: Record<Plano, string> = {
+  standard: '/cadastro?plano=standard',
+  premium: '/cadastro?plano=premium',
+}
+
+/** Standard e Premium lado a lado. O Standard é o card em destaque. Nenhum preço mensal. */
 export function Planos() {
   const conteudo = useConteudo()
   const { planosPagina } = conteudo
   const { standard, premium } = getPlanos(conteudo)
-  const reduced = useReducedMotion()
-  const [selecionado, setSelecionado] = useState<Plano | null>(null)
-  const [sobMouse, setSobMouse] = useState<Plano | null>(null)
-
-  // O premium soma as duas taxas: a do Standard e a da retenção.
-  const cards: CardPlano[] = [
-    {
-      ...standard,
-      taxas: [{ valor: standard.taxa, base: standard.base }],
-      destino: '/cadastro?plano=standard',
-    },
-    {
-      ...premium,
-      taxas: [
-        { valor: standard.taxa, base: standard.base },
-        { valor: premium.taxa, base: premium.base },
-      ],
-      itens: [planosPagina.standardIncluido, ...premium.itens],
-      destino: '/cadastro?plano=premium',
-    },
-  ]
-
-  // O card sob o mouse cresce; sem mouse em cima, o card clicado fica maior.
-  const ativo = sobMouse ?? selecionado
 
   return (
     <div>
-      <div className="grid auto-rows-fr items-stretch gap-6 md:grid-cols-2 md:gap-8" onMouseLeave={() => setSobMouse(null)}>
-        {cards.map((plano) => {
-          const emDestaque = ativo === plano.id
-          const escolhido = selecionado === plano.id
-          const outroEmDestaque = ativo !== null && !emDestaque
-
-          return (
-            <motion.article
-              key={plano.id}
-              role="button"
-              tabIndex={0}
-              aria-pressed={escolhido}
-              aria-label={interpolar(planosPagina.selecionarAria, { plano: plano.nome })}
-              onMouseEnter={() => setSobMouse(plano.id)}
-              onClick={() => setSelecionado(plano.id)}
-              onKeyDown={(e) => {
-                if (e.target !== e.currentTarget) return
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  setSelecionado(plano.id)
-                }
-              }}
-              animate={{
-                scale: reduced ? 1 : emDestaque ? 1.04 : 1,
-                opacity: outroEmDestaque ? 0.72 : 1,
-              }}
-              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              style={{ zIndex: emDestaque ? 1 : 0 }}
-              className={cx(
-                'relative flex h-full cursor-pointer flex-col rounded-[14px] border bg-slate p-6 outline-none md:p-8',
-                'transition-[border-color,box-shadow] duration-200',
-                'focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-ink',
-                escolhido
-                  ? 'border-orange shadow-[0_0_48px_-12px_rgba(239,147,17,0.45)]'
-                  : emDestaque
-                    ? 'border-amber/50'
-                    : 'border-line',
-              )}
-            >
-              <div className="flex items-center justify-between gap-4">
-                <h2 className="t-h3">{plano.nome}</h2>
-                {escolhido ? <span className="t-apoio text-orange">{planosPagina.selecionado}</span> : null}
-              </div>
-
-              <div className="mt-6 flex flex-wrap items-start gap-x-6 gap-y-3">
-                {plano.taxas.map((taxa) => (
-                  <div key={taxa.base}>
-                    <p className="text-5xl leading-none font-semibold tracking-tight text-paper tabular-nums md:text-6xl">{taxa.valor}</p>
-                    <p className="t-apoio mt-2 text-silver">{taxa.base}</p>
-                  </div>
-                ))}
-              </div>
-
-              <p className="t-apoio mt-6 text-silver">{plano.resumo}</p>
-
-              <ul className="mt-6 flex flex-col gap-3 border-t border-line pt-6">
-                {plano.itens.map((item) => (
-                  <li key={item} className="t-apoio flex gap-3 text-paper">
-                    <IconCheck size={16} className="mt-[3px] shrink-0 text-silver" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="mt-auto pt-8">
-                <Link
-                  to={plano.destino}
-                  onClick={(e) => e.stopPropagation()}
-                  className={cx(
-                    'block rounded-[8px] px-5 py-3 text-center text-sm font-semibold transition-colors',
-                    'focus-visible:ring-2 focus-visible:ring-amber focus-visible:outline-none',
-                    escolhido || emDestaque ? 'bg-orange text-ink hover:bg-amber' : 'border border-graphite text-paper hover:border-silver',
-                  )}
-                >
-                  {plano.cta}
-                </Link>
-              </div>
-            </motion.article>
-          )
-        })}
+      <div className="mx-auto grid max-w-[896px] gap-4 min-[861px]:grid-cols-2">
+        <CardPlano plano={standard} destaque />
+        <CardPlano plano={premium} />
       </div>
 
       <div className="mt-12 grid gap-6 border-t border-line pt-8 lg:grid-cols-12 lg:gap-8">
@@ -137,5 +47,65 @@ export function Planos() {
         <p className="t-apoio text-paper lg:col-span-4 lg:col-start-9">{planosPagina.faixa}</p>
       </div>
     </div>
+  )
+}
+
+function CardPlano({ plano, destaque = false }: { plano: PlanoInfo; destaque?: boolean }) {
+  const icones = ICONES[plano.id]
+
+  return (
+    <article
+      className={cx(
+        'flex flex-col rounded-[22px] border bg-slate p-[22px] min-[421px]:p-7',
+        destaque ? 'border-orange/45' : 'border-line',
+      )}
+    >
+      <header className="flex min-h-[30px] items-center justify-between gap-3">
+        <h2 className="m-0 text-[1.125rem] font-semibold">{plano.nome}</h2>
+      </header>
+
+      <h3 className="mt-[22px] text-[1.6rem] leading-[1.15] font-semibold tracking-[-0.02em] min-[421px]:text-[1.875rem]">
+        {plano.titulo}
+      </h3>
+      <p className="mt-3 text-[0.975rem] leading-[1.55] text-silver min-[861px]:min-h-[3.1em]">{plano.resumo}</p>
+
+      {/* Altura mínima igual nos dois cards: o Premium tem a linha de detalhe e os botões ficam alinhados. */}
+      <div className="mt-[26px] mb-[18px] flex flex-col gap-1.5 min-[861px]:mb-0 min-[861px]:min-h-[92px]">
+        <div className="flex items-baseline gap-2.5">
+          <span className="text-[2.3rem] leading-none font-semibold tracking-[-0.03em] text-paper tabular-nums min-[421px]:text-[2.75rem]">
+            {plano.valor}
+          </span>
+          {plano.base ? <span className="text-[0.95rem] text-silver">{plano.base}</span> : null}
+        </div>
+        {plano.detalhe ? <p className="mt-1 text-[0.9rem] leading-[1.45] text-silver">{plano.detalhe}</p> : null}
+      </div>
+
+      <Link
+        to={DESTINO[plano.id]}
+        className={cx(
+          'mt-2 flex h-12 w-full items-center justify-center rounded-full border text-[0.975rem] font-semibold',
+          'transition-colors duration-150 motion-reduce:transition-none',
+          'focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-orange',
+          destaque
+            ? 'border-orange bg-orange text-ink hover:border-amber hover:bg-amber'
+            : 'border-line bg-transparent text-paper hover:border-silver',
+        )}
+      >
+        {plano.cta}
+      </Link>
+
+      <p className="mt-[30px] mb-3.5 text-[0.95rem] font-semibold">{plano.inclui}</p>
+      <ul className="m-0 flex list-none flex-col gap-4 p-0">
+        {plano.itens.map((item, i) => {
+          const Icone = icones[i] ?? IconCheck
+          return (
+            <li key={item} className="flex items-start gap-3.5 text-[0.95rem] leading-[1.45]">
+              <Icone size={18} strokeWidth={1.8} className={cx('mt-0.5 shrink-0', destaque ? 'text-orange' : 'text-silver')} />
+              <span>{item}</span>
+            </li>
+          )
+        })}
+      </ul>
+    </article>
   )
 }

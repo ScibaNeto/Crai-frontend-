@@ -203,3 +203,65 @@ export function IconSwap(props: IconProps) {
     </Icon>
   )
 }
+
+export function IconCalendar(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <path d="M16 2v4M8 2v4M3 10h18" />
+    </Icon>
+  )
+}
+
+export function IconMessage(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+    </Icon>
+  )
+}
+
+export function IconCompare(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="6" cy="6" r="3" />
+      <circle cx="18" cy="18" r="3" />
+      <path d="M13 6h3a2 2 0 0 1 2 2v7" />
+      <path d="M11 18H8a2 2 0 0 1-2-2V9" />
+    </Icon>
+  )
+}
+
+export function IconChart(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M3 3v18h18" />
+      <path d="M18 17V9M13 17V5M8 17v-3" />
+    </Icon>
+  )
+}
+
+export function IconActivity(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+    </Icon>
+  )
+}
+
+export function IconClock(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6v6l4 2" />
+    </Icon>
+  )
+}
+
+export function IconCode(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="m16 18 6-6-6-6M8 6l-6 6 6 6" />
+    </Icon>
+  )
+}
