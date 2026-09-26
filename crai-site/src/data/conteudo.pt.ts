@@ -348,7 +348,6 @@ export const conteudoPt = {
   planosPagina: {
     titulo: 'Taxa de sucesso e mais nada',
     lead: 'Sem mensalidade e sem taxa de implantação. Você paga uma parte do que a CRAI recupera, medida contra grupo de controle.',
-    standardIncluido: 'Tudo do Standard',
     selecionado: 'Selecionado',
     selecionarAria: 'Selecionar plano {plano}',
     nota: 'As duas taxas do Premium são somadas: 25% sobre o ganho incremental da recuperação e 20% sobre a receita preservada. Estorno em até 90 dias devolve a taxa correspondente.',
@@ -387,9 +386,12 @@ export const conteudoPt = {
   planos: {
     standard: {
       nome: 'Standard',
-      taxa: '25%',
-      base: 'sobre o ganho incremental',
+      titulo: 'Recupere o que falhou',
       resumo: 'Recuperação de cobranças que falharam, cobrada só sobre o que ficou acima do grupo de controle.',
+      valor: '25%',
+      base: 'sobre o ganho incremental',
+      detalhe: '',
+      inclui: 'O que está incluído:',
       itens: [
         'Recuperação de cobranças que falharam',
         'Inferência de liquidez e reagendamento',
@@ -401,9 +403,12 @@ export const conteudoPt = {
     },
     premium: {
       nome: 'Premium',
-      taxa: '+ 20%',
-      base: 'sobre a receita preservada',
-      resumo: 'Tudo do Standard, mais retenção de quem sinaliza que vai sair.',
+      titulo: 'Recupere e retenha',
+      resumo: 'Recuperação de cobranças somada à retenção de quem sinaliza que vai sair.',
+      valor: '45%',
+      base: '',
+      detalhe: '25% sobre o ganho incremental + 20% sobre a receita preservada',
+      inclui: 'Tudo do Standard, e ainda:',
       itens: [
         'Sinais de risco de cancelamento',
         'Ação de retenção sem fricção no cancelamento',

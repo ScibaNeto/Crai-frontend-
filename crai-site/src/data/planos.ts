@@ -4,9 +4,15 @@ import type { Conteudo } from './conteudo.pt'
 export interface PlanoInfo {
   id: Plano
   nome: string
-  taxa: string
-  base: string
+  titulo: string
   resumo: string
+  /** Número grande do card. */
+  valor: string
+  /** Texto ao lado do número; vazio quando o plano usa `detalhe`. */
+  base: string
+  /** Linha abaixo do número (o Premium explica a soma das duas taxas); vazio no Standard. */
+  detalhe: string
+  inclui: string
   itens: string[]
   cta: string
 }
