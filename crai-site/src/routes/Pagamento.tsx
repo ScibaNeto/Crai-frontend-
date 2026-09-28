@@ -118,9 +118,10 @@ function PagamentoForm({ empresa, email }: { empresa: Empresa; email: string }) 
     const t =
       estado === 'formando'
         ? window.setTimeout(() => setEstado('pronto'), reduced ? 150 : 1250)
-        : window.setTimeout(() => navigate('/confirmacao'), reduced ? 250 : 560)
+        : // Leva o dia escolhido: a confirmação dizia sempre "dia 5", mesmo com 10 ou 15 selecionado.
+          window.setTimeout(() => navigate('/confirmacao', { state: { dia: form.diaApuracao } }), reduced ? 250 : 560)
     return () => window.clearTimeout(t)
-  }, [estado, navigate, reduced])
+  }, [estado, navigate, reduced, form.diaApuracao])
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()

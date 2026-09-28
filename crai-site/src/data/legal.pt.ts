@@ -57,7 +57,7 @@ export const privacidadePt: DocumentoLegal = {
         { subtitulo: '3.2 Usuários com conta' },
         {
           lista: [
-            'Do responsável pela conta: nome, cargo, e-mail, telefone e senha (armazenada de forma criptografada).',
+            'Do responsável pela conta: nome, cargo, e-mail, telefone e senha (armazenada apenas como hash, nunca em texto legível).',
             'Da empresa: razão social, nome fantasia, CNPJ, site, segmento, faixa de MRR e número de assinantes.',
             'Plano escolhido, data e hora do aceite destes documentos e preferência de receber comunicações.',
             'Registros de uso da plataforma.',

@@ -1287,6 +1287,10 @@
   .marquee {
     overflow-x: auto;
   }
+  /* Sem animação, a cópia do loop só repetia a lista na frente do usuário. */
+  .marquee__track[aria-hidden='true'] {
+    display: none;
+  }
 
   .icon-draw {
     stroke-dashoffset: 0;

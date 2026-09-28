@@ -1,5 +1,5 @@
 import { RevealWords } from '../components/motion/Reveal'
-import { useState, type CSSProperties } from 'react'
+import { useState, type CSSProperties, type FormEvent } from 'react'
 import { IconArrowRight } from '../components/icons/Icons'
 import { CountUp } from '../components/motion/CountUp'
 import { Button } from '../components/ui/Button'
@@ -25,7 +25,31 @@ export function Simulador() {
   // Logado: parte da faixa de MRR e do plano da empresa; visitante: exemplo neutro.
   const [mrr, setMrr] = useState(() => (empresa ? mrrEstimado(empresa.faixa_mrr) : MRR_EXEMPLO))
   const [plano, setPlano] = useState<Plano>(() => empresa?.plano ?? 'standard')
+  // A empresa chega depois (leitura assíncrona da sessão): aplica faixa e plano uma vez quando ela aparece.
+  // Antes, quem abria /planos já logado via sempre o exemplo neutro.
+  const [empresaAplicada, setEmpresaAplicada] = useState<string | null>(empresa?.id ?? null)
+  if (empresa && empresa.id !== empresaAplicada) {
+    setEmpresaAplicada(empresa.id)
+    setMrr(mrrEstimado(empresa.faixa_mrr))
+    setPlano(empresa.plano ?? 'standard')
+  }
   const r = simular(mrr, plano)
+  // No Premium, o total exibido é a soma das parcelas já arredondadas (senão R$ 251 + R$ 451 aparecia como R$ 701).
+  const taxaExibida = plano === 'premium' ? Math.round(r.taxaStandard) + Math.round(r.taxaRetencao) : r.taxaCrai
+
+  function onMrr(e: FormEvent<HTMLInputElement>) {
+    const campo = e.currentTarget
+    let digitos = somenteDigitos(campo.value)
+    // Backspace/Delete em cima do separador de milhar não mudava os dígitos e o campo "travava":
+    // nesse caso apaga o dígito vizinho ao separador.
+    if (digitos === String(mrr) && campo.value.length < f.numero(mrr).length) {
+      const antesDoCursor = somenteDigitos(campo.value.slice(0, campo.selectionStart ?? campo.value.length)).length
+      const tipo = (e.nativeEvent as InputEvent).inputType
+      const alvo = tipo === 'deleteContentForward' ? antesDoCursor : antesDoCursor - 1
+      if (alvo >= 0) digitos = digitos.slice(0, alvo) + digitos.slice(alvo + 1)
+    }
+    setMrr(Number(digitos.slice(0, 9)))
+  }
 
   const opcoesPlano = s.planos as { value: Plano; label: string }[]
   const noTrilho = Math.min(MAX, Math.max(MIN, mrr))
@@ -45,7 +69,7 @@ export function Simulador() {
               inputMode="numeric"
               autoComplete="off"
               value={mrr ? f.numero(mrr) : ''}
-              onChange={(e) => setMrr(Number(somenteDigitos(e.target.value).slice(0, 9)))}
+              onChange={onMrr}
               className="tabular text-[20px] font-[560]"
             />
 
@@ -101,7 +125,7 @@ export function Simulador() {
                 <dt className="t-apoio text-silver">{s.saidas.taxa}</dt>
                 <dd className="mt-2">
                   <span className="t-number-sm block text-paper">
-                    <CountUp value={r.taxaCrai} format={f.brlInteiro} />
+                    <CountUp value={taxaExibida} format={f.brlInteiro} />
                   </span>
                   <span className="t-apoio mt-1 block text-silver">
                     {plano === 'premium'

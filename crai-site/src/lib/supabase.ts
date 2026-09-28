@@ -1,4 +1,4 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from './database.types'
 
 // Chaves públicas do projeto Supabase (vêm do .env.local). A publishable key é feita para ficar no
@@ -6,19 +6,32 @@ import type { Database } from './database.types'
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined
 const chavePublica = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined
 
-let cliente: SupabaseClient<Database> | null = null
+let cliente: Promise<SupabaseClient<Database>> | null = null
 
 /** true quando o .env.local tem URL e chave. Sem elas o site continua de pé; só o que usa o banco avisa. */
 export const supabaseConfigurado = Boolean(url && chavePublica)
 
-/** Cliente único, criado na primeira chamada. Lança erro se o .env.local não estiver configurado. */
-export function getSupabase(): SupabaseClient<Database> {
-  if (cliente) return cliente
+/**
+ * Cliente único, criado na primeira chamada. A biblioteca (~215 kB) é carregada sob demanda, num
+ * chunk separado: assim ela não atrasa a primeira pintura de nenhuma página.
+ * Rejeita se o .env.local não estiver configurado.
+ */
+export function getSupabase(): Promise<SupabaseClient<Database>> {
   if (!url || !chavePublica) {
-    throw new Error('Supabase não configurado: defina VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY no .env.local')
+    return Promise.reject(
+      new Error('Supabase não configurado: defina VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY no .env.local'),
+    )
   }
-  cliente = createClient<Database>(url, chavePublica, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
-  })
+  cliente ??= import('@supabase/supabase-js')
+    .then(({ createClient }) =>
+      createClient<Database>(url, chavePublica, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+      }),
+    )
+    .catch((erro: unknown) => {
+      // Falha ao baixar o chunk (rede): permite tentar de novo na próxima chamada.
+      cliente = null
+      throw erro
+    })
   return cliente
 }

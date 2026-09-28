@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { IconBolt, IconCalendar, IconCardFail, IconCheck, IconMessage, IconPlug, IconScale } from '../../components/icons/Icons'
 import { cx } from '../../lib/cx'
-import { useConteudo } from '../../lib/i18n'
+import { useConteudo, useFormato } from '../../lib/i18n'
 import { EASE_EXPO } from '../../lib/intro'
 import { useReducedMotion } from '../../lib/useReducedMotion'
 
@@ -23,6 +23,7 @@ const ICONES_REC = [IconPlug, IconScale, IconCalendar, IconBolt, IconMessage]
 /** 01 — pipeline de recuperação: a falha entra, cada etapa acende, o pagamento sai recuperado. */
 export function VisualRecuperacao({ ativo }: { ativo: boolean }) {
   const { capitulos } = useConteudo().home
+  const f = useFormato()
   const passos = capitulos.itens[0].passos
   const passo = useCiclo(passos.length, ativo)
   const concluido = passo >= passos.length
@@ -32,7 +33,7 @@ export function VisualRecuperacao({ ativo }: { ativo: boolean }) {
       <div className="flex items-center gap-3 rounded-[12px] border border-[#ff6b5b]/30 bg-[#ff6b5b]/[0.07] px-4 py-3 text-[14px]">
         <IconCardFail size={20} className="text-[#ff8a7d]" />
         <span className="text-paper">{capitulos.visual.falha}</span>
-        <span className="ml-auto text-[12px] text-silver tabular">R$ 100,00</span>
+        <span className="ml-auto text-[12px] text-silver tabular">{f.brl(100)}</span>
       </div>
       <ol className="flex flex-col">
         {passos.map((p, i) => {
@@ -71,7 +72,7 @@ export function VisualRecuperacao({ ativo }: { ativo: boolean }) {
           <IconCheck size={14} />
         </motion.span>
         <span className="text-paper">{capitulos.visual.recuperado}</span>
-        <span className="ml-auto text-[12px] text-[#9fe6c2] tabular">+ R$ 100,00</span>
+        <span className="ml-auto text-[12px] text-[#9fe6c2] tabular">+ {f.brl(100)}</span>
       </motion.div>
     </div>
   )
@@ -81,6 +82,8 @@ export function VisualRecuperacao({ ativo }: { ativo: boolean }) {
 export function VisualRetencao({ ativo }: { ativo: boolean }) {
   const { visual } = useConteudo().home.capitulos
   const reduced = useReducedMotion()
+  // Id único por instância: com "gauge" fixo, duas cópias na página disputavam o mesmo gradiente.
+  const idGradiente = `gauge-${useId().replace(/:/g, '')}`
   const passo = useCiclo(visual.sinais.length + 1, ativo, 1300)
   const nSinais = Math.min(passo, visual.sinais.length)
   const score = [0.18, 0.46, 0.68, 0.82][nSinais] ?? 0.82
@@ -93,7 +96,7 @@ export function VisualRetencao({ ativo }: { ativo: boolean }) {
       <div className="relative mx-auto w-full max-w-[260px]">
         <svg viewBox="0 0 180 100" className="w-full" aria-hidden="true">
           <defs>
-            <linearGradient id="gauge" x1="0" x2="1">
+            <linearGradient id={idGradiente} x1="0" x2="1">
               <stop offset="0" stopColor="#5fd39a" />
               <stop offset="0.55" stopColor="#ffb86c" />
               <stop offset="1" stopColor="#ef9311" />
@@ -103,7 +106,7 @@ export function VisualRetencao({ ativo }: { ativo: boolean }) {
           <motion.path
             d="M20 90 A70 70 0 0 1 160 90"
             fill="none"
-            stroke="url(#gauge)"
+            stroke={`url(#${idGradiente})`}
             strokeWidth="12"
             strokeLinecap="round"
             strokeDasharray={comp}

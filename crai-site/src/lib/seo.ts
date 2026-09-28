@@ -1,3 +1,4 @@
+import type { Lang } from './lang'
 import { normalizarSiteUrl } from './site'
 
 export const SITE_URL = normalizarSiteUrl(import.meta.env.VITE_SITE_URL)
@@ -8,6 +9,7 @@ interface MetaPagina {
   /** Caminho canônico, ex.: '/planos'. */
   caminho: string
   indexar: boolean
+  lang: Lang
 }
 
 /** Garante uma tag no <head> e devolve ela. */
@@ -29,7 +31,7 @@ function meta(atributo: 'name' | 'property', nome: string, conteudo: string) {
  * Atualiza título, descrição, canonical, robots e Open Graph da página atual.
  * O Google executa o JS e lê estes valores; WhatsApp e LinkedIn não, e ficam com os padrões do index.html.
  */
-export function aplicarSeo({ titulo, descricao, caminho, indexar }: MetaPagina) {
+export function aplicarSeo({ titulo, descricao, caminho, indexar, lang }: MetaPagina) {
   const url = `${SITE_URL}${caminho === '/' ? '/' : caminho}`
   document.title = titulo
   meta('name', 'description', descricao)
@@ -37,5 +39,8 @@ export function aplicarSeo({ titulo, descricao, caminho, indexar }: MetaPagina) 
   meta('property', 'og:title', titulo)
   meta('property', 'og:description', descricao)
   meta('property', 'og:url', url)
+  // Acompanha o idioma escolhido (antes ficava sempre pt_BR).
+  meta('property', 'og:locale', lang === 'en' ? 'en_US' : 'pt_BR')
+  meta('property', 'og:locale:alternate', lang === 'en' ? 'pt_BR' : 'en_US')
   tagHead('link', 'link[rel="canonical"]', { rel: 'canonical' }).setAttribute('href', url)
 }

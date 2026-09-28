@@ -34,6 +34,8 @@ export interface DadosCadastro {
  */
 interface CadastroPendente {
   perfil: {
+    /** Opcional: pendências gravadas por versões antigas do site não tinham o nome. */
+    nome_completo?: string
     cargo: string | null
     telefone: string | null
     aceite_termos_em: string
@@ -90,6 +92,8 @@ function montarPendente(d: DadosCadastro): CadastroPendente {
   const assinantes = somenteDigitos(d.empresa.assinantes)
   return {
     perfil: {
+      // Sem isto, o nome corrigido no fluxo "só falta a empresa" (concluirComDados) era descartado.
+      nome_completo: d.responsavel.nome.trim(),
       cargo: vazioParaNulo(d.responsavel.cargo),
       telefone: telefoneE164(d.responsavel.telefone),
       aceite_termos_em: agora,
@@ -121,14 +125,17 @@ function erroDeAuth(erro: AuthError): ErroCadastro {
 
 function erroDeBanco(erro: PostgrestError): ErroCadastro {
   if (erro.code === '23505') return new ErroCadastro('cnpj_existente')
-  if (erro.code === '22023' || erro.code === '23514') return new ErroCadastro('cnpj_invalido')
+  // 23514 = CHECK violado. Só é "CNPJ inválido" quando o CHECK é o do CNPJ; os demais (tamanho de
+  // cargo, razão social...) caem no genérico em vez de mandar o usuário corrigir um CNPJ correto.
+  if (erro.code === '22023' || (erro.code === '23514' && /cnpj/i.test(`${erro.message} ${erro.details ?? ''}`)))
+    return new ErroCadastro('cnpj_invalido')
   return new ErroCadastro('desconhecido', erro.message)
 }
 
 /** Cria a conta no Supabase Auth e, se já houver sessão, grava perfil e empresa na sequência. */
 export async function cadastrar(d: DadosCadastro): Promise<ResultadoCadastro> {
   if (!supabaseConfigurado) throw new ErroCadastro('config')
-  const supabase = getSupabase()
+  const supabase = await getSupabase()
   const email = d.responsavel.email.trim()
 
   const { data, error } = await supabase.auth.signUp({
@@ -154,7 +161,7 @@ export async function cadastrar(d: DadosCadastro): Promise<ResultadoCadastro> {
 /** true se o usuário logado ainda tem perfil/empresa por gravar. */
 export async function temCadastroPendente(): Promise<boolean> {
   if (!supabaseConfigurado) return false
-  const { data } = await getSupabase().auth.getSession()
+  const { data } = await (await getSupabase()).auth.getSession()
   return Boolean(data.session?.user.user_metadata?.cadastro_pendente)
 }
 
@@ -172,7 +179,7 @@ export function concluirCadastroPendente(): Promise<boolean> {
 }
 
 async function executarPendente(): Promise<boolean> {
-  const supabase = getSupabase()
+  const supabase = await getSupabase()
   const { data: sessao } = await supabase.auth.getSession()
   const usuario = sessao.session?.user
   const pendente = usuario?.user_metadata?.cadastro_pendente as CadastroPendente | undefined
@@ -190,6 +197,7 @@ async function executarPendente(): Promise<boolean> {
   const { error: erroPerfil } = await supabase
     .from('perfis')
     .update({
+      ...(perfil.nome_completo ? { nome_completo: perfil.nome_completo } : {}),
       cargo: perfil.cargo,
       telefone: perfil.telefone,
       aceite_termos_em: perfil.aceite_termos_em,
@@ -225,7 +233,7 @@ async function executarPendente(): Promise<boolean> {
  * Regrava a pendência com os dados corrigidos do formulário e tenta concluir de novo.
  */
 export async function concluirComDados(d: DadosCadastro): Promise<ResultadoCadastro> {
-  const supabase = getSupabase()
+  const supabase = await getSupabase()
   const { error } = await supabase.auth.updateUser({ data: { cadastro_pendente: montarPendente(d) } })
   if (error) throw erroDeAuth(error)
   await concluirCadastroPendente()

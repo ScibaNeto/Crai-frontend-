@@ -50,7 +50,7 @@ function hojeISO() {
 const CAMPOS_POR_ETAPA = [
   ['razao-social', 'cnpj'],
   ['resp-nome', 'resp-email', 'resp-telefone', 'resp-senha'],
-  ['termos'],
+  ['inicio', 'termos'],
 ]
 
 export function Cadastro() {
@@ -58,7 +58,7 @@ export function Cadastro() {
   const reduced = useReducedMotion()
   const conteudo = useConteudo()
   const { cadastro, simuladorCopy } = conteudo
-  const { sessao, perfil, empresa, recarregar, sair } = useSessao()
+  const { carregando, sessao, perfil, empresa, recarregar, sair } = useSessao()
   const [etapa, setEtapa] = useState(0)
   const [direcao, setDirecao] = useState(1)
   // Segmento e faixa guardam o índice da opção, para o que foi digitado sobreviver à troca de idioma.
@@ -67,8 +67,9 @@ export function Cadastro() {
     nomeFantasia: '',
     cnpj: '',
     site: '',
-    segmento: '0',
-    mrrFaixa: '0',
+    // Vazio = não informado. Antes começavam em '0' e gravavam o 1º segmento/faixa sem o usuário escolher.
+    segmento: '',
+    mrrFaixa: '',
     assinantes: '',
   })
   const [dadosResp, setDadosResp] = useState({ nome: '', cargo: '', email: '', telefone: '', senha: '' })
@@ -155,7 +156,11 @@ export function Cadastro() {
       if (tel && tel.length < 10) novos['resp-telefone'] = v.telefone
       if (!modoConta && dadosResp.senha.length < 8) novos['resp-senha'] = v.senha
     }
-    if (n === 2 && !dadosOp.aceitouTermos) novos.termos = v.termos
+    if (n === 2) {
+      if (!dadosOp.aceitouTermos) novos.termos = v.termos
+      // O form usa noValidate, então o min do input date não bloqueia uma data no passado.
+      if (dadosOp.inicio && dadosOp.inicio < hojeISO()) novos.inicio = v.data
+    }
     return novos
   }
 
@@ -189,8 +194,8 @@ export function Cadastro() {
         nomeFantasia: dadosEmpresa.nomeFantasia,
         cnpj: dadosEmpresa.cnpj,
         site: dadosEmpresa.site,
-        segmento: SEGMENTOS[Number(dadosEmpresa.segmento)] ?? '',
-        faixaMrr: FAIXAS_MRR[Number(dadosEmpresa.mrrFaixa)] ?? null,
+        segmento: dadosEmpresa.segmento === '' ? '' : (SEGMENTOS[Number(dadosEmpresa.segmento)] ?? ''),
+        faixaMrr: dadosEmpresa.mrrFaixa === '' ? null : (FAIXAS_MRR[Number(dadosEmpresa.mrrFaixa)] ?? null),
         assinantes: dadosEmpresa.assinantes,
       },
       operacao: dadosOp,
@@ -304,7 +309,8 @@ export function Cadastro() {
     )
   }
 
-  if (concluindo) {
+  // Enquanto a sessão carrega, não mostra o formulário de "criar conta" para quem talvez já esteja logado.
+  if (concluindo || (carregando && !enviando)) {
     return (
       <PageShell titulo={cadastro.titulo} lead={cadastro.lead}>
         <div className="container-site pb-24 md:pb-32">
@@ -353,6 +359,7 @@ export function Cadastro() {
                         id="razao-social"
                         label={e.razaoSocial}
                         autoComplete="organization"
+                        maxLength={200}
                         required
                         error={erros['razao-social']}
                         value={dadosEmpresa.razaoSocial}
@@ -365,6 +372,7 @@ export function Cadastro() {
                       <Field
                         id="nome-fantasia"
                         label={e.nomeFantasia}
+                        maxLength={200}
                         value={dadosEmpresa.nomeFantasia}
                         onChange={(ev) => setDadosEmpresa({ ...dadosEmpresa, nomeFantasia: ev.target.value })}
                       />
@@ -392,14 +400,14 @@ export function Cadastro() {
                       <Select
                         id="segmento"
                         label={e.segmento}
-                        options={e.segmentos.map((label, i) => ({ value: String(i), label }))}
+                        options={[{ value: '', label: e.naoInformado }, ...e.segmentos.map((label, i) => ({ value: String(i), label }))]}
                         value={dadosEmpresa.segmento}
                         onChange={(ev) => setDadosEmpresa({ ...dadosEmpresa, segmento: ev.target.value })}
                       />
                       <Select
                         id="mrr-faixa"
                         label={e.mrrFaixa}
-                        options={e.faixas.map((label, i) => ({ value: String(i), label }))}
+                        options={[{ value: '', label: e.naoInformado }, ...e.faixas.map((label, i) => ({ value: String(i), label }))]}
                         value={dadosEmpresa.mrrFaixa}
                         onChange={(ev) => setDadosEmpresa({ ...dadosEmpresa, mrrFaixa: ev.target.value })}
                       />
@@ -407,6 +415,7 @@ export function Cadastro() {
                         id="assinantes"
                         label={e.assinantes}
                         inputMode="numeric"
+                        maxLength={9}
                         className="tabular"
                         value={dadosEmpresa.assinantes}
                         onChange={(ev) => setDadosEmpresa({ ...dadosEmpresa, assinantes: somenteDigitos(ev.target.value) })}
@@ -427,6 +436,7 @@ export function Cadastro() {
                         id="resp-nome"
                         label={r.nome}
                         autoComplete="name"
+                        maxLength={150}
                         required
                         error={erros['resp-nome']}
                         value={dadosResp.nome}
@@ -439,6 +449,7 @@ export function Cadastro() {
                         id="resp-cargo"
                         label={r.cargo}
                         autoComplete="organization-title"
+                        maxLength={100}
                         value={dadosResp.cargo}
                         onChange={(ev) => setDadosResp({ ...dadosResp, cargo: ev.target.value })}
                       />
@@ -515,8 +526,12 @@ export function Cadastro() {
                         label={o.inicio}
                         min={hojeISO()}
                         className="tabular"
+                        error={erros.inicio}
                         value={dadosOp.inicio}
-                        onChange={(ev) => setDadosOp({ ...dadosOp, inicio: ev.target.value })}
+                        onChange={(ev) => {
+                          limparErro('inicio')
+                          setDadosOp({ ...dadosOp, inicio: ev.target.value })
+                        }}
                       />
                       <div className="flex flex-col gap-5 border-t border-line pt-6 sm:col-span-2">
                         <Checkbox

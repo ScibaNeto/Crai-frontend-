@@ -1,9 +1,14 @@
 import { SelfDrawingSvg } from '../components/motion/SelfDrawingSvg'
 import { Button } from '../components/ui/Button'
+import { useLocation } from 'react-router-dom'
+import { interpolar } from '../lib/cx'
 import { useConteudo } from '../lib/i18n'
 
 export function Confirmacao() {
-  const { confirmacao } = useConteudo()
+  const { confirmacao, pagamento } = useConteudo()
+  const estado = useLocation().state as { dia?: number } | null
+  // Dia escolhido no pagamento; sem ele (acesso direto à URL), o padrão do formulário.
+  const dia = estado?.dia ?? pagamento.dias[0]
   return (
     <section className="container-site pt-16 pb-24 md:pt-28 md:pb-40">
       <SelfDrawingSvg
@@ -28,7 +33,7 @@ export function Confirmacao() {
       </SelfDrawingSvg>
 
       <h1 className="t-h1 mt-10 max-w-[16em]">{confirmacao.titulo}</h1>
-      <p className="t-body measure mt-5 text-silver">{confirmacao.texto}</p>
+      <p className="t-body measure mt-5 text-silver">{interpolar(confirmacao.texto, { dia })}</p>
 
       <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
         {confirmacao.links.map((link) => (

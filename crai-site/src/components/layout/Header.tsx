@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { cx } from '../../lib/cx'
 import { nomeExibicao } from '../../lib/empresa'
@@ -101,6 +101,7 @@ export function Header() {
   const reduced = useReducedMotion()
   const [rolou, setRolou] = useState(() => window.scrollY > 24)
   const [aberto, setAberto] = useState(false)
+  const botaoMenu = useRef<HTMLButtonElement>(null)
   const [desenho, setDesenho] = useState(0)
   const { pathname } = useLocation()
   const [rotaAnterior, setRotaAnterior] = useState(pathname)
@@ -119,7 +120,12 @@ export function Header() {
 
   useEffect(() => {
     if (!aberto) return
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setAberto(false)
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      setAberto(false)
+      // O foco estava num link do menu, que some: devolve ao botão que abriu o menu.
+      botaoMenu.current?.focus()
+    }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [aberto])
@@ -177,6 +183,7 @@ export function Header() {
               </>
             )}
             <button
+              ref={botaoMenu}
               type="button"
               className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-line text-paper hover:bg-paper/5 lg:hidden"
               aria-expanded={aberto}
@@ -200,7 +207,8 @@ export function Header() {
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.32, ease: EASE_EXPO }}
             >
-              <ul className="container-site flex flex-col pt-2 pb-6">
+              {/* Rola por dentro em telas baixas (celular deitado): antes os últimos itens ficavam fora de alcance. */}
+              <ul className="container-site flex max-h-[calc(100dvh-4rem)] flex-col overflow-y-auto overscroll-contain pt-2 pb-6">
                 {site.nav.map((item, i) => (
                   <motion.li
                     key={item.para}
@@ -211,6 +219,8 @@ export function Header() {
                   >
                     <NavLink
                       to={item.para}
+                      // Tocar na página atual não muda a rota; fecha o menu mesmo assim.
+                      onClick={() => setAberto(false)}
                       className={({ isActive }) =>
                         cx('flex items-center justify-between py-4 text-[22px] font-[600] tracking-[-0.02em]', isActive ? 'text-paper' : 'text-silver')
                       }

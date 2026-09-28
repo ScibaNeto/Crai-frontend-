@@ -15,7 +15,8 @@ const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
 /** Só aceita caminhos internos em ?proximo=, para o login não virar redirecionamento aberto. */
 function destinoSeguro(valor: string | null): string {
-  return valor && valor.startsWith('/') && !valor.startsWith('//') ? valor : '/painel'
+  // Recusa também "/\\..." — o navegador lê "/\\" como "//" (outro domínio) e a navegação quebrava.
+  return valor && /^\/(?![/\\])/.test(valor) ? valor : '/painel'
 }
 
 export function Entrar() {

@@ -29,25 +29,25 @@ export function codigoErroAuth(erro: unknown): CodigoErroAuth {
   return 'desconhecido'
 }
 
-function exigirConfig() {
+async function exigirConfig() {
   if (!supabaseConfigurado) throw new ErroAuth('config')
   return getSupabase()
 }
 
 export async function entrar(email: string, senha: string): Promise<void> {
-  const { error } = await exigirConfig().auth.signInWithPassword({ email: email.trim(), password: senha })
+  const { error } = await (await exigirConfig()).auth.signInWithPassword({ email: email.trim(), password: senha })
   if (error) throw traduzir(error)
 }
 
 /** Envia o link de nova senha. Não revela se o e-mail tem conta (o Supabase responde igual). */
 export async function recuperarSenha(email: string): Promise<void> {
-  const { error } = await exigirConfig().auth.resetPasswordForEmail(email.trim(), {
+  const { error } = await (await exigirConfig()).auth.resetPasswordForEmail(email.trim(), {
     redirectTo: `${window.location.origin}/redefinir-senha`,
   })
   if (error) throw traduzir(error)
 }
 
 export async function redefinirSenha(senha: string): Promise<void> {
-  const { error } = await exigirConfig().auth.updateUser({ password: senha })
+  const { error } = await (await exigirConfig()).auth.updateUser({ password: senha })
   if (error) throw traduzir(error)
 }

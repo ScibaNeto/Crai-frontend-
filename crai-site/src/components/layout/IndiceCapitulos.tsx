@@ -22,7 +22,9 @@ export function IndiceCapitulos({ aria, itens }: IndiceCapitulosProps) {
     const ol = trilho.current
     const a = ol?.querySelector<HTMLElement>('[aria-current="location"]')
     if (!ol || !a) return
-    ol.scrollTo({ left: Math.max(0, a.offsetLeft - 24), behavior: reduced ? 'auto' : 'smooth' })
+    // Posição relativa ao trilho. (a.offsetLeft era sempre 0: o offsetParent do link é o <li relative>.)
+    const esquerda = a.getBoundingClientRect().left - ol.getBoundingClientRect().left + ol.scrollLeft
+    ol.scrollTo({ left: Math.max(0, esquerda - 24), behavior: reduced ? 'auto' : 'smooth' })
   }, [ativo, reduced])
 
   useEffect(() => {

@@ -171,7 +171,7 @@ export const conteudoEn: Conteudo = {
           { tipo: 'risco', texto: 'Risk signal: usage drop', valor: 'score 0.82' },
           { tipo: 'msg', texto: 'Retention offer sent', valor: 'WhatsApp' },
           { tipo: 'ok', texto: 'Pix Automático recovered', valor: 'R$ 100.00' },
-          { tipo: 'saida', texto: 'Cancellation honoured, no friction', valor: 'Decreto 11.034' },
+          { tipo: 'saida', texto: 'Cancellation honored, no friction', valor: 'Decreto 11.034' },
         ],
       },
       grafico: {
@@ -664,7 +664,7 @@ export const conteudoEn: Conteudo = {
           resposta: 'No. CRAI is not a payment gateway. Billing stays in your current setup and CRAI acts on top of it.',
         },
         {
-          pergunta: 'Do you make cancelling harder to keep the customer?',
+          pergunta: 'Do you make canceling harder to keep the customer?',
           resposta:
             'No. The retention agent never hinders, obstructs or delays a cancellation, as required by Decreto 11.034/2022 (Brazil’s consumer-service rules). Beyond the rule, holding someone back only delays the exit and sours the relationship.',
         },
@@ -693,7 +693,7 @@ export const conteudoEn: Conteudo = {
     premium: {
       nome: 'Premium',
       titulo: 'Recover and retain',
-      resumo: 'Recovery of failed charges combined with retention of those signalling they will leave.',
+      resumo: 'Recovery of failed charges combined with retention of those signaling they will leave.',
       valor: '45%',
       base: '',
       detalhe: '25% of the incremental gain + 20% of preserved revenue',
@@ -722,12 +722,12 @@ export const conteudoEn: Conteudo = {
       risco: 'Revenue at risk / month',
       ganho: 'Estimated incremental gain',
       taxa: 'CRAI’s fee',
-      fica: 'Stays with you',
+      fica: 'You keep',
     },
     preservada: 'plus {valor} of preserved revenue',
     taxaDetalheStandard: '25% of the incremental gain',
     taxaDetalhePremium: '{rec} from recovery + {ret} from retention',
-    premissas: 'Estimate based on CRAI’s model assumptions (10% failure, 20% incremental gain). The real result is measured against a control group.',
+    premissas: 'Estimate based on CRAI’s model assumptions (10% failure, 20% incremental gain and, on Premium, preserved revenue of 4.5% of MRR). The real result is measured against a control group.',
     foraDaFaixa: 'Outside the range CRAI serves today.',
     acao: { rotulo: 'Create account', para: '/cadastro' },
   },
@@ -792,7 +792,7 @@ export const conteudoEn: Conteudo = {
       naoRecuperada: 'Not recovered',
     },
     retencao: {
-      titulo: 'Subscribers at risk of cancelling',
+      titulo: 'Subscribers at risk of canceling',
       colunas: ['Subscriber', 'Risk signal', 'Risk', 'Suggested action'],
       nota: 'No suggested action blocks, hinders or delays a cancellation (Decreto 11.034/2022, Brazil’s consumer-service rules).',
       riscos: { alto: 'High', medio: 'Medium' },
@@ -815,7 +815,7 @@ export const conteudoEn: Conteudo = {
     lead: 'Fill in your company details and who will manage the account. It takes about two minutes.',
     stepperAria: 'Sign-up steps',
     etapaDe: 'Step {n} of {total}',
-    etapas: ['Company', 'Contact', 'Operation'],
+    etapas: ['Company', 'Owner', 'Operation'],
     empresa: {
       titulo: 'Company details',
       razaoSocial: 'Legal name',
@@ -823,6 +823,7 @@ export const conteudoEn: Conteudo = {
       cnpj: 'CNPJ (company tax ID)',
       site: 'Website',
       segmento: 'Segment',
+      naoInformado: 'Select (optional)',
       segmentos: ['Clinic management SaaS', 'Finance management SaaS', 'Education SaaS', 'Retail SaaS', 'Other segment'],
       mrrFaixa: 'Average MRR',
       faixas: ['Up to R$ 25k', 'R$ 25k to R$ 75k', 'R$ 75k to R$ 200k', 'R$ 200k to R$ 500k', 'Above R$ 500k'],
@@ -870,6 +871,7 @@ export const conteudoEn: Conteudo = {
       email: 'Enter a valid email.',
       senha: 'The password must be at least 8 characters.',
       telefone: 'Incomplete phone number. Include the area code.',
+      data: 'Choose a date from today onward.',
       termos: 'To create the account, accept the terms of use and the privacy policy.',
     },
     erros: {
@@ -962,7 +964,7 @@ export const conteudoEn: Conteudo = {
     },
     instituicoes: ['Demo bank', 'Demo credit union', 'Fictional institution S.A.'],
     dias: [5, 10, 15],
-    diaRotulo: 'Every day {n}',
+    diaRotulo: 'Day {n} of each month',
     resumo: {
       titulo: 'Summary',
       plano: '{nome} plan',
@@ -980,7 +982,7 @@ export const conteudoEn: Conteudo = {
 
   confirmacao: {
     titulo: 'Authorization recorded',
-    texto: 'The first settlement happens on the 5th of next month. Meanwhile, CRAI starts monitoring charges that fail.',
+    texto: 'The first settlement happens on day {dia} of next month. Meanwhile, CRAI starts monitoring charges that fail.',
     marca: 'Confirmation mark',
     links: [
       { rotulo: 'Open the dashboard', para: '/painel', variante: 'primary' as const },
@@ -1005,9 +1007,9 @@ export const conteudoEn: Conteudo = {
       valores: [
         { nome: 'Autonomy', texto: 'The agent runs the cycle end to end, without needing someone on your team for each case.' },
         { nome: 'Transparency', texto: 'If CRAI acts on your base by itself, it accounts for every action and every result.' },
-        { nome: 'Rigour', texto: 'Results measured against a control group, with stated assumptions and conservative estimates.' },
+        { nome: 'Rigor', texto: 'Results measured against a control group, with stated assumptions and conservative estimates.' },
         { nome: 'Security', texto: 'LGPD compliance: only the data strictly needed for the decision enters the system.' },
-        { nome: 'Efficiency', texto: 'Every real recovered should cost a small fraction of what it is worth.' },
+        { nome: 'Efficiency', texto: 'Every recovered real (R$) should cost only a small fraction of its value.' },
       ],
     },
     titulo: 'A software company for the revenue that leaves without notice',
@@ -1015,7 +1017,7 @@ export const conteudoEn: Conteudo = {
     proposito: {
       titulo: 'Purpose',
       texto:
-        'Help SaaS companies lose less revenue to problems that have a fix: a charge that failed on the wrong day, a subscriber nobody heard before they cancelled. And do it without friction for whoever decided to leave.',
+        'Help SaaS companies lose less revenue to problems that have a fix: a charge that failed on the wrong day, a subscriber nobody heard before they canceled. And do it without friction for whoever decided to leave.',
     },
     operacao: {
       titulo: 'How the company operates today',

@@ -44,7 +44,7 @@ export const privacidadeEn: DocumentoLegal = {
         { subtitulo: '3.2 Account users' },
         {
           lista: [
-            'About the account owner: name, job title, email, phone and password (stored encrypted).',
+            'About the account owner: name, job title, email, phone and password (stored only as a hash, never in readable form).',
             'About the company: legal name, trade name, CNPJ, website, segment, MRR range and number of subscribers.',
             'Chosen plan, date and time these documents were accepted, and whether you want to receive communications.',
             'Platform usage logs.',

@@ -65,10 +65,13 @@ function Capitulo({
           ))}
         </ul>
       </motion.div>
-      {/* Mobile/tablet: o visual vem junto do texto. */}
-      <div className="glass-panel mt-8 min-h-[400px] lg:hidden">
-        <Visual ativo={visivel} />
-      </div>
+      {/* Mobile/tablet: o visual vem junto do texto. Só é montado fora do desktop, para os intervalos
+          das animações não rodarem escondidos (e não duplicar ids de SVG). */}
+      {desktop ? null : (
+        <div className="glass-panel mt-8 min-h-[400px] lg:hidden">
+          <Visual ativo={visivel} />
+        </div>
+      )}
     </div>
   )
 }
@@ -80,6 +83,7 @@ function Capitulo({
 export function Capitulos() {
   const { capitulos } = useConteudo().home
   const reduced = useReducedMotion()
+  const desktop = useDesktop()
   const [ativo, setAtivo] = useState(0)
   const Visual = VISUAIS[ativo]
 
@@ -89,6 +93,9 @@ export function Capitulos() {
         <CabecalhoSecao id="capitulos-titulo" eyebrow={capitulos.eyebrow} titulo={capitulos.titulo} lead={capitulos.lead} />
 
         <div className="mt-10 grid lg:mt-6 lg:grid-cols-12 lg:gap-12">
+          {/* Painel fixo do desktop: não é montado no celular, onde ficava oculto mas ativo, rodando
+              intervalos e registrando um gradiente que "roubava" o id do medidor visível. */}
+          {desktop ? (
           <div className="hidden lg:col-span-6 lg:block">
             <div className="sticky top-[16vh] flex h-[68vh] items-center">
               <div className="relative w-full">
@@ -123,6 +130,7 @@ export function Capitulos() {
               </div>
             </div>
           </div>
+          ) : null}
 
           <div className={cx('lg:col-span-6')}>
             {capitulos.itens.map((c, i) => (

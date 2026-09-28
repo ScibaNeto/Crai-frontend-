@@ -756,7 +756,7 @@ export const conteudoPt = {
     taxaDetalheStandard: '25% do ganho incremental',
     taxaDetalhePremium: '{rec} da recuperação + {ret} da retenção',
     premissas:
-      'Estimativa baseada em premissas do modelo da CRAI (falha de 10%, ganho incremental de 20%). O resultado real é apurado contra grupo de controle.',
+      'Estimativa baseada em premissas do modelo da CRAI (falha de 10%, ganho incremental de 20% e, no Premium, receita preservada de 4,5% do MRR). O resultado real é apurado contra grupo de controle.',
     foraDaFaixa: 'Fora da faixa que a CRAI atende hoje.',
     acao: { rotulo: 'Criar conta', para: '/cadastro' },
   },
@@ -855,6 +855,7 @@ export const conteudoPt = {
       cnpj: 'CNPJ',
       site: 'Site',
       segmento: 'Segmento',
+      naoInformado: 'Selecione (opcional)',
       segmentos: [
         'SaaS de gestão para clínicas',
         'SaaS de gestão financeira',
@@ -914,6 +915,7 @@ export const conteudoPt = {
       email: 'Informe um e-mail válido.',
       senha: 'A senha precisa ter pelo menos 8 caracteres.',
       telefone: 'Telefone incompleto. Inclua o DDD.',
+      data: 'Escolha uma data a partir de hoje.',
       termos: 'Para criar a conta, aceite os termos de uso e a política de privacidade.',
     },
     erros: {
@@ -1026,7 +1028,7 @@ export const conteudoPt = {
   confirmacao: {
     titulo: 'Autorização registrada',
     texto:
-      'A primeira apuração acontece no dia 5 do mês que vem. Enquanto isso, a CRAI já começa a monitorar as cobranças que falharem.',
+      'A primeira apuração acontece no dia {dia} do mês que vem. Enquanto isso, a CRAI já começa a monitorar as cobranças que falharem.',
     marca: 'Marca de confirmação',
     links: [
       { rotulo: 'Abrir o painel', para: '/painel', variante: 'primary' as const },

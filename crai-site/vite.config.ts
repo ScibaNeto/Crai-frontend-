@@ -13,11 +13,9 @@ function ehProducao(mode: string): boolean {
 function robotsTxt(siteUrl: string, indexar: boolean): string {
   // Preview/staging e dev: nada indexado.
   if (!indexar) return 'User-agent: *\nDisallow: /\n'
-  const bloqueadas = Object.entries(ROTAS)
-    .filter(([, r]) => !r.indexar)
-    .map(([caminho]) => `Disallow: ${caminho}\n`)
-    .join('')
-  return `User-agent: *\nAllow: /\n${bloqueadas}\nSitemap: ${siteUrl}/sitemap.xml\n`
+  // As rotas privadas não vão como Disallow: o Google não lê o `noindex` de uma URL bloqueada no robots
+  // e podia indexá-las só pelo link (ex.: /painel no menu). Elas ficam de fora pelo `noindex` (lib/seo.ts).
+  return `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`
 }
 
 function sitemapXml(siteUrl: string): string {

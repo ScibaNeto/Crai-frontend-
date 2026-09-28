@@ -7,6 +7,17 @@ import { codigoErroAuth, redefinirSenha, type CodigoErroAuth } from '../lib/auth
 import { useConteudo } from '../lib/i18n'
 import { useSessao } from '../lib/useSessao'
 
+/**
+ * true se o link de recuperação chegou com erro (expirado, já usado...). O Supabase manda o erro na URL
+ * (#error=... ou ?error=...) e, se já houver uma sessão aberta no navegador, mantém essa sessão — sem esta
+ * checagem a página mostrava o formulário de nova senha para um link inválido.
+ */
+function linkComErro(): boolean {
+  const hash = new URLSearchParams(window.location.hash.slice(1))
+  const busca = new URLSearchParams(window.location.search)
+  return Boolean(hash.get('error') || hash.get('error_code') || busca.get('error') || busca.get('error_code'))
+}
+
 /** Destino do link "esqueci minha senha": o Supabase abre uma sessão de recuperação pela URL. */
 export function RedefinirSenha() {
   const conteudo = useConteudo()
@@ -17,6 +28,8 @@ export function RedefinirSenha() {
   const [erroAuth, setErroAuth] = useState<CodigoErroAuth | null>(null)
   const [salvando, setSalvando] = useState(false)
   const [pronto, setPronto] = useState(false)
+  // Lido uma vez, antes de o Supabase limpar a URL.
+  const [linkInvalido] = useState(linkComErro)
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -41,7 +54,7 @@ export function RedefinirSenha() {
   let corpo
   if (carregando) {
     corpo = <p className="t-body text-silver">…</p>
-  } else if (!sessao) {
+  } else if (!sessao || linkInvalido) {
     corpo = (
       <div className="flex flex-col items-start gap-6">
         <p role="alert" className="t-body text-silver">

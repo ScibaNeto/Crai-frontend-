@@ -41,8 +41,10 @@ export const ROTAS: Record<string, Rota> = {
   '/empresa': { chave: 'empresa', indexar: true, frequencia: 'monthly', prioridade: 0.6 },
   '/contato': { chave: 'contato', indexar: true, frequencia: 'monthly', prioridade: 0.5 },
   '/cadastro': { chave: 'cadastro', indexar: true, frequencia: 'monthly', prioridade: 0.6 },
-  '/privacidade': { chave: 'privacidade', indexar: true, frequencia: 'yearly', prioridade: 0.3 },
-  '/termos': { chave: 'termos', indexar: true, frequencia: 'yearly', prioridade: 0.3 },
+  // ⚠️ Fora do Google até os textos legais deixarem de ter placeholders ([RAZÃO SOCIAL], CNPJ, [DOMÍNIO]...).
+  // Depois de preencher legal.pt.ts e legal.en.ts, voltar para indexar: true.
+  '/privacidade': { chave: 'privacidade', indexar: false, frequencia: 'yearly', prioridade: 0.3 },
+  '/termos': { chave: 'termos', indexar: false, frequencia: 'yearly', prioridade: 0.3 },
   '/painel': { chave: 'painel', indexar: false },
   '/pagamento': { chave: 'pagamento', indexar: false },
   '/confirmacao': { chave: 'confirmacao', indexar: false },
