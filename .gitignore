@@ -13,3 +13,6 @@ desktop.ini
 .env
 .env.*
 !.env.example
+
+# Capturas de tela e arquivos gerados pelo Claude (não fazem parte do site)
+Claude outputs/
