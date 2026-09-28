@@ -1,82 +1,72 @@
 import { motion } from 'framer-motion'
+import { useId } from 'react'
 import { cx } from '../../lib/cx'
 import { EASE_EXPO } from '../../lib/intro'
 import { useReducedMotion } from '../../lib/useReducedMotion'
+import { LOGO_A, LOGO_LETRAS, LOGO_RATIO, LOGO_SETA, LOGO_VIEWBOX, SETA_CAIXA } from './logoCrai'
 
 interface WordmarkProps {
-  /** Mudar o valor redesenha a seta. */
+  /** Mudar o valor revela a seta de novo. */
   drawKey?: number
   /** Nasce com a seta completa, sem animação. */
   instant?: boolean
   duration?: number
   delay?: number
-  /** Em unidades do viewBox (24 = altura da letra A). 4.5 ≈ 3px no tamanho do header. */
-  strokeWidth?: number
+  /** O tamanho acompanha o font-size do pai: a altura do logo é ~1em. */
   className?: string
   /** Quando está dentro de um link que já tem nome acessível. */
   decorative?: boolean
 }
 
-/** Wordmark tipográfico "CRAI" — nunca o logo. O A em silver, cruzado por uma seta ascendente laranja. */
+/**
+ * Logo oficial da CRAI. Sobre o fundo escuro: C, R e I em paper, o A em silver e a seta em laranja.
+ * A seta se revela da esquerda para a direita, subindo junto com a curva.
+ */
 export function Wordmark({
   drawKey = 0,
   instant = false,
   duration = 0.4,
   delay = 0,
-  strokeWidth = 4.5,
   className,
   decorative = false,
 }: WordmarkProps) {
   const reduced = useReducedMotion()
   const skip = instant || reduced
-
-  const shaft = { duration: duration * 0.72, delay, ease: EASE_EXPO }
-  const head = { duration: duration * 0.42, delay: delay + duration * 0.58, ease: EASE_EXPO }
-  const initial = skip ? false : { pathLength: 0, opacity: 0 }
+  const clipId = `crai-seta-${useId().replace(/:/g, '')}`
 
   return (
     <span
-      className={cx('relative inline-flex items-baseline leading-none font-[680] tracking-[-0.04em] text-paper select-none', className)}
+      className={cx('inline-flex leading-none select-none', className)}
       role={decorative ? undefined : 'img'}
       aria-label={decorative ? undefined : 'CRAI'}
       aria-hidden={decorative ? true : undefined}
     >
-      <span aria-hidden="true">CR</span>
-      <span aria-hidden="true" className="relative text-silver">
-        A
-        <svg
-          className="pointer-events-none absolute overflow-visible"
-          style={{ left: '-0.1em', top: '0.14em', width: 'calc(100% + 0.2em)', height: '0.73em' }}
-          viewBox="0 0 24 24"
-          preserveAspectRatio="none"
-          fill="none"
-          aria-hidden="true"
-        >
-          <motion.path
-            key={`haste-${drawKey}`}
-            d="M2 21.5 L10 13.5 L22 3"
-            stroke="var(--color-orange)"
-            strokeWidth={strokeWidth}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            initial={initial}
-            animate={{ pathLength: 1, opacity: 1 }}
-            transition={{ ...shaft, opacity: { duration: 0.01, delay } }}
-          />
-          <motion.path
-            key={`ponta-${drawKey}`}
-            d="M15 3 L22 3 L22 10"
-            stroke="var(--color-orange)"
-            strokeWidth={strokeWidth}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            initial={initial}
-            animate={{ pathLength: 1, opacity: 1 }}
-            transition={{ ...head, opacity: { duration: 0.01, delay: head.delay } }}
-          />
-        </svg>
-      </span>
-      <span aria-hidden="true">I</span>
+      <svg
+        viewBox={LOGO_VIEWBOX}
+        className="block h-[1em] w-auto overflow-visible"
+        style={{ aspectRatio: String(LOGO_RATIO) }}
+        aria-hidden="true"
+        focusable="false"
+      >
+        <defs>
+          <clipPath id={clipId}>
+            <motion.rect
+              key={`revela-${drawKey}`}
+              x={SETA_CAIXA.x}
+              y={SETA_CAIXA.y}
+              height={SETA_CAIXA.altura}
+              initial={skip ? false : { width: 0 }}
+              animate={{ width: SETA_CAIXA.largura }}
+              transition={{ duration, delay, ease: EASE_EXPO }}
+            />
+          </clipPath>
+        </defs>
+        <path fill="var(--color-paper)" fillRule="evenodd" d={LOGO_LETRAS} />
+        <path fill="var(--color-silver)" fillRule="evenodd" d={LOGO_A} />
+        <g clipPath={`url(#${clipId})`}>
+          <path fill="var(--color-orange)" fillRule="evenodd" d={LOGO_SETA} />
+        </g>
+      </svg>
     </span>
   )
 }

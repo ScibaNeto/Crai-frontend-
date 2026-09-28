@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { useEffect } from 'react'
 import { Wordmark } from '../ui/Wordmark'
 
-/** Wordmark com a seta se desenhando (~900ms) e fade de 240ms. Total ≤ 1,2s. */
+/** Logo com a seta se revelando (~900ms) e fade de 240ms. Total ≤ 1,2s. */
 export function Preloader({ onDone }: { onDone: () => void }) {
   useEffect(() => {
     const t = window.setTimeout(onDone, 940)
@@ -16,7 +16,7 @@ export function Preloader({ onDone }: { onDone: () => void }) {
       exit={{ opacity: 0, transition: { duration: 0.24, ease: 'easeOut' } }}
       aria-hidden="true"
     >
-      <Wordmark className="text-[56px] md:text-[72px]" duration={0.86} delay={0.04} strokeWidth={3} decorative />
+      <Wordmark className="text-[56px] md:text-[72px]" duration={0.86} delay={0.04} decorative />
     </motion.div>
   )
 }
