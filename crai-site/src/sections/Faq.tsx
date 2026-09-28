@@ -1,25 +1,27 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { IconPlus } from '../components/icons/Icons'
+import { RevealWords } from '../components/motion/Reveal'
 import { useConteudo } from '../lib/i18n'
 import { EASE_EXPO } from '../lib/intro'
 
-/** Accordion com microinteração (10.7): + gira 45° e vira ×; altura animada. */
-export function Faq() {
-  const { faq } = useConteudo().planosPagina
+type FaqDados = ReturnType<typeof useConteudo>['planosPagina']['faq']
+
+/** Accordion com microinteração (10.7): + gira 45° e vira ×; altura animada. Home passa as próprias perguntas. */
+export function Faq({ dados, id = 'faq' }: { dados?: FaqDados; id?: string } = {}) {
+  const padrao = useConteudo().planosPagina.faq
+  const faq = dados ?? padrao
   const [aberto, setAberto] = useState<number | null>(null)
 
   return (
-    <section className="container-site section-y border-t border-line" aria-labelledby="faq-titulo">
+    <section className="container-site section-y border-t border-line" aria-labelledby={`${id}-titulo`}>
       <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
-        <h2 id="faq-titulo" className="t-h2 lg:col-span-4">
-          {faq.titulo}
-        </h2>
+        <RevealWords id={`${id}-titulo`} as="h2" noScroll texto={faq.titulo} className="t-h2 lg:col-span-4" />
         <ul className="border-t border-line lg:col-span-8">
           {faq.itens.map((item, i) => {
             const open = aberto === i
-            const botaoId = `faq-botao-${i}`
-            const painelId = `faq-painel-${i}`
+            const botaoId = `${id}-botao-${i}`
+            const painelId = `${id}-painel-${i}`
             return (
               <motion.li key={item.pergunta} layout="position" className="border-b border-line">
                 <h3>
@@ -54,7 +56,14 @@ export function Faq() {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.34, ease: EASE_EXPO }}
                     >
-                      <p className="t-body measure pb-6 text-silver">{item.resposta}</p>
+                      <motion.p
+                        className="t-body measure pb-6 text-silver"
+                        initial={{ y: 12 }}
+                        animate={{ y: 0 }}
+                        transition={{ duration: 0.4, ease: EASE_EXPO }}
+                      >
+                        {item.resposta}
+                      </motion.p>
                     </motion.div>
                   ) : null}
                 </AnimatePresence>

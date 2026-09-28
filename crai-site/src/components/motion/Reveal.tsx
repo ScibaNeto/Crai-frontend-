@@ -1,5 +1,6 @@
-import { motion } from 'framer-motion'
-import { Fragment, type ReactNode } from 'react'
+import { motion, useInView } from 'framer-motion'
+import { Fragment, useRef, type ReactNode } from 'react'
+import { cx } from '../../lib/cx'
 import { EASE_EXPO } from '../../lib/intro'
 import { useReducedMotion } from '../../lib/useReducedMotion'
 
@@ -33,38 +34,60 @@ interface RevealWordsProps {
   /** Só começa quando true (ex.: depois do preloader). */
   start?: boolean
   delay?: number
+  /** Anima ao entrar na viewport em vez de ao montar. */
+  noScroll?: boolean
+  /** Trecho final do texto que ganha o gradiente laranja/âmbar animado. */
+  destaque?: string
+  id?: string
 }
 
-/** Tipografia expressiva (10.3): palavra a palavra com máscara, 60ms de escalonamento. Só no hero da Home e no 404. */
-export function RevealWords({ texto, as: Tag = 'h1', className, start = true, delay = 0 }: RevealWordsProps) {
+/**
+ * Tipografia expressiva (SVGator: expressive typography; IrisFlow: word-rise com máscara):
+ * palavra a palavra, subindo de trás de uma máscara, 60ms de escalonamento.
+ */
+export function RevealWords({ texto, as: Tag = 'h1', className, start = true, delay = 0, noScroll = false, destaque, id }: RevealWordsProps) {
   const reduced = useReducedMotion()
+  // O gatilho de rolagem observa o título inteiro: as palavras nascem recortadas (clip-path) e o
+  // IntersectionObserver não as considera visíveis.
+  const ref = useRef<HTMLHeadingElement>(null)
+  const visto = useInView(ref, { once: true, amount: 0.5 })
   const palavras = texto.split(' ')
+  const nDestaque = destaque && texto.endsWith(destaque) ? destaque.split(' ').length : 0
+  const inicioDestaque = palavras.length - nDestaque
 
   if (reduced) {
     return (
-      <Tag className={className}>
-        <motion.span initial={{ opacity: 0 }} animate={start ? { opacity: 1 } : undefined} transition={{ duration: 0.12 }}>
-          {texto}
-        </motion.span>
+      <Tag id={id} className={className}>
+        {nDestaque ? (
+          <>
+            {palavras.slice(0, inicioDestaque).join(' ')} <span className="text-gradient">{destaque}</span>
+          </>
+        ) : (
+          texto
+        )}
       </Tag>
     )
   }
 
+  const alvo = { clipPath: 'inset(0% 0% 0% 0%)', y: '0em' }
   return (
-    <Tag className={className}>
-      {palavras.map((palavra, i) => (
-        <Fragment key={`${palavra}-${i}`}>
-          <motion.span
-            className="-mb-[0.14em] inline-block pb-[0.14em] will-change-transform"
-            initial={{ clipPath: 'inset(0% 0% 100% 0%)', y: '0.32em' }}
-            animate={start ? { clipPath: 'inset(0% 0% 0% 0%)', y: '0em' } : undefined}
-            transition={{ duration: 0.9, delay: delay + i * 0.06, ease: EASE_EXPO }}
-          >
-            {palavra}
-          </motion.span>
-          {i < palavras.length - 1 ? ' ' : null}
-        </Fragment>
-      ))}
+    <Tag ref={ref} id={id} className={className}>
+      <span className="sr-only">{texto}</span>
+      <span aria-hidden="true">
+        {palavras.map((palavra, i) => (
+          <Fragment key={`${palavra}-${i}`}>
+            <motion.span
+              className={cx('-mb-[0.14em] inline-block pb-[0.14em] will-change-transform', i >= inicioDestaque && nDestaque ? 'text-gradient' : undefined)}
+              initial={{ clipPath: 'inset(0% 0% 100% 0%)', y: '0.42em' }}
+              animate={start && (!noScroll || visto) ? alvo : undefined}
+              transition={{ duration: 0.9, delay: delay + i * 0.06, ease: EASE_EXPO }}
+            >
+              {palavra}
+            </motion.span>
+            {i < palavras.length - 1 ? ' ' : null}
+          </Fragment>
+        ))}
+      </span>
     </Tag>
   )
 }

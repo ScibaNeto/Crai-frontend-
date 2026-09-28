@@ -1,4 +1,5 @@
 import type { Conteudo } from './conteudo.pt'
+import { privacidadeEn, termosEn } from './legal.en'
 
 // English copy. Not a literal translation: shorter, same dry tone, no promise that is not in the Portuguese.
 // Legal names stay in Portuguese (LGPD, Decreto 11.034/2022) with a short gloss. Currency is always BRL.
@@ -12,21 +13,78 @@ export const conteudoEn: Conteudo = {
     ],
   },
 
-  titulos: {
-    home: 'CRAI — Revenue recovery for SaaS',
-    produto: 'How CRAI works — CRAI',
-    planos: 'Plans and simulator — CRAI',
-    painel: 'Dashboard (demo) — CRAI',
-    cadastro: 'Create account — CRAI',
-    pagamento: 'Billing authorization — CRAI',
-    confirmacao: 'Authorization recorded — CRAI',
-    empresa: 'About CRAI — CRAI',
-    contato: 'Contact — CRAI',
-    naoEncontrada: 'Page not found — CRAI',
-    entrar: 'Sign in — CRAI',
-    redefinirSenha: 'New password — CRAI',
+  seo: {
+    home: {
+      titulo: 'CRAI — Revenue recovery and retention for SaaS',
+      descricao:
+        'CRAI recovers failed payments through Pix Automático and helps Brazilian SaaS companies keep subscribers. You only pay on the revenue that comes back.',
+    },
+    produto: {
+      titulo: 'How CRAI works | CRAI',
+      descricao:
+        'See how CRAI detects failed charges and cancellation risk, acts through Pix Automático and measures the result against a control group.',
+    },
+    planos: {
+      titulo: 'Plans and simulator | CRAI',
+      descricao:
+        'Compare the Standard and Premium plans and simulate, with your own MRR, how much of the revenue you lose to churn CRAI could recover.',
+    },
+    painel: {
+      titulo: 'Dashboard (demo) | CRAI',
+      descricao:
+        'CRAI dashboard with recovered revenue, charges in progress and churn indicators for your subscriber base, shown here as a demo version.',
+    },
+    cadastro: {
+      titulo: 'Create account | CRAI',
+      descricao:
+        'Create your company’s CRAI account in about two minutes: company details, the account owner and billing through Pix Automático.',
+    },
+    pagamento: {
+      titulo: 'Billing authorization | CRAI',
+      descricao:
+        'Authorize CRAI billing through Pix Automático. In the beta no payment is processed, and the authorization is for demonstration only.',
+    },
+    confirmacao: {
+      titulo: 'Authorization recorded | CRAI',
+      descricao:
+        'Billing authorization recorded. Open the CRAI dashboard to follow recovered revenue and the churn indicators for your company.',
+    },
+    empresa: {
+      titulo: 'About CRAI | CRAI',
+      descricao:
+        'Meet CRAI: the purpose, the way we operate and the team behind the revenue recovery and retention platform for Brazilian SaaS companies.',
+    },
+    contato: {
+      titulo: 'Contact | CRAI',
+      descricao:
+        'Talk to the CRAI team about plans, how results are measured, data integration or any question about revenue recovery for SaaS.',
+    },
+    entrar: {
+      titulo: 'Sign in | CRAI',
+      descricao:
+        'Sign in to your company’s CRAI account to follow recovered revenue, charges in progress and your churn and retention indicators.',
+    },
+    redefinirSenha: {
+      titulo: 'New password | CRAI',
+      descricao:
+        'Set a new password for your company’s CRAI account. The reset link is sent to the registered email address and expires after a while.',
+    },
+    privacidade: {
+      titulo: 'Privacy Policy | CRAI',
+      descricao:
+        'How CRAI collects, uses, protects and shares personal data of website visitors, users and customers, in line with Brazil’s LGPD.',
+    },
+    termos: {
+      titulo: 'Terms of Use | CRAI',
+      descricao:
+        'Rules for using the CRAI website and platform: account, responsibilities, data you send, intellectual property and liability limits.',
+    },
+    naoEncontrada: {
+      titulo: 'Page not found | CRAI',
+      descricao:
+        'The address you looked for does not exist or has moved. Go back to the CRAI home page or simulate how much churned revenue could return.',
+    },
   },
-  metaDescricao: 'CRAI recovers revenue SaaS companies lose to churn, through Pix Automático, and charges only on what it recovers.',
 
   site: {
     marca: 'CRAI',
@@ -65,6 +123,13 @@ export const conteudoEn: Conteudo = {
             { rotulo: 'Create account', para: '/cadastro' },
           ],
         },
+        {
+          titulo: 'Legal',
+          links: [
+            { rotulo: 'Privacy Policy', para: '/privacidade' },
+            { rotulo: 'Terms of Use', para: '/termos' },
+          ],
+        },
       ],
       aviso: 'Beta version — no payment is processed.',
       lgpd: 'Data handled under the LGPD (Brazil’s data protection law), with minimal collection and a stated purpose.',
@@ -75,12 +140,40 @@ export const conteudoEn: Conteudo = {
 
   home: {
     hero: {
-      titulo: 'The revenue that leaves before it becomes churn',
+      selo: { tag: 'Beta', texto: 'Customer pilots in October and November 2026' },
+      titulo: 'Revenue you already earned, back in the bank',
+      destaque: 'back in the bank',
       subtitulo:
-        'Failed charges and subscribers who decide to leave drain recurring revenue every month. CRAI recovers part of it through Pix Automático and charges only on what it recovers.',
-      acaoPrimaria: { rotulo: 'Create account', para: '/cadastro' },
+        'AI agents recover failed charges through Pix Automático and step in before a subscriber cancels. You follow everything on a dashboard and only pay on the gain CRAI proves.',
+      acaoPrimaria: { rotulo: 'Run the free diagnosis', para: '/planos#simulador' },
       acaoSecundaria: { rotulo: 'See how it works', para: '/produto' },
       apoio: 'No monthly fee. No setup fee. No CRM for you to maintain.',
+      fatos: ['No monthly fee', 'Pix Automático', 'Measured against a control group'],
+      rolar: 'Scroll',
+      mockup: {
+        aria: 'Illustration of the CRAI dashboard with sample data for a SaaS with BRL 50k MRR',
+        janela: 'dashboard.crai',
+        titulo: 'This month',
+        etiqueta: 'Illustrative data',
+        status: 'Agents running',
+        kpis: [
+          { rotulo: 'Revenue at risk', valor: 5000, nota: '10% of BRL 50k MRR' },
+          { rotulo: 'Incremental gain', valor: 1000, nota: 'above the control group' },
+          { rotulo: 'You keep', valor: 750, nota: 'after the 25% fee' },
+        ],
+        grafico: 'Recovery accumulated this month',
+        tratado: 'With CRAI',
+        controle: 'Control group',
+        eventosTitulo: 'Agent activity',
+        eventos: [
+          { tipo: 'ok', texto: 'Pix Automático recovered', valor: 'R$ 100.00' },
+          { tipo: 'agenda', texto: 'New attempt in the liquidity window', valor: 'day 05' },
+          { tipo: 'risco', texto: 'Risk signal: usage drop', valor: 'score 0.82' },
+          { tipo: 'msg', texto: 'Retention offer sent', valor: 'WhatsApp' },
+          { tipo: 'ok', texto: 'Pix Automático recovered', valor: 'R$ 100.00' },
+          { tipo: 'saida', texto: 'Cancellation honoured, no friction', valor: 'Decreto 11.034' },
+        ],
+      },
       grafico: {
         titulo: 'Illustrative chart of recurring revenue',
         descricao: 'Revenue drops when charges fail. The orange line is the recovered part: it climbs, but not back to the previous level.',
@@ -181,9 +274,217 @@ export const conteudoEn: Conteudo = {
       texto: 'Enter your MRR and see how much of your revenue at risk goes on the bill.',
       acao: { rotulo: 'Open the simulator', para: '/planos#simulador' },
     },
+    marquee: {
+      aria: 'What CRAI covers',
+      itens: [
+        'Pix Automático',
+        'Liquidity inference',
+        'Involuntary churn',
+        'Voluntary churn',
+        'Control group',
+        'WhatsApp, email and SMS',
+        'LGPD',
+        'No monthly fee',
+        'No setup fee',
+        'Frictionless cancellation',
+      ],
+    },
+    numeros: {
+      eyebrow: 'The problem',
+      titulo: 'Where the money leaks',
+      lead: 'Revenue lost to failed charges rarely shows up as a single event in the numbers. Part of it is even booked as voluntary cancellation. That is why it goes unnoticed.',
+      stats: [
+        { de: 9, ate: 0, tipo: 'pct', texto: 'of monthly recurring revenue is lost, on average, to failed payments alone', fonte: 'Baremetrics' },
+        { de: 25, ate: 40, tipo: 'pct', texto: 'of what companies record as cancellations is actually involuntary churn', fonte: 'Freemius' },
+        {
+          de: 45,
+          ate: 70,
+          tipo: 'pct',
+          texto: 'of failed payments can be recovered with smart retries (card data)',
+          fonte: 'Baremetrics and Freemius',
+        },
+        {
+          de: 45,
+          ate: 0,
+          tipo: 'milBrl',
+          texto: 'leak every month from a SaaS with BRL 500k MRR without anyone deciding to cancel',
+          fonte: 'CRAI estimate on the 9% average',
+        },
+      ],
+    },
+    capitulos: {
+      eyebrow: 'How it works',
+      titulo: 'Two agents, one dashboard',
+      lead: 'Each agent owns one kind of loss, end to end. No case is escalated to your team.',
+      itens: [
+        {
+          numero: '01',
+          rotulo: 'Recovery · involuntary churn',
+          titulo: 'A charge failed. The agent acts on the right day.',
+          texto:
+            'A webhook reports the failure the moment it happens. The agent weighs the odds and the cost of recovering it, estimates when that payer will have funds and schedules the new Pix Automático attempt in that window, within Central Bank rules.',
+          passos: ['Webhook', 'Diagnosis', 'Liquidity', 'Pix Automático', 'Multichannel'],
+        },
+        {
+          numero: '02',
+          rotulo: 'Retention · voluntary churn',
+          titulo: 'A customer cooled down. The agent notices first.',
+          texto:
+            'A usage drop, a visit to the cancellation page or a downgrade becomes a risk score, weighted by the customer’s value. The agent picks an offer proportional to what is at stake and talks through the right channel, never making it harder to leave.',
+          passos: ['Signal', 'Risk score', 'Offer', 'Conversation'],
+        },
+        {
+          numero: '03',
+          rotulo: 'Dashboard · proven result',
+          titulo: 'You see what came back, account by account.',
+          texto:
+            'The dashboard shows how much was recovered and retained, with a record of every account worked. Everything is measured against a control group from your own base: the difference between the two is what CRAI charges on.',
+          passos: ['Treated', 'Control', 'Incremental gain'],
+        },
+      ],
+      visual: {
+        aria: 'Animated illustration of the step',
+        risco: 'Risk score',
+        riscoAlto: 'high',
+        oferta: 'Offer proportional to customer value',
+        sinais: ['Usage drop', 'Cancellation page visit', 'Plan downgrade'],
+        falha: 'Charge failed',
+        recuperado: 'Payment recovered',
+        tratado: 'Treated',
+        controle: 'Control',
+        ganho: 'Incremental gain',
+      },
+    },
+    contraste: {
+      eyebrow: 'Liquidity inference',
+      titulo: 'Trying again is not the same as trying at the right time',
+      lead: 'A fixed schedule retries at set intervals. CRAI estimates when that payer will have funds and concentrates the attempt there.',
+      fixa: {
+        rotulo: 'Fixed schedule',
+        titulo: 'Same interval for everyone',
+        texto: 'Each attempt lands on a day the account still has no funds. It fails again, for the same reason.',
+      },
+      crai: {
+        rotulo: 'CRAI',
+        titulo: 'One attempt in the right window',
+        texto: 'The model estimates the likely funding date for that payer. The charge goes there.',
+      },
+      janela: 'Estimated liquidity window',
+      dia: 'Day',
+      nota: 'Illustration. Among the 19 recovery and retention solutions CRAI mapped, none offers liquidity inference.',
+    },
+    preco: {
+      eyebrow: 'Pricing',
+      titulo: 'BRL 0 to start. You pay after you get paid.',
+      lead: 'No monthly fee, no setup, no per-subscriber charge. CRAI only earns when it produces a gain, and in proportion to it.',
+      planos: [
+        {
+          nome: 'Standard',
+          prefixo: '',
+          taxa: 25,
+          unidade: 'of incremental gain',
+          resumo: 'Recovery of failed charges.',
+          itens: ['Involuntary churn', 'Liquidity inference', 'Pix Automático', 'Multichannel messaging', 'Results dashboard'],
+          selo: '',
+        },
+        {
+          nome: 'Premium',
+          prefixo: '+',
+          taxa: 20,
+          unidade: 'of preserved revenue',
+          resumo: 'Everything in Standard, plus retention.',
+          itens: ['All of Standard, with its 25%', 'Voluntary churn', 'Risk score and offers', '6-month window per retention', 'SDK integration'],
+          selo: 'Most complete',
+        },
+      ],
+      exemplo: {
+        titulo: 'Example: SaaS with BRL 50k MRR',
+        linhas: [
+          { rotulo: 'Standard', valor: 250 },
+          { rotulo: 'Premium', valor: 700 },
+        ],
+        porMes: '/mo',
+        nota: 'Reference company in CRAI’s financial model: 500 subscribers, BRL 100 average ticket.',
+      },
+      garantia: 'Recovered payment refunded within 90 days? The fee comes back.',
+      acao: { rotulo: 'See plans and simulator', para: '/planos' },
+    },
+    parceiros: {
+      eyebrow: 'Validation',
+      titulo: 'Decisions validated with people who run the market',
+      lead: 'Three professionals follow the project and validate product and operating decisions.',
+      pessoas: [
+        { nome: 'Waldir Augusto Gunther', papel: 'Founder and head', empresa: 'Casa do Cliente', area: 'Customer relationship' },
+        { nome: 'Leo Gmeiner', papel: 'Founder and CEO', empresa: 'School Guardian', area: 'SaaS platform management' },
+        { nome: 'Wallace Barbosa', papel: 'Head of payments', empresa: 'iFood', area: 'Payments' },
+      ],
+    },
+    roadmap: {
+      eyebrow: 'Roadmap',
+      titulo: 'Where CRAI is right now',
+      agora: 'Now',
+      etapas: [
+        { quando: 'Mar 2026', titulo: 'Research', texto: 'Study of churn in Brazilian SaaS and definition of the idea.', estado: 'feito' },
+        { quando: 'Sep 2026', titulo: 'MVP', texto: 'Agents, models and dashboard under construction.', estado: 'agora' },
+        { quando: 'Oct–Nov 2026', titulo: 'Customer pilots', texto: 'First customers measuring incremental gain.', estado: 'depois' },
+        { quando: 'Early 2027', titulo: 'Commercial launch', texto: 'Operation with the Standard and Premium plans.', estado: 'depois' },
+        { quando: 'Late 2027–2028', titulo: 'More integrations', texto: 'Broader integrations. Credit card is on the roadmap.', estado: 'depois' },
+        { quando: '2031', titulo: 'Reference in Brazil', texto: 'Wider reach built on the existing base.', estado: 'depois' },
+      ],
+    },
+    faq: {
+      titulo: 'Frequently asked questions',
+      itens: [
+        {
+          pergunta: 'How much does it cost to start?',
+          resposta:
+            'Nothing. There is no monthly fee, setup fee or per-subscriber charge. CRAI only charges a share of the gain it proves: 25% on recovery and, on Premium, another 20% on revenue preserved by retention.',
+        },
+        {
+          pergunta: 'How do you prove the incremental gain?',
+          resposta:
+            'Part of the subscribers stays in a control group, outside CRAI’s action. We compare both groups, and the difference is the incremental gain. The calculation for each period is on the dashboard.',
+        },
+        {
+          pergunta: 'Do I need to change my payment gateway?',
+          resposta: 'No. CRAI is not a payment gateway. Billing stays on your current setup and CRAI works on top of it.',
+        },
+        {
+          pergunta: 'Does my team need to follow each case?',
+          resposta: 'No. The agents decide and act without escalating to human support. Your team follows the result on the dashboard.',
+        },
+        {
+          pergunta: 'How do you handle my subscribers’ data?',
+          resposta: 'Under the LGPD (Brazil’s data protection law), with minimal collection: only the data strictly needed for the agent’s decision enters the system.',
+        },
+        {
+          pergunta: 'When can I use it?',
+          resposta:
+            'CRAI is building the MVP. Customer pilots are planned for October and November 2026 and the commercial launch for early 2027. This site is a beta version.',
+        },
+      ],
+    },
+    cta: {
+      eyebrow: 'Free diagnosis',
+      titulo: 'How much of your revenue is leaking?',
+      texto: 'Enter your MRR and see how much is at risk from failed charges and how much of it can come back. No sign-up, no commitment.',
+      acaoPrimaria: { rotulo: 'Run the diagnosis', para: '/planos#simulador' },
+      acaoSecundaria: { rotulo: 'Talk to the team', para: '/contato' },
+    },
   },
 
   produto: {
+    indice: {
+      aria: 'Sections on this page',
+      itens: [
+        { id: 'recuperacao', rotulo: 'Recovery' },
+        { id: 'liquidez', rotulo: 'Liquidity' },
+        { id: 'retencao', rotulo: 'Retention' },
+        { id: 'medicao', rotulo: 'Measurement' },
+        { id: 'painel', rotulo: 'Dashboard' },
+        { id: 'dados', rotulo: 'Data' },
+      ],
+    },
     titulo: 'How CRAI works inside',
     lead: 'Charge recovery, liquidity inference, friction-free retention, and a measurement that separates what CRAI did from what would have happened anyway.',
     recuperacao: {
@@ -546,7 +847,7 @@ export const conteudoEn: Conteudo = {
       cobranca: 'Billing method',
       cobrancaDica: 'Cards coming soon',
       inicio: 'Desired start',
-      termos: 'I have read and accept the terms of use and the privacy policy',
+      termos: 'I have read and accept the [Terms of Use](/termos) and the [Privacy Policy](/privacidade)',
       comunicacao: 'Send me product news by email',
       comunicacaoDica: 'Optional',
     },
@@ -604,6 +905,7 @@ export const conteudoEn: Conteudo = {
     esqueci: 'Forgot my password',
     semConta: "Don't have an account yet?",
     criarConta: 'Create account',
+    aviso: 'By signing in, you agree to the [Terms of Use](/termos) and the [Privacy Policy](/privacidade).',
     validacao: {
       email: 'Enter a valid email.',
       senha: 'Enter your password.',
@@ -688,6 +990,26 @@ export const conteudoEn: Conteudo = {
   },
 
   empresaPagina: {
+    declaracao: {
+      eyebrow: 'Strategic statement',
+      missao: {
+        rotulo: 'Mission',
+        texto:
+          'Give Brazilian subscription software companies back the recurring revenue they lose to failed payments and cancellations, with AI agents that act on their own and prove every result.',
+      },
+      visao: {
+        rotulo: 'Vision',
+        texto: 'Be the reference in revenue retention and recovery for subscription software companies in Brazil by 2031.',
+      },
+      valoresTitulo: 'Values',
+      valores: [
+        { nome: 'Autonomy', texto: 'The agent runs the cycle end to end, without needing someone on your team for each case.' },
+        { nome: 'Transparency', texto: 'If CRAI acts on your base by itself, it accounts for every action and every result.' },
+        { nome: 'Rigour', texto: 'Results measured against a control group, with stated assumptions and conservative estimates.' },
+        { nome: 'Security', texto: 'LGPD compliance: only the data strictly needed for the decision enters the system.' },
+        { nome: 'Efficiency', texto: 'Every real recovered should cost a small fraction of what it is worth.' },
+      ],
+    },
     titulo: 'A software company for the revenue that leaves without notice',
     lead: 'CRAI is a Brazilian B2B software company. The product recovers part of the revenue SaaS companies lose to churn and shows the result in a dashboard.',
     proposito: {
@@ -731,6 +1053,7 @@ export const conteudoEn: Conteudo = {
     },
     assuntos: ['I want to understand Premium', 'Question about measurement', 'Integration and data', 'Something else'],
     enviar: 'Send message',
+    privacidade: 'We only use this data to reply to your message, as described in the [Privacy Policy](/privacidade).',
     sucesso: {
       titulo: 'Message recorded',
       texto: 'This is a demo site, so nothing was sent. In a real environment, the team would reply to the email given.',
@@ -748,7 +1071,19 @@ export const conteudoEn: Conteudo = {
 
   naoEncontrada: {
     codigo: '404',
-    titulo: 'This page does not exist — but the revenue you are looking for might.',
-    link: { rotulo: 'Back to home', para: '/' },
+    titulo: 'This page churned.',
+    texto: 'The page you are looking for does not exist or has moved. Your revenue does not have to go with it.',
+    inicio: { rotulo: 'Back to home', para: '/' },
+    simulacao: { rotulo: 'Run a simulation', para: '/planos#simulador' },
   },
+
+  erroInesperado: {
+    titulo: 'Something went wrong here.',
+    texto: 'An unexpected error interrupted the page. Reload it or go back to the home page; if it keeps happening, get in touch.',
+    inicio: 'Back to home',
+    tituloAba: 'Unexpected error | CRAI',
+  },
+
+  privacidade: privacidadeEn,
+  termos: termosEn,
 }

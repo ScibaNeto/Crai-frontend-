@@ -38,6 +38,7 @@ Ficam em `crai-site/.env.local`, que **não vai para o git**. O modelo é o `cra
 |---|---|
 | `VITE_SUPABASE_URL` | Project Settings → API |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Project Settings → API Keys (começa com `sb_publishable_`) |
+| `VITE_SITE_URL` | Não é do Supabase: domínio de produção, sem barra no fim (canonical, Open Graph, robots, sitemap) |
 
 - A chave *publishable* pode ficar no navegador: quem protege os dados são as regras de acesso (RLS) do banco.
 - **Nunca** coloque a chave `service_role` / *secret* no frontend.
@@ -58,6 +59,11 @@ Ficam em `crai-site/.env.local`, que **não vai para o git**. O modelo é o `cra
 | `/pagamento` | Autorização do Pix Automático (exige login) | Empresa real; **cobrança ainda simulada** |
 | `/confirmacao` | Fim do fluxo de pagamento | — |
 | `/painel` | Painel do cliente (beta) | Nome e plano reais; **números de demonstração** |
+| `/privacidade` | Política de Privacidade | Texto fixo (`src/data/legal.pt.ts` / `legal.en.ts`) |
+| `/termos` | Termos de Uso | Texto fixo (`src/data/legal.pt.ts` / `legal.en.ts`) |
+
+Título, descrição e indexação de cada rota: `src/lib/site.ts` (quais indexar) e `seo` em `conteudo.pt.ts`/`.en.ts`
+(os textos). Rota nova precisa entrar nos dois.
 
 ## 4. Estrutura
 
@@ -80,7 +86,8 @@ CRAI frontend/
         ├── App.tsx          rotas, layout e título de cada página
         ├── index.css        estilos globais e tema (Tailwind)
         ├── routes/          uma página por rota (Home.tsx, Cadastro.tsx, Painel.tsx…)
-        ├── sections/        blocos reaproveitados dentro das páginas (Hero, Simulador, Planos…)
+        ├── sections/        blocos reaproveitados dentro das páginas (Simulador, Planos, Faq…)
+        │   └── home/        seções da página inicial (HeroCrai, PainelMockup, Capitulos, Contraste, Preco…)
         ├── components/
         │   ├── ui/          peças básicas: botão, campo, select, card, badge
         │   ├── layout/      cabeçalho, rodapé, moldura da página
@@ -109,15 +116,48 @@ CRAI frontend/
 - Página nova: crie em `src/routes/` e registre em `src/App.tsx`.
 - Mudou o banco? Regenere `src/lib/database.types.ts` (ver [`crai-site/supabase/README.md`](crai-site/supabase/README.md)).
 
-## 5. Banco de dados
+
+## 5. Animações (motion)
+
+A linguagem visual segue duas referências: o site do **IrisFlow** (hero com aparelho em perspectiva, halo e anéis,
+título que sobe palavra a palavra, capítulos 01/02/03, navegação em pílula de vidro, fundo com malha de gradiente,
+blobs, grade mascarada e linha de varredura) e o catálogo de efeitos da **SVGator** (scrollytelling, self-drawing,
+microinterações, marquee, gradiente animado, spotlight no hover, contadores).
+
+| Peça | Onde | O que faz |
+|---|---|---|
+| `AmbientBackground` | `components/motion/` | Malha de gradiente, blobs que mudam de forma, grade, varredura e partículas. `variant="suave"` nas páginas internas |
+| `Header` (`NavPill`) | `components/layout/` | Pílula de vidro que desliza até o link sob o cursor; header ganha vidro ao rolar |
+| `ScrollProgress` | `components/motion/` | Filete laranja no topo acompanhando a leitura |
+| `RevealWords` | `components/motion/Reveal.tsx` | Título palavra a palavra com máscara; `noScroll` anima ao entrar na tela; `destaque` pinta o final com gradiente |
+| `Marquee` | `components/motion/` | Faixa infinita (pausa no hover) |
+| `Spotlight` | `components/motion/` | Borda e brilho que seguem o cursor |
+| `PainelMockup` | `sections/home/` | Painel em 3D com KPIs contando, gráfico se desenhando e feed de eventos |
+| `Capitulos` | `sections/home/` | Visual preso à esquerda que troca conforme o capítulo cruza o centro da tela |
+| `Contraste` | `sections/home/` | Régua fixa × janela de liquidez, com agulha percorrendo os dias |
+| `IndiceCapitulos` | `components/layout/` | Índice fixo das seções (página Produto) com pílula que acompanha a rolagem |
+| `Card` | `components/ui/` | Superfície de vidro com brilho seguindo o cursor, usada em formulários, simulador e time |
+| `MarcaRodape` | `sections/` | "CRAI" do rodapé sobe letra a letra e a seta se desenha |
+
+Classes de apoio ficam no bloco **Motion 2.0** do `src/index.css` (`.aurora`, `.nav-pill`, `.glass-panel`, `.device`,
+`.beam`, `.spotlight`, `.marquee`, `.btn-shine`, `.text-gradient`, `.eyebrow`, `.chip`).
+
+**Regra:** tudo respeita `prefers-reduced-motion`. Com movimento reduzido, fundos ficam estáticos, contadores mostram o
+valor final e nada entra deslizando. Ao criar um efeito novo, trate os dois casos.
+
+## 6. Banco de dados
 
 Tudo sobre tabelas, permissões, login e configuração do painel do Supabase está em
 [`crai-site/supabase/README.md`](crai-site/supabase/README.md).
 
-## 6. Publicar
+## 7. Publicar
 
-1. `npm run build` (dentro de `crai-site/`) gera a pasta `dist/`, que é o site pronto.
-2. No painel do Supabase → Authentication → URL Configuration, adicione o domínio publicado em **Site URL** e em
+1. `npm run build` (dentro de `crai-site/`) gera a pasta `dist/`, que é o site pronto, já com `robots.txt` e
+   `sitemap.xml` montados a partir de `VITE_SITE_URL`. Fora do deploy de produção (preview da Vercel/Netlify), o
+   `robots.txt` sai com `Disallow: /`.
+2. Na hospedagem, toda rota desconhecida deve servir o `index.html` (fallback de SPA). Com isso a página 404 aparece,
+   mas o HTTP continua 200 — ela leva `noindex` para o Google não indexar.
+3. No painel do Supabase → Authentication → URL Configuration, adicione o domínio publicado em **Site URL** e em
    **Redirect URLs** (`https://seu-dominio/**`). Sem isso, os links de e-mail (confirmação, nova senha) voltam para
    `localhost`.
 

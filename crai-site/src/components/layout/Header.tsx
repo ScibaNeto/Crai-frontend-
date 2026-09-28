@@ -7,7 +7,9 @@ import { useConteudo, useLang, useSetLang } from '../../lib/i18n'
 import { EASE_EXPO } from '../../lib/intro'
 import { isLang, LANG_HTML } from '../../lib/lang'
 import { useSessao } from '../../lib/useSessao'
-import { IconClose, IconMenu } from '../icons/Icons'
+import { useReducedMotion } from '../../lib/useReducedMotion'
+import { IconArrowUpRight, IconClose, IconMenu } from '../icons/Icons'
+import { ScrollProgress } from '../motion/ScrollProgress'
 import { Button } from '../ui/Button'
 import { Wordmark } from '../ui/Wordmark'
 
@@ -52,12 +54,52 @@ function LanguageSwitch({ id, className }: { id: string; className?: string }) {
   )
 }
 
-/** Header fixo com vidro (10.11). A borda inferior só aparece depois de 40px de rolagem. */
+/** Navegação em pílula de vidro (IrisFlow): o vidro desliza até o link sob o cursor e volta ao ativo. */
+function NavPill() {
+  const { site } = useConteudo()
+  const { pathname } = useLocation()
+  const reduced = useReducedMotion()
+  const ativo = site.nav.find((item) => pathname === item.para || pathname.startsWith(`${item.para}/`))?.para ?? null
+  const [sobre, setSobre] = useState<string | null>(null)
+  const alvo = sobre ?? ativo
+
+  return (
+    <nav aria-label={site.navAria} className="hidden lg:block">
+      <ul className="nav-pill" onMouseLeave={() => setSobre(null)}>
+        {site.nav.map((item) => (
+          <li key={item.para} className="relative">
+            {alvo === item.para ? (
+              <motion.span
+                layoutId="nav-pill-glass"
+                aria-hidden="true"
+                className="nav-pill__glass"
+                transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 36, mass: 0.7 }}
+              />
+            ) : null}
+            <NavLink
+              to={item.para}
+              onMouseEnter={() => setSobre(item.para)}
+              onFocus={() => setSobre(item.para)}
+              onBlur={() => setSobre(null)}
+              className="nav-pill__link focus-visible:outline-offset-1"
+            >
+              {item.rotulo}
+            </NavLink>
+            {ativo === item.para ? <span aria-hidden="true" className="nav-pill__dot" /> : null}
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+/** Header fixo; ganha vidro mais denso depois de 24px de rolagem. Filete de progresso no topo. */
 export function Header() {
   const { site } = useConteudo()
   const { sessao, empresa, sair } = useSessao()
   const navigate = useNavigate()
-  const [rolou, setRolou] = useState(() => window.scrollY > 40)
+  const reduced = useReducedMotion()
+  const [rolou, setRolou] = useState(() => window.scrollY > 24)
   const [aberto, setAberto] = useState(false)
   const [desenho, setDesenho] = useState(0)
   const { pathname } = useLocation()
@@ -70,7 +112,7 @@ export function Header() {
   }
 
   useEffect(() => {
-    const onScroll = () => setRolou(window.scrollY > 40)
+    const onScroll = () => setRolou(window.scrollY > 24)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
@@ -90,117 +132,114 @@ export function Header() {
   }
 
   return (
-    <header
-      className={cx(
-        'glass fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300',
-        rolou || aberto ? 'border-line' : 'border-transparent',
-      )}
-    >
-      <div className="container-site flex h-16 items-center justify-between gap-6">
-        <Link
-          to="/"
-          aria-label={site.inicioAria}
-          onMouseEnter={redesenhar}
-          onFocus={redesenhar}
-          className="rounded-[4px] text-[23px] focus-visible:outline-offset-4"
-        >
-          <Wordmark drawKey={desenho} instant={desenho === 0} decorative />
-        </Link>
-
-        <nav aria-label={site.navAria} className="hidden lg:block">
-          <ul className="flex items-center gap-8">
-            {site.nav.map((item) => (
-              <li key={item.para}>
-                <NavLink
-                  to={item.para}
-                  className={({ isActive }) =>
-                    cx('nav-link t-apoio rounded-[2px] transition-colors duration-150', isActive ? 'text-paper' : 'text-silver hover:text-paper')
-                  }
-                >
-                  {item.rotulo}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className="flex items-center gap-2 lg:gap-4">
-          <LanguageSwitch id="desktop" className="hidden lg:flex" />
-          {sessao ? (
-            <>
-              {empresa ? (
-                <span className="t-apoio hidden max-w-[16ch] truncate text-silver xl:inline" title={nomeExibicao(empresa)}>
-                  {nomeExibicao(empresa)}
-                </span>
-              ) : null}
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex" onClick={onSair}>
-                {site.sair}
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button to="/entrar" variant="ghost" size="sm" className="hidden sm:inline-flex">
-                {site.entrar}
-              </Button>
-              <Button to="/cadastro" size="sm" className="hidden sm:inline-flex">
-                {site.criarConta}
-              </Button>
-            </>
-          )}
-          <button
-            type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-[4px] text-paper hover:bg-paper/5 lg:hidden"
-            aria-expanded={aberto}
-            aria-controls="menu-mobile"
-            aria-label={aberto ? site.fecharMenu : site.abrirMenu}
-            onClick={() => setAberto((v) => !v)}
+    <>
+      <ScrollProgress />
+      <header
+        className={cx(
+          'header-shell fixed inset-x-0 top-0 z-50 border-b',
+          rolou || aberto ? 'is-scrolled border-line' : 'border-transparent bg-transparent',
+        )}
+      >
+        <div className="container-site flex h-16 items-center justify-between gap-6">
+          <Link
+            to="/"
+            aria-label={site.inicioAria}
+            onMouseEnter={redesenhar}
+            onFocus={redesenhar}
+            className="rounded-[4px] text-[23px] focus-visible:outline-offset-4"
           >
-            {aberto ? <IconClose size={22} /> : <IconMenu size={22} />}
-          </button>
-        </div>
-      </div>
+            <Wordmark drawKey={desenho} instant={desenho === 0} decorative />
+          </Link>
 
-      <AnimatePresence initial={false}>
-        {aberto ? (
-          <motion.nav
-            id="menu-mobile"
-            aria-label={site.navAria}
-            className="overflow-hidden lg:hidden"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.28, ease: EASE_EXPO }}
-          >
-            <ul className="container-site flex flex-col pt-2 pb-6">
-              {site.nav.map((item) => (
-                <li key={item.para} className="border-b border-line">
-                  <NavLink
-                    to={item.para}
-                    className={({ isActive }) => cx('block py-3.5 text-[17px]', isActive ? 'text-paper' : 'text-silver')}
-                  >
-                    {item.rotulo}
-                  </NavLink>
-                </li>
-              ))}
-              <li className="flex items-center justify-between gap-4 pt-5">
-                <LanguageSwitch id="mobile" className="-ml-2.5" />
-                {sessao ? (
-                  <Button variant="ghost" className="sm:hidden" onClick={onSair}>
-                    {site.sair}
-                  </Button>
-                ) : (
-                  <span className="flex gap-2 sm:hidden">
-                    <Button to="/entrar" variant="ghost">
-                      {site.entrar}
-                    </Button>
-                    <Button to="/cadastro">{site.criarConta}</Button>
+          <NavPill />
+
+          <div className="flex items-center gap-2 lg:gap-3">
+            <LanguageSwitch id="desktop" className="hidden lg:flex" />
+            {sessao ? (
+              <>
+                {empresa ? (
+                  <span className="t-apoio hidden max-w-[16ch] truncate text-silver xl:inline" title={nomeExibicao(empresa)}>
+                    {nomeExibicao(empresa)}
                   </span>
-                )}
-              </li>
-            </ul>
-          </motion.nav>
-        ) : null}
-      </AnimatePresence>
-    </header>
+                ) : null}
+                <Button variant="ghost" size="sm" className="hidden rounded-full sm:inline-flex" onClick={onSair}>
+                  {site.sair}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button to="/entrar" variant="ghost" size="sm" className="hidden rounded-full border-transparent sm:inline-flex">
+                  {site.entrar}
+                </Button>
+                <Button to="/cadastro" size="sm" className="hidden rounded-full sm:inline-flex">
+                  {site.criarConta}
+                </Button>
+              </>
+            )}
+            <button
+              type="button"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-line text-paper hover:bg-paper/5 lg:hidden"
+              aria-expanded={aberto}
+              aria-controls="menu-mobile"
+              aria-label={aberto ? site.fecharMenu : site.abrirMenu}
+              onClick={() => setAberto((v) => !v)}
+            >
+              {aberto ? <IconClose size={20} /> : <IconMenu size={20} />}
+            </button>
+          </div>
+        </div>
+
+        <AnimatePresence initial={false}>
+          {aberto ? (
+            <motion.nav
+              id="menu-mobile"
+              aria-label={site.navAria}
+              className="overflow-hidden lg:hidden"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.32, ease: EASE_EXPO }}
+            >
+              <ul className="container-site flex flex-col pt-2 pb-6">
+                {site.nav.map((item, i) => (
+                  <motion.li
+                    key={item.para}
+                    className="border-b border-line"
+                    initial={reduced ? false : { opacity: 0, x: -28 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.46, delay: 0.05 + i * 0.05, ease: EASE_EXPO }}
+                  >
+                    <NavLink
+                      to={item.para}
+                      className={({ isActive }) =>
+                        cx('flex items-center justify-between py-4 text-[22px] font-[600] tracking-[-0.02em]', isActive ? 'text-paper' : 'text-silver')
+                      }
+                    >
+                      {item.rotulo}
+                      <IconArrowUpRight size={18} className="text-orange" />
+                    </NavLink>
+                  </motion.li>
+                ))}
+                <li className="flex items-center justify-between gap-4 pt-5">
+                  <LanguageSwitch id="mobile" className="-ml-2.5" />
+                  {sessao ? (
+                    <Button variant="ghost" className="sm:hidden" onClick={onSair}>
+                      {site.sair}
+                    </Button>
+                  ) : (
+                    <span className="flex gap-2 sm:hidden">
+                      <Button to="/entrar" variant="ghost">
+                        {site.entrar}
+                      </Button>
+                      <Button to="/cadastro">{site.criarConta}</Button>
+                    </span>
+                  )}
+                </li>
+              </ul>
+            </motion.nav>
+          ) : null}
+        </AnimatePresence>
+      </header>
+    </>
   )
 }

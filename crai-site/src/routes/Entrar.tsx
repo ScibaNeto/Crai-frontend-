@@ -4,6 +4,7 @@ import { PageShell } from '../components/layout/PageShell'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Field } from '../components/ui/Field'
+import { TextoRico } from '../components/ui/TextoRico'
 import { codigoErroAuth, entrar, recuperarSenha, type CodigoErroAuth } from '../lib/auth'
 import { concluirCadastroPendente, temCadastroPendente } from '../lib/cadastro'
 import { interpolar } from '../lib/cx'
@@ -144,6 +145,9 @@ export function Entrar() {
                 <Link to="/cadastro" className="text-link text-paper">
                   {copy.criarConta}
                 </Link>
+              </p>
+              <p className="t-apoio text-silver">
+                <TextoRico texto={copy.aviso} />
               </p>
             </form>
           ) : (

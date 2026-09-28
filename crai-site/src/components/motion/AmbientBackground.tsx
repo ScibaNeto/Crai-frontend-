@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { cx } from '../../lib/cx'
 import { mulberry32 } from '../../lib/prng'
 import { useReducedMotion } from '../../lib/useReducedMotion'
 
@@ -16,12 +17,25 @@ const PARTICULAS = Array.from({ length: 18 }, (_, i) => {
   }
 })
 
-/** Gradiente cônico girando devagar + partículas em SVG (10.2). Sem canvas. */
-export function AmbientBackground() {
+interface AmbientBackgroundProps {
+  /** 'hero' = malha, blobs, grade, scan e partículas. 'suave' = o mesmo, mais discreto (páginas internas). */
+  variant?: 'hero' | 'suave'
+  className?: string
+}
+
+/**
+ * Fundo ambiente (SVGator: ambient background motion + animated gradient; IrisFlow: mesh, blob-morph,
+ * grade mascarada e linha de varredura). Só CSS e SVG, sem canvas. Movimento reduzido: fica estático.
+ */
+export function AmbientBackground({ variant = 'hero', className }: AmbientBackgroundProps) {
   const reduced = useReducedMotion()
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="ambient-cone" />
+    <div aria-hidden="true" className={cx('aurora', variant === 'suave' && 'aurora--suave', className)}>
+      <div className="aurora__mesh" />
+      <div className="aurora__blob aurora__blob--a" />
+      <div className="aurora__blob aurora__blob--b" />
+      <div className="aurora__grid" />
+      {variant === 'hero' ? <div className="aurora__scan" /> : null}
       {reduced ? null : (
         <svg className="motion-decor absolute inset-0 h-full w-full">
           {PARTICULAS.map((p, i) => (
@@ -31,7 +45,7 @@ export function AmbientBackground() {
               cx={`${p.x}%`}
               cy={`${p.y}%`}
               r={p.r}
-              fill="var(--color-paper)"
+              fill={i % 4 === 0 ? 'var(--color-amber)' : 'var(--color-paper)'}
               opacity={p.opacidade}
               style={
                 {
@@ -44,7 +58,7 @@ export function AmbientBackground() {
           ))}
         </svg>
       )}
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-ink" />
+      <div className="aurora__fade" />
     </div>
   )
 }

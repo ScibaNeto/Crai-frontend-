@@ -13,6 +13,9 @@ import {
   IconShield,
   type IconProps,
 } from '../components/icons/Icons'
+import { CountUp } from '../components/motion/CountUp'
+import { Reveal } from '../components/motion/Reveal'
+import { Spotlight } from '../components/motion/Spotlight'
 import { getPlanos, type PlanoInfo } from '../data/planos'
 import { cx } from '../lib/cx'
 import { useConteudo } from '../lib/i18n'
@@ -38,8 +41,12 @@ export function Planos() {
   return (
     <div>
       <div className="mx-auto grid max-w-[896px] gap-4 min-[861px]:grid-cols-2">
-        <CardPlano plano={standard} destaque />
-        <CardPlano plano={premium} />
+        <Reveal className="h-full">
+          <CardPlano plano={standard} destaque />
+        </Reveal>
+        <Reveal delay={0.12} className="h-full">
+          <CardPlano plano={premium} />
+        </Reveal>
       </div>
 
       <div className="mt-12 grid gap-6 border-t border-line pt-8 lg:grid-cols-12 lg:gap-8">
@@ -52,14 +59,12 @@ export function Planos() {
 
 function CardPlano({ plano, destaque = false }: { plano: PlanoInfo; destaque?: boolean }) {
   const icones = ICONES[plano.id]
+  // "25%" / "45%": o número conta ao entrar na tela; o resto do texto fica como está.
+  const numero = Number.parseFloat(plano.valor)
+  const sufixo = Number.isNaN(numero) ? '' : plano.valor.replace(String(numero), '')
 
-  return (
-    <article
-      className={cx(
-        'flex flex-col rounded-[22px] border bg-slate p-[22px] min-[421px]:p-7',
-        destaque ? 'border-orange/45' : 'border-line',
-      )}
-    >
+  const corpo = (
+    <article className="flex h-full flex-col p-[22px] min-[421px]:p-7">
       <header className="flex min-h-[30px] items-center justify-between gap-3">
         <h2 className="m-0 text-[1.125rem] font-semibold">{plano.nome}</h2>
       </header>
@@ -72,8 +77,20 @@ function CardPlano({ plano, destaque = false }: { plano: PlanoInfo; destaque?: b
       {/* Altura mínima igual nos dois cards: o Premium tem a linha de detalhe e os botões ficam alinhados. */}
       <div className="mt-[26px] mb-[18px] flex flex-col gap-1.5 min-[861px]:mb-0 min-[861px]:min-h-[92px]">
         <div className="flex items-baseline gap-2.5">
-          <span className="text-[2.3rem] leading-none font-semibold tracking-[-0.03em] text-paper tabular-nums min-[421px]:text-[2.75rem]">
-            {plano.valor}
+          <span
+            className={cx(
+              'text-[2.6rem] leading-none font-[700] tracking-[-0.04em] tabular-nums min-[421px]:text-[3.4rem]',
+              destaque ? 'text-gradient' : 'text-paper',
+            )}
+          >
+            {Number.isNaN(numero) ? (
+              plano.valor
+            ) : (
+              <>
+                <CountUp value={numero} format={(v) => String(Math.round(v))} duration={1100} />
+                {sufixo}
+              </>
+            )}
           </span>
           {plano.base ? <span className="text-[0.95rem] text-silver">{plano.base}</span> : null}
         </div>
@@ -87,8 +104,8 @@ function CardPlano({ plano, destaque = false }: { plano: PlanoInfo; destaque?: b
           'transition-colors duration-150 motion-reduce:transition-none',
           'focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-orange',
           destaque
-            ? 'border-orange bg-orange text-ink hover:border-amber hover:bg-amber'
-            : 'border-line bg-transparent text-paper hover:border-silver',
+            ? 'btn-shine relative border-orange bg-orange text-ink hover:border-amber hover:bg-amber hover:shadow-[0_10px_30px_-10px_rgba(239,147,17,0.7)]'
+            : 'border-line bg-transparent text-paper hover:border-silver hover:bg-paper/[0.03]',
         )}
       >
         {plano.cta}
@@ -99,7 +116,7 @@ function CardPlano({ plano, destaque = false }: { plano: PlanoInfo; destaque?: b
         {plano.itens.map((item, i) => {
           const Icone = icones[i] ?? IconCheck
           return (
-            <li key={item} className="flex items-start gap-3.5 text-[0.95rem] leading-[1.45]">
+            <li key={item} className="flex items-start gap-3.5 text-[0.95rem] leading-[1.45] transition-transform duration-300 hover:translate-x-1">
               <Icone size={18} strokeWidth={1.8} className={cx('mt-0.5 shrink-0', destaque ? 'text-orange' : 'text-silver')} />
               <span>{item}</span>
             </li>
@@ -107,5 +124,13 @@ function CardPlano({ plano, destaque = false }: { plano: PlanoInfo; destaque?: b
         })}
       </ul>
     </article>
+  )
+
+  return destaque ? (
+    <div className="beam h-full rounded-[22px]">
+      <div className="beam__inner rounded-[21px]">{corpo}</div>
+    </div>
+  ) : (
+    <Spotlight className="h-full rounded-[22px] border border-line bg-slate/60">{corpo}</Spotlight>
   )
 }

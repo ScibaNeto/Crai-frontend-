@@ -1,3 +1,4 @@
+import { RevealWords } from '../components/motion/Reveal'
 import { useState, type CSSProperties } from 'react'
 import { IconArrowRight } from '../components/icons/Icons'
 import { CountUp } from '../components/motion/CountUp'
@@ -33,9 +34,7 @@ export function Simulador() {
   return (
     <section id="simulador" className="section-y scroll-mt-16 border-t border-line" aria-labelledby="simulador-titulo">
       <div className="container-site">
-        <h2 id="simulador-titulo" className="t-h2">
-          {s.titulo}
-        </h2>
+        <RevealWords id="simulador-titulo" as="h2" noScroll texto={s.titulo} className="t-h2" />
         <p className="t-body measure mt-4 text-silver">{s.lead}</p>
 
         <div className="mt-10 grid gap-4 lg:grid-cols-12 lg:gap-6">

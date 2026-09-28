@@ -1,3 +1,4 @@
+import { RevealWords } from '../components/motion/Reveal'
 import { motion } from 'framer-motion'
 import { interpolar } from '../lib/cx'
 import { useConteudo, useFormato } from '../lib/i18n'
@@ -37,12 +38,10 @@ export function GrupoControle() {
     reduced ? { duration: 0 } : { duration: 0.9, delay: atraso, ease: [0.22, 1, 0.36, 1] as const }
 
   return (
-    <section className="section-y border-t border-line" aria-labelledby="medicao-titulo">
+    <section id="medicao" className="section-y scroll-mt-32 border-t border-line" aria-labelledby="medicao-titulo">
       <div className="container-site grid gap-12 lg:grid-cols-12 lg:gap-8">
         <div className="lg:col-span-5">
-          <h2 id="medicao-titulo" className="t-h2">
-            {medicao.titulo}
-          </h2>
+          <RevealWords id="medicao-titulo" as="h2" noScroll texto={medicao.titulo} className="t-h2" />
           <p className="t-body measure mt-5 text-silver">{medicao.texto}</p>
 
           <ol className="mt-10 flex flex-col gap-7">

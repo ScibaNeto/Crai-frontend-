@@ -2,11 +2,14 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { IconArrowRight } from '../components/icons/Icons'
 import { PageShell } from '../components/layout/PageShell'
+import { Reveal } from '../components/motion/Reveal'
 import { SelfDrawingSvg } from '../components/motion/SelfDrawingSvg'
+import { Spotlight } from '../components/motion/Spotlight'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Field, TextArea } from '../components/ui/Field'
 import { Select } from '../components/ui/Select'
+import { TextoRico } from '../components/ui/TextoRico'
 import { mockContato } from '../data/mockCadastro'
 import { useConteudo, useLang } from '../lib/i18n'
 
@@ -110,6 +113,9 @@ function ContatoForm() {
                     wrapperClassName="sm:col-span-2"
                   />
                 </div>
+                <p className="t-apoio mt-6 text-silver">
+                  <TextoRico texto={contatoPagina.privacidade} novaAba />
+                </p>
                 <div className="mt-8">
                   <Button type="submit" size="lg" loading={estado === 'enviando'} disabled={estado === 'enviando'} className="w-full sm:w-auto">
                     {contatoPagina.enviar}
@@ -120,21 +126,26 @@ function ContatoForm() {
           </AnimatePresence>
         </Card>
 
-        <aside className="lg:col-span-4 lg:col-start-9" aria-labelledby="contato-lateral-titulo">
-          <h2 id="contato-lateral-titulo" className="t-h3">
+        <aside className="lg:col-span-5 lg:col-start-8 xl:col-span-4 xl:col-start-9" aria-labelledby="contato-lateral-titulo">
+          <Reveal delay={0.15}>
+          <Spotlight className="rounded-[18px] border border-line bg-slate/40 p-6 md:p-8">
+          <span aria-hidden="true" className="pulse-dot pulse-dot--orange" />
+          <h2 id="contato-lateral-titulo" className="t-h3 mt-5">
             {contatoPagina.lateral.titulo}
           </h2>
           <p className="t-body mt-3 text-silver">{contatoPagina.lateral.texto}</p>
           <ul className="mt-6 flex flex-col divide-y divide-line border-y border-line">
             {contatoPagina.lateral.links.map((link) => (
               <li key={link.para}>
-                <Button to={link.para} variant="ghost" className="group h-auto w-full justify-between rounded-none border-0 px-0 py-4 hover:bg-transparent">
+                <Button to={link.para} variant="ghost" className="group h-auto w-full justify-between! rounded-none border-0 px-0 py-4 hover:bg-transparent">
                   {link.rotulo}
-                  <IconArrowRight size={18} className="text-silver" />
+                  <IconArrowRight size={18} className="text-silver transition-colors group-hover:text-orange" />
                 </Button>
               </li>
             ))}
           </ul>
+          </Spotlight>
+          </Reveal>
         </aside>
       </div>
     </PageShell>

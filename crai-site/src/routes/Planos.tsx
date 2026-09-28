@@ -4,6 +4,7 @@ import { PageShell } from '../components/layout/PageShell'
 import { useConteudo } from '../lib/i18n'
 import { useReducedMotion } from '../lib/useReducedMotion'
 import { Faq } from '../sections/Faq'
+import { CtaFinal } from '../sections/home/CtaFinal'
 import { Planos as SecaoPlanos } from '../sections/Planos'
 import { Simulador } from '../sections/Simulador'
 
@@ -27,6 +28,7 @@ export function Planos() {
       </section>
       <Simulador />
       <Faq />
+      <CtaFinal />
     </PageShell>
   )
 }

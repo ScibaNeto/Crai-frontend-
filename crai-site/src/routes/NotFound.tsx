@@ -43,9 +43,13 @@ export function NotFound() {
       <div className="container-site relative flex min-h-[72vh] flex-col justify-center py-20">
         <p className="t-mega t-outline">{naoEncontrada.codigo}</p>
         <RevealWords texto={naoEncontrada.titulo} as="h1" className="t-h1 mt-2 max-w-[15em]" start={ready} />
-        <div className="mt-10">
-          <Button to={naoEncontrada.link.para} size="lg">
-            {naoEncontrada.link.rotulo}
+        <p className="t-body measure mt-6 text-silver">{naoEncontrada.texto}</p>
+        <div className="mt-10 flex w-full max-w-xs flex-col gap-3 sm:max-w-none sm:flex-row">
+          <Button to={naoEncontrada.inicio.para} size="lg">
+            {naoEncontrada.inicio.rotulo}
+          </Button>
+          <Button to={naoEncontrada.simulacao.para} variant="ghost" size="lg">
+            {naoEncontrada.simulacao.rotulo}
           </Button>
         </div>
       </div>

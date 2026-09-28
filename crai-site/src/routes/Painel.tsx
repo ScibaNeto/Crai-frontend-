@@ -21,7 +21,7 @@ const ICONES_ABA: Record<Aba, typeof IconRefresh> = {
   retencao: IconUserSignal,
 }
 
-const bloco = 'rounded-[8px] border border-line bg-ink/40'
+const bloco = 'rounded-[12px] border border-line bg-ink/40 transition-colors duration-300 hover:border-orange/30'
 
 function SkeletonRecuperacao() {
   return (
@@ -290,7 +290,7 @@ export function Painel() {
   return (
     <PageShell titulo={painel.titulo} badge={<Badge tone="beta">{painel.badge}</Badge>} lead={empresa ? painel.leadConta : painel.lead}>
       <div className="container-site pb-24 md:pb-32">
-        <div className="overflow-hidden rounded-[14px] border border-line bg-slate/50 lg:grid lg:grid-cols-[96px_minmax(0,1fr)]">
+        <div className="glass-panel anim-entrada overflow-hidden lg:grid lg:grid-cols-[96px_minmax(0,1fr)]">
           <aside className="border-b border-line bg-ink/40 lg:border-r lg:border-b-0">
             <div role="tablist" aria-label={painel.navAria} className="flex gap-1 p-2 lg:flex-col lg:p-3">
               {painel.abas.map((a, i) => {

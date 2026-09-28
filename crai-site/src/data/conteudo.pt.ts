@@ -1,6 +1,8 @@
 // Todo o copy visível do site, em pt-BR. Componentes não carregam strings de texto próprias.
 // `conteudo.en.ts` é tipado como `Conteudo`: chave faltando em inglês quebra o build.
 
+import { privacidadePt, termosPt } from './legal.pt'
+
 export const conteudoPt = {
   idioma: {
     grupoAria: 'Idioma',
@@ -10,22 +12,79 @@ export const conteudoPt = {
     ],
   },
 
-  titulos: {
-    home: 'CRAI — Recuperação de receita para SaaS',
-    produto: 'Como a CRAI funciona — CRAI',
-    planos: 'Planos e simulador — CRAI',
-    painel: 'Painel (demo) — CRAI',
-    cadastro: 'Criar conta — CRAI',
-    pagamento: 'Autorização de cobrança — CRAI',
-    confirmacao: 'Autorização registrada — CRAI',
-    empresa: 'Sobre a CRAI — CRAI',
-    contato: 'Contato — CRAI',
-    naoEncontrada: 'Página não encontrada — CRAI',
-    entrar: 'Entrar — CRAI',
-    redefinirSenha: 'Nova senha — CRAI',
+  // <title> (até 60 caracteres) e meta description (120 a 160) de cada página. Chaves em src/lib/site.ts.
+  seo: {
+    home: {
+      titulo: 'CRAI — Recuperação de receita e retenção para SaaS',
+      descricao:
+        'A CRAI recupera cobranças falhas por Pix Automático e ajuda a reter assinantes de SaaS brasileiros. Você só paga sobre a receita que volta.',
+    },
+    produto: {
+      titulo: 'Como a CRAI funciona | CRAI',
+      descricao:
+        'Veja como a CRAI detecta cobranças falhas e riscos de cancelamento, age por Pix Automático e mede o resultado contra um grupo de controle.',
+    },
+    planos: {
+      titulo: 'Planos e simulador | CRAI',
+      descricao:
+        'Compare os planos Standard e Premium e simule, com o MRR da sua empresa, quanto da receita perdida por churn a CRAI pode recuperar.',
+    },
+    painel: {
+      titulo: 'Painel (demo) | CRAI',
+      descricao:
+        'Painel da CRAI com receita recuperada, cobranças em andamento e indicadores de churn da sua base de assinantes, em versão de demonstração.',
+    },
+    cadastro: {
+      titulo: 'Criar conta | CRAI',
+      descricao:
+        'Crie a conta da sua empresa na CRAI em cerca de dois minutos: dados da empresa, responsável pela conta e cobrança por Pix Automático.',
+    },
+    pagamento: {
+      titulo: 'Autorização de cobrança | CRAI',
+      descricao:
+        'Autorize a cobrança da CRAI por Pix Automático. Na versão beta nenhum pagamento é processado e a autorização serve apenas para demonstração.',
+    },
+    confirmacao: {
+      titulo: 'Autorização registrada | CRAI',
+      descricao:
+        'Autorização de cobrança registrada. Acesse o painel da CRAI para acompanhar a receita recuperada e os indicadores de churn da sua empresa.',
+    },
+    empresa: {
+      titulo: 'Sobre a CRAI | CRAI',
+      descricao:
+        'Conheça a CRAI: o propósito, a forma de operar e o time por trás da plataforma de recuperação e retenção de receita para SaaS brasileiros.',
+    },
+    contato: {
+      titulo: 'Contato | CRAI',
+      descricao:
+        'Fale com o time da CRAI sobre planos, medição de resultado, integração de dados ou qualquer dúvida sobre recuperação de receita para SaaS.',
+    },
+    entrar: {
+      titulo: 'Entrar | CRAI',
+      descricao:
+        'Acesse a conta da sua empresa na CRAI para acompanhar a receita recuperada, as cobranças em andamento e os indicadores de churn e retenção.',
+    },
+    redefinirSenha: {
+      titulo: 'Nova senha | CRAI',
+      descricao:
+        'Defina uma nova senha para a conta da sua empresa na CRAI. O link de redefinição chega no e-mail cadastrado e vale por tempo limitado.',
+    },
+    privacidade: {
+      titulo: 'Política de Privacidade | CRAI',
+      descricao:
+        'Como a CRAI coleta, usa, protege e compartilha dados pessoais de visitantes, usuários e clientes, conforme a LGPD e o Marco Civil da Internet.',
+    },
+    termos: {
+      titulo: 'Termos de Uso | CRAI',
+      descricao:
+        'Regras de uso do site e da plataforma CRAI: conta, responsabilidades, dados enviados, propriedade intelectual e limitações de responsabilidade.',
+    },
+    naoEncontrada: {
+      titulo: 'Página não encontrada | CRAI',
+      descricao:
+        'O endereço procurado não existe ou foi movido. Volte ao início do site da CRAI ou simule quanto da sua receita perdida por churn pode voltar.',
+    },
   },
-  metaDescricao:
-    'A CRAI recupera receita que empresas de SaaS perdem por churn, por Pix Automático, e cobra só sobre o que recupera.',
 
   site: {
     marca: 'CRAI',
@@ -65,6 +124,13 @@ export const conteudoPt = {
             { rotulo: 'Criar conta', para: '/cadastro' },
           ],
         },
+        {
+          titulo: 'Legal',
+          links: [
+            { rotulo: 'Política de Privacidade', para: '/privacidade' },
+            { rotulo: 'Termos de Uso', para: '/termos' },
+          ],
+        },
       ],
       aviso: 'Versão beta — nenhum pagamento é processado.',
       lgpd: 'Dados tratados conforme a LGPD, com coleta mínima e finalidade declarada.',
@@ -75,12 +141,40 @@ export const conteudoPt = {
 
   home: {
     hero: {
-      titulo: 'A receita que some antes de virar churn',
+      selo: { tag: 'Beta', texto: 'Testes com clientes em outubro e novembro de 2026' },
+      titulo: 'A receita que você já conquistou, de volta ao caixa',
+      destaque: 'de volta ao caixa',
       subtitulo:
-        'Cobranças que falham e assinantes que decidem sair drenam faturamento recorrente todo mês. A CRAI recupera parte disso por Pix Automático e cobra só sobre o que recupera.',
-      acaoPrimaria: { rotulo: 'Criar conta', para: '/cadastro' },
+        'Agentes de IA recuperam cobranças que falharam por Pix Automático e agem antes do cancelamento. Você acompanha tudo em um painel e só paga sobre o ganho que a CRAI comprova.',
+      acaoPrimaria: { rotulo: 'Fazer o diagnóstico grátis', para: '/planos#simulador' },
       acaoSecundaria: { rotulo: 'Ver como funciona', para: '/produto' },
       apoio: 'Sem mensalidade. Sem taxa de implantação. Sem CRM para você manter.',
+      fatos: ['Sem mensalidade', 'Pix Automático', 'Medido contra grupo de controle'],
+      rolar: 'Role',
+      mockup: {
+        aria: 'Ilustração do painel da CRAI com dados de exemplo de um SaaS com R$ 50 mil de MRR',
+        janela: 'painel.crai',
+        titulo: 'Resultado do mês',
+        etiqueta: 'Dados ilustrativos',
+        status: 'Agentes ativos',
+        kpis: [
+          { rotulo: 'Receita em risco', valor: 5000, nota: '10% de R$ 50 mil de MRR' },
+          { rotulo: 'Ganho incremental', valor: 1000, nota: 'acima do grupo de controle' },
+          { rotulo: 'Fica com você', valor: 750, nota: 'depois da taxa de 25%' },
+        ],
+        grafico: 'Recuperação acumulada no mês',
+        tratado: 'Com a CRAI',
+        controle: 'Grupo de controle',
+        eventosTitulo: 'Atividade dos agentes',
+        eventos: [
+          { tipo: 'ok', texto: 'Pix Automático recuperado', valor: 'R$ 100,00' },
+          { tipo: 'agenda', texto: 'Nova tentativa na janela de liquidez', valor: 'dia 05' },
+          { tipo: 'risco', texto: 'Sinal de risco: queda de uso', valor: 'score 0,82' },
+          { tipo: 'msg', texto: 'Oferta de retenção enviada', valor: 'WhatsApp' },
+          { tipo: 'ok', texto: 'Pix Automático recuperado', valor: 'R$ 100,00' },
+          { tipo: 'saida', texto: 'Cancelamento respeitado, sem atrito', valor: 'Decreto 11.034' },
+        ],
+      },
       grafico: {
         titulo: 'Gráfico ilustrativo do faturamento recorrente',
         descricao:
@@ -184,9 +278,232 @@ export const conteudoPt = {
       texto: 'Coloque seu MRR e veja quanto da sua receita em risco entra na conta.',
       acao: { rotulo: 'Abrir o simulador', para: '/planos#simulador' },
     },
+    marquee: {
+      aria: 'O que a CRAI cobre',
+      itens: [
+        'Pix Automático',
+        'Inferência de liquidez',
+        'Churn involuntário',
+        'Churn voluntário',
+        'Grupo de controle',
+        'WhatsApp, e-mail e SMS',
+        'LGPD',
+        'Sem mensalidade',
+        'Sem implantação',
+        'Cancelamento sem atrito',
+      ],
+    },
+    numeros: {
+      eyebrow: 'O problema',
+      titulo: 'Onde o dinheiro escapa',
+      lead: 'A perda por falha de cobrança quase nunca aparece como um evento único no resultado. Parte dela ainda é contada como cancelamento voluntário. Por isso passa despercebida.',
+      stats: [
+        {
+          de: 9,
+          ate: 0,
+          tipo: 'pct',
+          texto: 'da receita recorrente mensal se perde, em média, só com falhas de pagamento',
+          fonte: 'Baremetrics',
+        },
+        {
+          de: 25,
+          ate: 40,
+          tipo: 'pct',
+          texto: 'do que as empresas registram como cancelamento é, na verdade, churn involuntário',
+          fonte: 'Freemius',
+        },
+        {
+          de: 45,
+          ate: 70,
+          tipo: 'pct',
+          texto: 'dos pagamentos que falham podem ser recuperados com retentativa inteligente (dados de cartão)',
+          fonte: 'Baremetrics e Freemius',
+        },
+        {
+          de: 45,
+          ate: 0,
+          tipo: 'milBrl',
+          texto: 'por mês escapam de um SaaS com R$ 500 mil de MRR sem que ninguém tenha decidido cancelar',
+          fonte: 'Cálculo da CRAI sobre a média de 9%',
+        },
+      ],
+    },
+    capitulos: {
+      eyebrow: 'Como funciona',
+      titulo: 'Dois agentes, um painel',
+      lead: 'Cada agente cuida de um tipo de perda, do início ao fim. Nenhum caso é escalado para a sua equipe.',
+      itens: [
+        {
+          numero: '01',
+          rotulo: 'Recuperação · churn involuntário',
+          titulo: 'A cobrança falhou. O agente age no dia certo.',
+          texto:
+            'Um webhook avisa a falha no instante em que ela acontece. O agente avalia a chance e o custo de recuperar, estima quando aquele pagador terá saldo e concentra a nova tentativa por Pix Automático nessa janela, dentro das regras do Banco Central.',
+          passos: ['Webhook', 'Diagnóstico', 'Liquidez', 'Pix Automático', 'Multicanal'],
+        },
+        {
+          numero: '02',
+          rotulo: 'Retenção · churn voluntário',
+          titulo: 'O cliente esfriou. O agente percebe antes.',
+          texto:
+            'Queda de uso, visita à página de cancelamento ou downgrade viram um score de risco, pesado pelo valor do cliente. O agente escolhe uma oferta proporcional ao que está em jogo e conversa pelo canal certo, sem nunca dificultar a saída.',
+          passos: ['Sinal', 'Score de risco', 'Oferta', 'Conversa'],
+        },
+        {
+          numero: '03',
+          rotulo: 'Painel · resultado comprovado',
+          titulo: 'Você vê o que voltou, conta por conta.',
+          texto:
+            'O painel mostra quanto foi recuperado e quanto foi retido, com o registro de cada conta trabalhada. Tudo medido contra um grupo de controle da sua própria base: a diferença entre os dois é o que a CRAI cobra.',
+          passos: ['Tratado', 'Controle', 'Ganho incremental'],
+        },
+      ],
+      visual: {
+        aria: 'Ilustração animada da etapa',
+        risco: 'Score de risco',
+        riscoAlto: 'alto',
+        oferta: 'Oferta proporcional ao valor do cliente',
+        sinais: ['Queda de uso', 'Visita à página de cancelamento', 'Downgrade de plano'],
+        falha: 'Cobrança falhou',
+        recuperado: 'Pagamento recuperado',
+        tratado: 'Tratado',
+        controle: 'Controle',
+        ganho: 'Ganho incremental',
+      },
+    },
+    contraste: {
+      eyebrow: 'Inferência de liquidez',
+      titulo: 'Tentar de novo não é o mesmo que tentar na hora certa',
+      lead: 'A régua fixa repete a cobrança em intervalos definidos. A CRAI estima quando aquele pagador terá saldo e concentra a tentativa nesse momento.',
+      fixa: {
+        rotulo: 'Régua fixa',
+        titulo: 'Mesmo intervalo para todo mundo',
+        texto: 'Cada tentativa cai num dia em que a conta ainda não tem saldo. Falha de novo, pelo mesmo motivo.',
+      },
+      crai: {
+        rotulo: 'CRAI',
+        titulo: 'Uma tentativa na janela certa',
+        texto: 'O modelo estima a data provável de saldo daquele pagador. A cobrança vai para lá.',
+      },
+      janela: 'Janela de liquidez estimada',
+      dia: 'Dia',
+      nota: 'Ilustração. Entre as 19 soluções de recuperação e retenção mapeadas pela CRAI, nenhuma oferece inferência de liquidez.',
+    },
+    preco: {
+      eyebrow: 'Preço',
+      titulo: 'R$ 0 para começar. Você paga depois de receber.',
+      lead: 'Sem mensalidade, sem implantação, sem valor por assinante. A CRAI só é remunerada quando produz ganho, e na proporção dele.',
+      planos: [
+        {
+          nome: 'Standard',
+          prefixo: '',
+          taxa: 25,
+          unidade: 'do ganho incremental',
+          resumo: 'Recuperação de cobranças que falharam.',
+          itens: ['Churn involuntário', 'Inferência de liquidez', 'Pix Automático', 'Comunicação multicanal', 'Painel de resultado'],
+          selo: '',
+        },
+        {
+          nome: 'Premium',
+          prefixo: '+',
+          taxa: 20,
+          unidade: 'da receita preservada',
+          resumo: 'Tudo do Standard, somado à retenção.',
+          itens: ['Tudo do Standard, com os 25%', 'Churn voluntário', 'Score de risco e ofertas', 'Janela de 6 meses por retenção', 'Integração por SDK'],
+          selo: 'Mais completo',
+        },
+      ],
+      exemplo: {
+        titulo: 'Exemplo: SaaS com R$ 50 mil de MRR',
+        linhas: [
+          { rotulo: 'Standard', valor: 250 },
+          { rotulo: 'Premium', valor: 700 },
+        ],
+        porMes: '/mês',
+        nota: 'Empresa de referência do modelo financeiro da CRAI: 500 assinantes, ticket médio de R$ 100.',
+      },
+      garantia: 'Pagamento recuperado estornado em até 90 dias? A taxa volta.',
+      acao: { rotulo: 'Ver planos e simulador', para: '/planos' },
+    },
+    parceiros: {
+      eyebrow: 'Validação',
+      titulo: 'Decisões validadas com quem opera o mercado',
+      lead: 'Três profissionais acompanham o projeto e validam as decisões de produto e de operação.',
+      pessoas: [
+        { nome: 'Waldir Augusto Gunther', papel: 'Fundador e head', empresa: 'Casa do Cliente', area: 'Relacionamento com o cliente' },
+        { nome: 'Leo Gmeiner', papel: 'Fundador e CEO', empresa: 'School Guardian', area: 'Gestão de plataformas SaaS' },
+        { nome: 'Wallace Barbosa', papel: 'Head de pagamentos', empresa: 'iFood', area: 'Pagamentos' },
+      ],
+    },
+    roadmap: {
+      eyebrow: 'Roadmap',
+      titulo: 'Onde a CRAI está agora',
+      agora: 'Agora',
+      etapas: [
+        { quando: 'Mar 2026', titulo: 'Pesquisa', texto: 'Estudo sobre churn em SaaS brasileiro e definição da ideia.', estado: 'feito' },
+        { quando: 'Set 2026', titulo: 'MVP', texto: 'Agentes, modelos e painel em construção.', estado: 'agora' },
+        { quando: 'Out–Nov 2026', titulo: 'Testes com clientes', texto: 'Primeiros clientes medindo o ganho incremental.', estado: 'depois' },
+        { quando: 'Início de 2027', titulo: 'Lançamento comercial', texto: 'Operação com os planos Standard e Premium.', estado: 'depois' },
+        { quando: 'Fim de 2027–2028', titulo: 'Mais integrações', texto: 'Ampliação das integrações. Cartão de crédito está no roadmap.', estado: 'depois' },
+        { quando: '2031', titulo: 'Referência no Brasil', texto: 'Expansão de alcance a partir da base construída.', estado: 'depois' },
+      ],
+    },
+    faq: {
+      titulo: 'Perguntas frequentes',
+      itens: [
+        {
+          pergunta: 'Quanto custa para começar?',
+          resposta:
+            'Nada. Não há mensalidade, taxa de implantação nem cobrança por assinante. A CRAI cobra só um percentual do ganho que comprova: 25% na recuperação e, no Premium, mais 20% sobre a receita preservada pela retenção.',
+        },
+        {
+          pergunta: 'Como vocês provam o ganho incremental?',
+          resposta:
+            'Uma parte dos assinantes fica em um grupo de controle, fora da ação da CRAI. Comparamos o resultado dos dois grupos, e a diferença é o ganho incremental. A memória de cálculo de cada apuração fica no painel.',
+        },
+        {
+          pergunta: 'Preciso trocar meu gateway?',
+          resposta: 'Não. A CRAI não é gateway de pagamento. A cobrança continua no seu arranjo atual e a CRAI atua sobre ela.',
+        },
+        {
+          pergunta: 'Minha equipe precisa acompanhar cada caso?',
+          resposta:
+            'Não. Os agentes decidem e executam sem escalar para atendimento humano. Sua equipe acompanha o resultado no painel.',
+        },
+        {
+          pergunta: 'Como vocês tratam os dados dos meus assinantes?',
+          resposta:
+            'Conforme a LGPD, com coleta mínima: só entra no sistema o dado estritamente necessário para a decisão do agente.',
+        },
+        {
+          pergunta: 'Quando posso usar?',
+          resposta:
+            'A CRAI está construindo o MVP. Os testes com clientes estão previstos para outubro e novembro de 2026 e o lançamento comercial para o início de 2027. Este site é uma versão beta.',
+        },
+      ],
+    },
+    cta: {
+      eyebrow: 'Diagnóstico gratuito',
+      titulo: 'Quanto da sua receita está escapando?',
+      texto:
+        'Informe o MRR e veja quanto está em risco por falha de cobrança e quanto disso pode voltar. Sem cadastro e sem compromisso.',
+      acaoPrimaria: { rotulo: 'Fazer o diagnóstico', para: '/planos#simulador' },
+      acaoSecundaria: { rotulo: 'Falar com o time', para: '/contato' },
+    },
   },
 
   produto: {
+    indice: {
+      aria: 'Seções desta página',
+      itens: [
+        { id: 'recuperacao', rotulo: 'Recuperação' },
+        { id: 'liquidez', rotulo: 'Liquidez' },
+        { id: 'retencao', rotulo: 'Retenção' },
+        { id: 'medicao', rotulo: 'Medição' },
+        { id: 'painel', rotulo: 'Painel' },
+        { id: 'dados', rotulo: 'Dados' },
+      ],
+    },
     titulo: 'Como a CRAI funciona por dentro',
     lead: 'Recuperação de cobranças, inferência de liquidez, retenção sem fricção e uma medição que separa o que a CRAI fez do que aconteceria de qualquer jeito.',
     recuperacao: {
@@ -574,7 +891,7 @@ export const conteudoPt = {
       cobranca: 'Forma de cobrança',
       cobrancaDica: 'Cartão em breve',
       inicio: 'Início desejado',
-      termos: 'Li e aceito os termos de uso e a política de privacidade',
+      termos: 'Li e aceito os [Termos de Uso](/termos) e a [Política de Privacidade](/privacidade)',
       comunicacao: 'Quero receber novidades sobre o produto por e-mail',
       comunicacaoDica: 'Opcional',
     },
@@ -633,6 +950,7 @@ export const conteudoPt = {
     esqueci: 'Esqueci minha senha',
     semConta: 'Ainda não tem conta?',
     criarConta: 'Criar conta',
+    aviso: 'Ao entrar, você concorda com os [Termos de Uso](/termos) e a [Política de Privacidade](/privacidade).',
     validacao: {
       email: 'Informe um e-mail válido.',
       senha: 'Informe a senha.',
@@ -718,6 +1036,26 @@ export const conteudoPt = {
   },
 
   empresaPagina: {
+    declaracao: {
+      eyebrow: 'Declaração estratégica',
+      missao: {
+        rotulo: 'Missão',
+        texto:
+          'Devolver às empresas brasileiras de software por assinatura a receita recorrente que elas perdem por falha de pagamento e por cancelamento, com agentes de IA que agem de forma autônoma e comprovam cada resultado.',
+      },
+      visao: {
+        rotulo: 'Visão',
+        texto: 'Ser a referência em retenção e recuperação de receita para empresas de software por assinatura no Brasil até 2031.',
+      },
+      valoresTitulo: 'Valores',
+      valores: [
+        { nome: 'Autonomia', texto: 'O agente conduz o ciclo do início ao fim, sem depender de alguém da sua equipe para cada caso.' },
+        { nome: 'Transparência', texto: 'Se a CRAI age sozinha sobre a sua base, presta contas de cada ação e de cada resultado.' },
+        { nome: 'Rigor', texto: 'Resultado medido contra grupo de controle, com premissas declaradas e estimativas conservadoras.' },
+        { nome: 'Segurança', texto: 'Adesão à LGPD: só entra no sistema o dado estritamente necessário para a decisão.' },
+        { nome: 'Eficiência', texto: 'Cada real recuperado deve custar uma fração mínima do que representa.' },
+      ],
+    },
     titulo: 'Uma empresa de software para a receita que some sem aviso',
     lead: 'A CRAI é uma empresa brasileira de software B2B. O produto recupera parte da receita que empresas de SaaS perdem por churn e mostra o resultado em um painel.',
     proposito: {
@@ -761,6 +1099,7 @@ export const conteudoPt = {
     },
     assuntos: ['Quero entender o Premium', 'Dúvida sobre a medição', 'Integração e dados', 'Outro assunto'],
     enviar: 'Enviar mensagem',
+    privacidade: 'Usamos esses dados só para responder à sua mensagem, conforme a [Política de Privacidade](/privacidade).',
     sucesso: {
       titulo: 'Mensagem registrada',
       texto: 'Este é um site demonstrativo, então nada foi enviado. Em um ambiente real, o time responderia no e-mail informado.',
@@ -778,9 +1117,21 @@ export const conteudoPt = {
 
   naoEncontrada: {
     codigo: '404',
-    titulo: 'Essa página não existe — mas a receita que você procura talvez exista.',
-    link: { rotulo: 'Voltar ao início', para: '/' },
+    titulo: 'Essa página deu churn.',
+    texto: 'O endereço que você procurou não existe ou foi movido. Mas a sua receita não precisa ir embora junto.',
+    inicio: { rotulo: 'Voltar para o início', para: '/' },
+    simulacao: { rotulo: 'Fazer uma simulação', para: '/planos#simulador' },
   },
+
+  erroInesperado: {
+    titulo: 'Algo deu errado por aqui.',
+    texto: 'Um erro inesperado interrompeu a página. Recarregue ou volte ao início; se continuar, fale com a gente.',
+    inicio: 'Voltar para o início',
+    tituloAba: 'Erro inesperado | CRAI',
+  },
+
+  privacidade: privacidadePt,
+  termos: termosPt,
 }
 
 export type Conteudo = typeof conteudoPt

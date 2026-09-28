@@ -7,6 +7,7 @@ import { Card } from '../components/ui/Card'
 import { Checkbox, Field } from '../components/ui/Field'
 import { Select } from '../components/ui/Select'
 import { Stepper } from '../components/ui/Stepper'
+import { TextoRico } from '../components/ui/TextoRico'
 import { Toggle } from '../components/ui/Toggle'
 import {
   FAIXAS_MRR,
@@ -520,7 +521,7 @@ export function Cadastro() {
                       <div className="flex flex-col gap-5 border-t border-line pt-6 sm:col-span-2">
                         <Checkbox
                           id="termos"
-                          label={o.termos}
+                          label={<TextoRico texto={o.termos} novaAba />}
                           required
                           error={erros.termos}
                           checked={dadosOp.aceitouTermos}
