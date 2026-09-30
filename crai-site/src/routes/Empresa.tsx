@@ -3,11 +3,11 @@ import { PageShell } from '../components/layout/PageShell'
 import { Reveal, RevealWords } from '../components/motion/Reveal'
 import { Spotlight } from '../components/motion/Spotlight'
 import { Card } from '../components/ui/Card'
+import { TextoRico } from '../components/ui/TextoRico'
 import { useConteudo } from '../lib/i18n'
 import { EASE_EXPO } from '../lib/intro'
 import { CtaFinal } from '../sections/home/CtaFinal'
 import { Parceiros } from '../sections/home/Parceiros'
-import { Roadmap } from '../sections/home/Roadmap'
 
 export function Empresa() {
   const { empresaPagina } = useConteudo()
@@ -86,7 +86,9 @@ export function Empresa() {
               <Reveal key={item.titulo} delay={i * 0.08}>
                 <div className="group border-t border-graphite pt-5 transition-colors duration-500 hover:border-orange">
                   <dt className="t-apoio text-silver transition-colors group-hover:text-amber">{item.titulo}</dt>
-                  <dd className="t-body mt-2 text-paper">{item.texto}</dd>
+                  <dd className="t-body mt-2 text-paper">
+                    <TextoRico texto={item.texto} />
+                  </dd>
                 </div>
               </Reveal>
             ))}
@@ -132,7 +134,6 @@ export function Empresa() {
       </section>
 
       <Parceiros />
-      <Roadmap />
 
       {/* Origem */}
       <section className="hatch section-y bg-slate" aria-labelledby="origem-titulo">

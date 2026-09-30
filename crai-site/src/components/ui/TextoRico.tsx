@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 
-// **negrito** ou [rótulo](/rota). Colchetes sem (url) logo depois ficam como texto (ex.: [RAZÃO SOCIAL]).
+// **negrito** ou [rótulo](/rota, mailto: ou https://). Colchetes sem (url) logo depois ficam como texto (ex.: [RAZÃO SOCIAL]).
 const MARCACAO = /\*\*(.+?)\*\*|\[([^\]]+)\]\(([^)\s]+)\)/g
 
 interface TextoRicoProps {
@@ -10,7 +10,7 @@ interface TextoRicoProps {
   novaAba?: boolean
 }
 
-/** Renderiza a marcação mínima usada no copy: negrito e links internos. */
+/** Renderiza a marcação mínima usada no copy: negrito, links internos e links externos. */
 export function TextoRico({ texto, novaAba = false }: TextoRicoProps) {
   const partes: ReactNode[] = []
   let ultimo = 0
@@ -21,6 +21,14 @@ export function TextoRico({ texto, novaAba = false }: TextoRicoProps) {
         <strong key={m.index} className="font-[600] text-paper">
           {m[1]}
         </strong>,
+      )
+    } else if (/^(mailto:|https?:)/.test(m[3])) {
+      // Links externos (e-mail, outro site) não passam pelo roteador.
+      const site = m[3].startsWith('http')
+      partes.push(
+        <a key={m.index} href={m[3]} className="text-link" {...(site ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+          {m[2]}
+        </a>,
       )
     } else {
       partes.push(

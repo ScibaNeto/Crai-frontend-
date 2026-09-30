@@ -79,6 +79,11 @@ export const conteudoPt = {
       descricao:
         'Regras de uso do site e da plataforma CRAI: conta, responsabilidades, dados enviados, propriedade intelectual e limitações de responsabilidade.',
     },
+    dados: {
+      titulo: 'Dados, privacidade e segurança (LGPD) | CRAI',
+      descricao:
+        'Como a CRAI protege os dados de SaaS e de assinantes: modelos treinados sem dados de clientes, isolamento por empresa, chave Pix cifrada, suboperadores e encarregado.',
+    },
     naoEncontrada: {
       titulo: 'Página não encontrada | CRAI',
       descricao:
@@ -95,6 +100,7 @@ export const conteudoPt = {
       { rotulo: 'Produto', para: '/produto' },
       { rotulo: 'Planos', para: '/planos' },
       { rotulo: 'Painel', para: '/painel' },
+      { rotulo: 'Dados', para: '/dados' },
       { rotulo: 'Empresa', para: '/empresa' },
       { rotulo: 'Contato', para: '/contato' },
     ],
@@ -129,6 +135,7 @@ export const conteudoPt = {
           links: [
             { rotulo: 'Política de Privacidade', para: '/privacidade' },
             { rotulo: 'Termos de Uso', para: '/termos' },
+            { rotulo: 'Privacidade e segurança', para: '/dados' },
           ],
         },
       ],
@@ -430,9 +437,9 @@ export const conteudoPt = {
       titulo: 'Decisões validadas com quem opera o mercado',
       lead: 'Três profissionais acompanham o projeto e validam as decisões de produto e de operação.',
       pessoas: [
-        { nome: 'Waldir Augusto Gunther', papel: 'Fundador e head', empresa: 'Casa do Cliente', area: 'Relacionamento com o cliente' },
-        { nome: 'Leo Gmeiner', papel: 'Fundador e CEO', empresa: 'School Guardian', area: 'Gestão de plataformas SaaS' },
-        { nome: 'Wallace Barbosa', papel: 'Head de pagamentos', empresa: 'iFood', area: 'Pagamentos' },
+        { nome: 'Waldir Augusto Gunther', papel: 'Fundador e head', empresa: 'Casa do Cliente', area: 'Relacionamento com o cliente', foto: '/parceiros/waldir.jpg' },
+        { nome: 'Leo Gmeiner', papel: 'Fundador e CEO', empresa: 'School Guardian', area: 'Gestão de plataformas SaaS', foto: '/parceiros/leo.jpg' },
+        { nome: 'Wallace Barbosa', papel: 'Head de pagamentos', empresa: 'iFood', area: 'Pagamentos', foto: '/parceiros/wallace.jpg' },
       ],
     },
     roadmap: {
@@ -646,7 +653,7 @@ export const conteudoPt = {
         {
           id: 'lgpd',
           titulo: 'LGPD',
-          texto: 'Tratamento mínimo de dados, com finalidade declarada: recuperar cobranças e reduzir cancelamentos.',
+          texto: 'Tratamento mínimo de dados, com finalidade declarada: recuperar cobranças e reduzir cancelamentos. [Como protegemos os dados](/dados)',
         },
         {
           id: 'cartao',
@@ -668,7 +675,7 @@ export const conteudoPt = {
     selecionado: 'Selecionado',
     selecionarAria: 'Selecionar plano {plano}',
     nota: 'As duas taxas do Premium são somadas: 25% sobre o ganho incremental da recuperação e 20% sobre a receita preservada. Estorno em até 90 dias devolve a taxa correspondente.',
-    faixa: 'A CRAI atende SaaS com MRR entre R$ 25 mil e R$ 500 mil.',
+    faixa: 'A CRAI atende toda empresa SaaS brasileira, de qualquer porte.',
     faq: {
       titulo: 'Perguntas frequentes',
       itens: [
@@ -733,6 +740,7 @@ export const conteudoPt = {
         'Integração por SDK',
       ],
       cta: 'Começar com Premium',
+      selo: 'Mais completo',
     },
   },
 
@@ -892,7 +900,7 @@ export const conteudoPt = {
       cobranca: 'Forma de cobrança',
       cobrancaDica: 'Cartão em breve',
       inicio: 'Início desejado',
-      termos: 'Li e aceito os [Termos de Uso](/termos) e a [Política de Privacidade](/privacidade)',
+      termos: 'Li e aceito os [Termos de Uso](/termos) e estou ciente da [Política de Privacidade](/privacidade)',
       comunicacao: 'Quero receber novidades sobre o produto por e-mail',
       comunicacaoDica: 'Opcional',
     },
@@ -916,7 +924,7 @@ export const conteudoPt = {
       senha: 'A senha precisa ter pelo menos 8 caracteres.',
       telefone: 'Telefone incompleto. Inclua o DDD.',
       data: 'Escolha uma data a partir de hoje.',
-      termos: 'Para criar a conta, aceite os termos de uso e a política de privacidade.',
+      termos: 'Para criar a conta, aceite os Termos de Uso.',
     },
     erros: {
       config: 'O cadastro está indisponível no momento. Tente novamente mais tarde.',
@@ -952,7 +960,7 @@ export const conteudoPt = {
     esqueci: 'Esqueci minha senha',
     semConta: 'Ainda não tem conta?',
     criarConta: 'Criar conta',
-    aviso: 'Ao entrar, você concorda com os [Termos de Uso](/termos) e a [Política de Privacidade](/privacidade).',
+    aviso: 'Ao entrar, você concorda com os [Termos de Uso](/termos). Veja como tratamos seus dados na [Política de Privacidade](/privacidade).',
     validacao: {
       email: 'Informe um e-mail válido.',
       senha: 'Informe a senha.',
@@ -1063,15 +1071,15 @@ export const conteudoPt = {
     proposito: {
       titulo: 'Propósito',
       texto:
-        'Fazer empresas de SaaS perderem menos receita por motivos que têm solução: uma cobrança que falhou no dia errado, um assinante que ninguém ouviu antes de cancelar. E fazer isso sem criar atrito para quem decidiu sair.',
+        'Fazer empresas de SaaS perderem menos receita por motivos que têm solução: uma cobrança que falhou no dia errado, um assinante que ninguém ouviu antes de cancelar. Receita se recupera, confiança não. Por isso cuidamos de cada assinante seu como se fosse nosso.',
     },
     operacao: {
       titulo: 'Como a empresa opera hoje',
       itens: [
-        { titulo: 'Para quem', texto: 'SaaS brasileiros com MRR entre R$ 25 mil e R$ 500 mil.' },
+        { titulo: 'Para quem', texto: 'Toda empresa SaaS brasileira, da que está começando à que já opera em escala.' },
         { titulo: 'Como cobra e recupera', texto: 'Por Pix Automático. Cartão está no roadmap.' },
         { titulo: 'Como ganha', texto: 'Só taxa de sucesso, medida contra grupo de controle. Sem mensalidade e sem implantação.' },
-        { titulo: 'Como trata dados', texto: 'Coleta mínima e finalidade declarada, conforme a LGPD.' },
+        { titulo: 'Como trata dados', texto: 'Coleta mínima e finalidade declarada, conforme a LGPD. [Veja como protegemos os dados](/dados).' },
       ],
     },
     time: {
@@ -1130,6 +1138,217 @@ export const conteudoPt = {
     texto: 'Um erro inesperado interrompeu a página. Recarregue ou volte ao início; se continuar, fale com a gente.',
     inicio: 'Voltar para o início',
     tituloAba: 'Erro inesperado | CRAI',
+  },
+
+  // Aba Dados (/dados): Central de Privacidade e Segurança. Tudo aqui repete o que já está na Política de Privacidade
+  // e nos Termos de Uso v1.0 — ao mudar um documento, revise esta página junto.
+  centralPrivacidade: {
+    titulo: 'Privacidade e segurança',
+    lead: 'Como a CRAI protege os dados do seu SaaS e dos seus assinantes, em linguagem direta. Os documentos completos estão no fim da página.',
+    selo: 'LGPD',
+    atualizado: 'Documentos na versão 1.0 · atualizado em setembro de 2026',
+    indiceAria: 'Nesta página',
+    indice: [
+      { rotulo: 'Compromissos', para: '#compromissos' },
+      { rotulo: 'Para assinantes', para: '#assinantes' },
+      { rotulo: 'Como o agente decide', para: '#agente' },
+      { rotulo: 'Segurança', para: '#seguranca' },
+      { rotulo: 'Suboperadores', para: '#suboperadores' },
+      { rotulo: 'Retenção', para: '#retencao' },
+      { rotulo: 'Encarregado', para: '#encarregado' },
+      { rotulo: 'Documentos', para: '#documentos' },
+    ],
+    compromissos: {
+      eyebrow: 'Compromissos',
+      titulo: 'O que a CRAI garante sobre os seus dados',
+      itens: [
+        {
+          id: 'modelos',
+          titulo: 'Seus dados não treinam nossos modelos',
+          texto: 'Os modelos da CRAI são treinados com dados sintéticos. Nenhum dado de cliente, nem estatística derivada dele, entra em modelo compartilhado.',
+        },
+        {
+          id: 'isolamento',
+          titulo: 'Cada empresa isolada',
+          texto: 'Os dados de cada empresa ficam separados no próprio banco de dados. Nenhum cliente enxerga os dados de outro.',
+        },
+        {
+          id: 'pix',
+          titulo: 'Chave Pix cifrada e fora da IA',
+          texto: 'Dados de pagamento ficam armazenados de forma cifrada, e a chave Pix nunca é enviada a modelos de inteligência artificial.',
+        },
+        {
+          id: 'regras',
+          titulo: 'A IA escreve, as regras cobram',
+          texto: 'Valor e data da cobrança seguem regras fixas e a autorização de Pix Automático do assinante. O modelo de linguagem só redige o texto.',
+        },
+        {
+          id: 'cookies',
+          titulo: 'Sem cookies, sem rastreamento',
+          texto: 'O site não usa cookies nem ferramentas de publicidade ou de análise de audiência. Só o armazenamento necessário para login e idioma.',
+        },
+        {
+          id: 'cancelamento',
+          titulo: 'Cancelar é sempre livre',
+          texto: 'A oferta de retenção aparece uma única vez por ciclo, e a decisão do assinante vale na hora, conforme o Decreto 11.034/2022.',
+        },
+      ],
+    },
+    assinantes: {
+      titulo: 'Recebeu uma mensagem da CRAI?',
+      itens: [
+        {
+          pergunta: 'Por que recebi uma mensagem da CRAI?',
+          resposta:
+            'A empresa da qual você é assinante usa a CRAI para avisar sobre um pagamento por Pix Automático que não foi concluído. A mensagem é enviada em nome dessa empresa, que aparece como credora e remetente.',
+        },
+        {
+          pergunta: 'Foi uma pessoa que escreveu?',
+          resposta:
+            'Não. O contato é automatizado, e toda mensagem avisa isso. A CRAI não negocia dívidas nem oferece condições diferentes das autorizadas pela empresa.',
+        },
+        {
+          pergunta: 'Como paro de receber mensagens?',
+          resposta: 'É só dizer que não quer mais receber. O contato por aquele canal é encerrado na hora.',
+        },
+        {
+          pergunta: 'Quero cancelar a assinatura. A CRAI pode impedir?',
+          resposta:
+            'Não. A CRAI nunca impede, atrasa ou condiciona um cancelamento. Se houver uma oferta para você ficar, ela aparece uma única vez, e a sua decisão vale na hora.',
+        },
+        {
+          pergunta: 'Quais dados meus a CRAI recebe?',
+          resposta:
+            'Só o necessário: o identificador que a empresa usa para você, dados da assinatura e da cobrança e o telefone ou e-mail de contato. No plano Premium, também sinais de uso do serviço. A lista completa está na [Política de Privacidade](/privacidade#assinantes).',
+        },
+        {
+          pergunta: 'Como exerço meus direitos sobre esses dados?',
+          resposta:
+            'Fale primeiro com a empresa da qual você é assinante, que é a controladora dos seus dados. Se escrever para a CRAI, encaminhamos o pedido a ela em até 7 dias e avisamos você.',
+        },
+        {
+          pergunta: 'Posso pedir a revisão de uma decisão automatizada?',
+          resposta:
+            'Pode, com base no art. 20 da LGPD. A CRAI registra cada decisão com a explicação dos critérios, em português, para que a empresa consiga responder a você.',
+        },
+      ],
+    },
+    agente: {
+      eyebrow: 'Transparência',
+      titulo: 'Como o agente decide',
+      lead: 'As ações são decididas e executadas por um sistema automatizado, sem intervenção humana. Estes são os critérios que ele considera e os limites que ele não cruza.',
+      colunas: [
+        {
+          titulo: 'Na recuperação de pagamentos',
+          itens: [
+            'Motivo da recusa',
+            'Histórico de pagamentos',
+            'Quantidade de falhas recentes',
+            'Valor médio das cobranças',
+            'Tempo de assinatura',
+            'Dia e horário da cobrança',
+          ],
+        },
+        {
+          titulo: 'Na retenção (plano Premium)',
+          itens: ['Tipo de evento de uso', 'Dias desde o último acesso', 'Funcionalidades usadas nos últimos 30 dias', 'Valor da assinatura'],
+        },
+      ],
+      limitesTitulo: 'Limites que o agente não cruza',
+      limites: [
+        'No máximo 3 novas tentativas de cobrança, em até 7 dias da primeira falha, conforme as regras do Banco Central.',
+        'Toda mensagem avisa que é automatizada, sem constrangimento e sem contato com terceiros.',
+        'O modelo de linguagem não define valores, prazos nem condições de pagamento.',
+        'Cada decisão fica registrada com a explicação dos critérios, inclusive quando o agente decide não agir.',
+      ],
+    },
+    seguranca: {
+      eyebrow: 'Segurança',
+      titulo: 'Como os dados são protegidos',
+      itens: [
+        { titulo: 'Criptografia em trânsito', texto: 'Toda comunicação com o site e com a plataforma passa por HTTPS.' },
+        { titulo: 'Dados de pagamento cifrados', texto: 'Dados de pagamento, como a chave Pix, ficam armazenados de forma cifrada.' },
+        { titulo: 'Senhas só em hash', texto: 'Nenhuma senha fica guardada em texto legível, nem para a equipe da CRAI.' },
+        {
+          titulo: 'Isolamento no banco de dados',
+          texto: 'As regras de acesso são aplicadas pelo próprio banco, linha a linha, e não só pela tela. Sem login, nada é lido.',
+        },
+        {
+          titulo: 'Acesso por perfil',
+          texto: 'Proprietário, administrador e membro, cada um com as suas permissões. Plano, status e CNPJ só mudam pelo servidor da CRAI.',
+        },
+        { titulo: 'Integrações verificadas', texto: 'A CRAI verifica a autenticidade das integrações antes de aceitar os dados que elas enviam.' },
+      ],
+      incidente: {
+        titulo: 'Se houver um incidente',
+        texto:
+          'A CRAI comunica a ANPD e os titulares afetados, conforme o art. 48 da LGPD. Quando o incidente envolve dados de assinantes, a empresa controladora é avisada imediatamente.',
+      },
+    },
+    suboperadores: {
+      eyebrow: 'Suboperadores',
+      titulo: 'Quem trata dados com a gente',
+      lead: 'A CRAI não vende dados. Estes prestadores tratam dados em nome da CRAI, recebem só o necessário e são obrigados por contrato a protegê-los.',
+      colunas: ['Prestador', 'Para quê', 'Onde'],
+      linhas: [
+        ['Supabase', 'Banco de dados, autenticação, execução da plataforma e e-mails de acesso', 'Estados Unidos'],
+        ['Anthropic', 'Redação do texto das mensagens', 'Estados Unidos'],
+        ['Pagar.me', 'Novas tentativas de cobrança por Pix Automático e cobrança da remuneração da CRAI', 'Brasil'],
+        ['Meta (WhatsApp Business)', 'Envio das mensagens aos assinantes', 'Fora do Brasil'],
+        ['Segment', 'Coleta de eventos de uso, só no plano Premium', 'Estados Unidos'],
+      ],
+      nota: 'Transferências para fora do Brasil seguem o art. 33 da LGPD e a Resolução CD/ANPD nº 19/2024, com cláusulas contratuais de proteção de dados. A lista oficial e atualizada fica na [Política de Privacidade](/privacidade#compartilhamento).',
+    },
+    retencao: {
+      eyebrow: 'Retenção',
+      titulo: 'Por quanto tempo guardamos',
+      itens: [
+        { prazo: '+6 meses', dado: 'Dados de assinantes enviados pela empresa, contados do fim do contrato' },
+        { prazo: '90 dias', dado: 'Motivo de cancelamento informado pela empresa' },
+        { prazo: '24 meses', dado: 'Histórico das ações de recuperação e retenção, depois anonimizado' },
+        { prazo: '5 anos', dado: 'Registro das decisões automatizadas, para responder a pedidos de revisão' },
+      ],
+      nota: 'Encerrados os prazos, os dados são eliminados ou anonimizados. A tabela completa está na [Política de Privacidade](/privacidade#retencao).',
+    },
+    encarregado: {
+      eyebrow: 'Encarregado (DPO)',
+      titulo: 'Fale com quem responde pelos dados',
+      texto: 'Canal para pedidos, dúvidas e reclamações sobre dados pessoais. A CRAI responde em até 15 dias.',
+      pessoas: [
+        { papel: 'Encarregado', nome: 'João Vitor Gava Pinheiro' },
+        { papel: 'Substituto', nome: 'Gabriel de Frias Ramirez' },
+      ],
+      email: 'agentia.startup@gmail.com',
+      escrever: 'Escrever para o encarregado',
+      anpd: 'Você também pode apresentar reclamação à Autoridade Nacional de Proteção de Dados (ANPD).',
+    },
+    documentos: {
+      eyebrow: 'Documentos',
+      titulo: 'Leia na íntegra',
+      itens: [
+        {
+          titulo: 'Política de Privacidade',
+          texto: 'Quais dados tratamos, para quê, com qual base legal, com quem, por quanto tempo e os seus direitos.',
+          versao: 'Versão 1.0',
+          para: '/privacidade',
+          acao: 'Ler documento',
+        },
+        {
+          titulo: 'Termos de Uso',
+          texto: 'As regras da plataforma, do agente e da relação entre a CRAI e a sua empresa.',
+          versao: 'Versão 1.0',
+          para: '/termos',
+          acao: 'Ler documento',
+        },
+        {
+          titulo: 'Acordo de Tratamento de Dados',
+          texto: 'Anexo do contrato de cada cliente, com as instruções de tratamento e as obrigações da CRAI como operadora.',
+          versao: 'Enviado com o contrato',
+          para: '/contato',
+          acao: 'Pedir ao time',
+        },
+      ],
+    },
   },
 
   privacidade: privacidadePt,

@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import { IconPlus } from '../components/icons/Icons'
 import { RevealWords } from '../components/motion/Reveal'
+import { TextoRico } from '../components/ui/TextoRico'
 import { useConteudo } from '../lib/i18n'
 import { EASE_EXPO } from '../lib/intro'
 
@@ -62,7 +63,7 @@ export function Faq({ dados, id = 'faq' }: { dados?: FaqDados; id?: string } = {
                         animate={{ y: 0 }}
                         transition={{ duration: 0.4, ease: EASE_EXPO }}
                       >
-                        {item.resposta}
+                        <TextoRico texto={item.resposta} />
                       </motion.p>
                     </motion.div>
                   ) : null}

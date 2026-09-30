@@ -79,6 +79,11 @@ export const conteudoEn: Conteudo = {
       descricao:
         'Rules for using the CRAI website and platform: account, responsibilities, data you send, intellectual property and liability limits.',
     },
+    dados: {
+      titulo: 'Data, privacy and security (LGPD) | CRAI',
+      descricao:
+        'How CRAI protects SaaS and subscriber data: models trained without client data, per-company isolation, encrypted Pix keys, subprocessors and data protection officer.',
+    },
     naoEncontrada: {
       titulo: 'Page not found | CRAI',
       descricao:
@@ -95,6 +100,7 @@ export const conteudoEn: Conteudo = {
       { rotulo: 'Product', para: '/produto' },
       { rotulo: 'Plans', para: '/planos' },
       { rotulo: 'Dashboard', para: '/painel' },
+      { rotulo: 'Data', para: '/dados' },
       { rotulo: 'Company', para: '/empresa' },
       { rotulo: 'Contact', para: '/contato' },
     ],
@@ -128,6 +134,7 @@ export const conteudoEn: Conteudo = {
           links: [
             { rotulo: 'Privacy Policy', para: '/privacidade' },
             { rotulo: 'Terms of Use', para: '/termos' },
+            { rotulo: 'Privacy and security', para: '/dados' },
           ],
         },
       ],
@@ -414,9 +421,9 @@ export const conteudoEn: Conteudo = {
       titulo: 'Decisions validated with people who run the market',
       lead: 'Three professionals follow the project and validate product and operating decisions.',
       pessoas: [
-        { nome: 'Waldir Augusto Gunther', papel: 'Founder and head', empresa: 'Casa do Cliente', area: 'Customer relationship' },
-        { nome: 'Leo Gmeiner', papel: 'Founder and CEO', empresa: 'School Guardian', area: 'SaaS platform management' },
-        { nome: 'Wallace Barbosa', papel: 'Head of payments', empresa: 'iFood', area: 'Payments' },
+        { nome: 'Waldir Augusto Gunther', papel: 'Founder and head', empresa: 'Casa do Cliente', area: 'Customer relationship', foto: '/parceiros/waldir.jpg' },
+        { nome: 'Leo Gmeiner', papel: 'Founder and CEO', empresa: 'School Guardian', area: 'SaaS platform management', foto: '/parceiros/leo.jpg' },
+        { nome: 'Wallace Barbosa', papel: 'Head of payments', empresa: 'iFood', area: 'Payments', foto: '/parceiros/wallace.jpg' },
       ],
     },
     roadmap: {
@@ -620,7 +627,7 @@ export const conteudoEn: Conteudo = {
         {
           id: 'lgpd',
           titulo: 'LGPD',
-          texto: 'Minimal data processing under the LGPD (Brazil’s data protection law), with a stated purpose: recover charges and reduce cancellations.',
+          texto: 'Minimal data processing under the LGPD (Brazil’s data protection law), with a stated purpose: recover charges and reduce cancellations. [How we protect data](/dados)',
         },
         {
           id: 'cartao',
@@ -642,7 +649,7 @@ export const conteudoEn: Conteudo = {
     selecionado: 'Selected',
     selecionarAria: 'Select the {plano} plan',
     nota: 'The two Premium fees add up: 25% of the incremental gain from recovery and 20% of preserved revenue. A refund within 90 days returns the matching fee.',
-    faixa: 'CRAI serves SaaS companies with MRR between R$ 25k and R$ 500k.',
+    faixa: 'CRAI serves every Brazilian SaaS company, of any size.',
     faq: {
       titulo: 'Frequently asked questions',
       itens: [
@@ -705,6 +712,7 @@ export const conteudoEn: Conteudo = {
         'SDK integration',
       ],
       cta: 'Start with Premium',
+      selo: 'Most complete',
     },
   },
 
@@ -848,7 +856,7 @@ export const conteudoEn: Conteudo = {
       cobranca: 'Billing method',
       cobrancaDica: 'Cards coming soon',
       inicio: 'Desired start',
-      termos: 'I have read and accept the [Terms of Use](/termos) and the [Privacy Policy](/privacidade)',
+      termos: 'I have read and accept the [Terms of Use](/termos) and acknowledge the [Privacy Policy](/privacidade)',
       comunicacao: 'Send me product news by email',
       comunicacaoDica: 'Optional',
     },
@@ -872,7 +880,7 @@ export const conteudoEn: Conteudo = {
       senha: 'The password must be at least 8 characters.',
       telefone: 'Incomplete phone number. Include the area code.',
       data: 'Choose a date from today onward.',
-      termos: 'To create the account, accept the terms of use and the privacy policy.',
+      termos: 'To create the account, accept the Terms of Use.',
     },
     erros: {
       config: 'Sign-up is unavailable right now. Please try again later.',
@@ -907,7 +915,7 @@ export const conteudoEn: Conteudo = {
     esqueci: 'Forgot my password',
     semConta: "Don't have an account yet?",
     criarConta: 'Create account',
-    aviso: 'By signing in, you agree to the [Terms of Use](/termos) and the [Privacy Policy](/privacidade).',
+    aviso: 'By signing in, you agree to the [Terms of Use](/termos). See how we handle your data in the [Privacy Policy](/privacidade).',
     validacao: {
       email: 'Enter a valid email.',
       senha: 'Enter your password.',
@@ -1017,15 +1025,15 @@ export const conteudoEn: Conteudo = {
     proposito: {
       titulo: 'Purpose',
       texto:
-        'Help SaaS companies lose less revenue to problems that have a fix: a charge that failed on the wrong day, a subscriber nobody heard before they canceled. And do it without friction for whoever decided to leave.',
+        'Help SaaS companies lose less revenue to problems that have a fix: a charge that failed on the wrong day, a subscriber nobody heard before they canceled. Revenue can be recovered; trust can’t. That’s why we treat every one of your subscribers as if they were our own.',
     },
     operacao: {
       titulo: 'How the company operates today',
       itens: [
-        { titulo: 'For whom', texto: 'Brazilian SaaS companies with MRR between R$ 25k and R$ 500k.' },
+        { titulo: 'For whom', texto: 'Every Brazilian SaaS company, from those just starting out to those operating at scale.' },
         { titulo: 'How it bills and recovers', texto: 'Through Pix Automático. Cards are on the roadmap.' },
         { titulo: 'How it earns', texto: 'Success fee only, measured against a control group. No monthly or setup fee.' },
-        { titulo: 'How it handles data', texto: 'Minimal collection and a stated purpose, under the LGPD (Brazil’s data protection law).' },
+        { titulo: 'How it handles data', texto: 'Minimal collection and a stated purpose, under the LGPD (Brazil’s data protection law). [See how we protect data](/dados).' },
       ],
     },
     time: {
@@ -1084,6 +1092,215 @@ export const conteudoEn: Conteudo = {
     texto: 'An unexpected error interrupted the page. Reload it or go back to the home page; if it keeps happening, get in touch.',
     inicio: 'Back to home',
     tituloAba: 'Unexpected error | CRAI',
+  },
+
+  centralPrivacidade: {
+    titulo: 'Privacy and security',
+    lead: 'How CRAI protects your SaaS’s data and your subscribers’ data, in plain language. The full documents are at the end of the page.',
+    selo: 'LGPD',
+    atualizado: 'Documents at version 1.0 · updated September 2026',
+    indiceAria: 'On this page',
+    indice: [
+      { rotulo: 'Commitments', para: '#compromissos' },
+      { rotulo: 'For subscribers', para: '#assinantes' },
+      { rotulo: 'How the agent decides', para: '#agente' },
+      { rotulo: 'Security', para: '#seguranca' },
+      { rotulo: 'Subprocessors', para: '#suboperadores' },
+      { rotulo: 'Retention', para: '#retencao' },
+      { rotulo: 'Data protection officer', para: '#encarregado' },
+      { rotulo: 'Documents', para: '#documentos' },
+    ],
+    compromissos: {
+      eyebrow: 'Commitments',
+      titulo: 'What CRAI guarantees about your data',
+      itens: [
+        {
+          id: 'modelos',
+          titulo: 'Your data doesn’t train our models',
+          texto: 'CRAI’s models are trained on synthetic data. No client data, or statistics derived from it, goes into a shared model.',
+        },
+        {
+          id: 'isolamento',
+          titulo: 'Each company isolated',
+          texto: 'Each company’s data is kept separate in the database itself. No client can see another client’s data.',
+        },
+        {
+          id: 'pix',
+          titulo: 'Pix key encrypted and kept away from AI',
+          texto: 'Payment data is stored encrypted, and the Pix key is never sent to artificial intelligence models.',
+        },
+        {
+          id: 'regras',
+          titulo: 'AI writes, rules bill',
+          texto: 'Charge amount and date follow fixed rules and the subscriber’s Pix Automático authorization. The language model only writes the text.',
+        },
+        {
+          id: 'cookies',
+          titulo: 'No cookies, no tracking',
+          texto: 'The website uses no cookies and no advertising or audience analytics tools. Only the storage needed for sign-in and language.',
+        },
+        {
+          id: 'cancelamento',
+          titulo: 'Canceling is always free',
+          texto: 'The retention offer appears only once per cycle, and the subscriber’s decision takes effect immediately, under Decree 11,034/2022.',
+        },
+      ],
+    },
+    assinantes: {
+      titulo: 'Got a message from CRAI?',
+      itens: [
+        {
+          pergunta: 'Why did I get a message from CRAI?',
+          resposta:
+            'The company you subscribe to uses CRAI to let you know about a Pix Automático payment that did not go through. The message is sent on behalf of that company, which appears as creditor and sender.',
+        },
+        {
+          pergunta: 'Was it written by a person?',
+          resposta:
+            'No. The contact is automated, and every message says so. CRAI does not negotiate debts or offer conditions other than those authorized by the company.',
+        },
+        {
+          pergunta: 'How do I stop receiving messages?',
+          resposta: 'Just say you don’t want to receive them anymore. Contact through that channel ends right away.',
+        },
+        {
+          pergunta: 'I want to cancel my subscription. Can CRAI stop me?',
+          resposta:
+            'No. CRAI never blocks, delays or conditions a cancellation. If there is an offer for you to stay, it appears only once, and your decision takes effect immediately.',
+        },
+        {
+          pergunta: 'What data about me does CRAI receive?',
+          resposta:
+            'Only what is needed: the identifier the company uses for you, subscription and billing data, and your contact phone or email. On the Premium plan, also usage signals from the service. The full list is in the [Privacy Policy](/privacidade#assinantes).',
+        },
+        {
+          pergunta: 'How do I exercise my rights over this data?',
+          resposta:
+            'Contact the company you subscribe to first, since it is the controller of your data. If you write to CRAI, we forward your request to them within 7 days and let you know.',
+        },
+        {
+          pergunta: 'Can I ask for a review of an automated decision?',
+          resposta:
+            'Yes, under LGPD art. 20. CRAI logs every decision with an explanation of the criteria, in Portuguese, so the company can answer you.',
+        },
+      ],
+    },
+    agente: {
+      eyebrow: 'Transparency',
+      titulo: 'How the agent decides',
+      lead: 'Actions are decided and carried out by an automated system, without human intervention. These are the criteria it considers and the limits it never crosses.',
+      colunas: [
+        {
+          titulo: 'In payment recovery',
+          itens: [
+            'Decline reason',
+            'Payment history',
+            'Number of recent failures',
+            'Average charge amount',
+            'Subscription age',
+            'Day and time of the charge',
+          ],
+        },
+        {
+          titulo: 'In retention (Premium plan)',
+          itens: ['Type of usage event', 'Days since last access', 'Features used in the last 30 days', 'Subscription amount'],
+        },
+      ],
+      limitesTitulo: 'Limits the agent never crosses',
+      limites: [
+        'At most 3 new billing attempts, within 7 days of the first failure, under Central Bank rules.',
+        'Every message says it is automated, with no embarrassment and no contact with third parties.',
+        'The language model does not set amounts, deadlines or payment terms.',
+        'Every decision is logged with an explanation of the criteria, including when the agent decides not to act.',
+      ],
+    },
+    seguranca: {
+      eyebrow: 'Security',
+      titulo: 'How data is protected',
+      itens: [
+        { titulo: 'Encryption in transit', texto: 'All communication with the website and the platform goes over HTTPS.' },
+        { titulo: 'Encrypted payment data', texto: 'Payment data, such as the Pix key, is stored encrypted.' },
+        { titulo: 'Passwords as hashes only', texto: 'No password is stored in readable form, not even for the CRAI team.' },
+        {
+          titulo: 'Isolation in the database',
+          texto: 'Access rules are enforced by the database itself, row by row, not just by the screen. Without sign-in, nothing can be read.',
+        },
+        {
+          titulo: 'Role-based access',
+          texto: 'Owner, admin and member, each with its own permissions. Plan, status and CNPJ can only be changed by CRAI’s server.',
+        },
+        { titulo: 'Verified integrations', texto: 'CRAI verifies the authenticity of integrations before accepting the data they send.' },
+      ],
+      incidente: {
+        titulo: 'If there is an incident',
+        texto:
+          'CRAI notifies the ANPD and the affected data subjects, under LGPD art. 48. When the incident involves subscriber data, the controlling company is notified immediately.',
+      },
+    },
+    suboperadores: {
+      eyebrow: 'Subprocessors',
+      titulo: 'Who processes data with us',
+      lead: 'CRAI does not sell data. These providers process data on CRAI’s behalf, receive only what is needed and are contractually bound to protect it.',
+      colunas: ['Provider', 'Purpose', 'Where'],
+      linhas: [
+        ['Supabase', 'Database, authentication, running the platform and access emails', 'United States'],
+        ['Anthropic', 'Writing the text of messages', 'United States'],
+        ['Pagar.me', 'New Pix Automático billing attempts and billing of CRAI’s fee', 'Brazil'],
+        ['Meta (WhatsApp Business)', 'Sending messages to subscribers', 'Outside Brazil'],
+        ['Segment', 'Collecting usage events, Premium plan only', 'United States'],
+      ],
+      nota: 'Transfers outside Brazil follow LGPD art. 33 and ANPD Resolution CD/ANPD No. 19/2024, with data protection contractual clauses. The official, up-to-date list is in the [Privacy Policy](/privacidade#compartilhamento).',
+    },
+    retencao: {
+      eyebrow: 'Retention',
+      titulo: 'How long we keep data',
+      itens: [
+        { prazo: '+6 months', dado: 'Subscriber data sent by the company, counted from the end of the contract' },
+        { prazo: '90 days', dado: 'Cancellation reason provided by the company' },
+        { prazo: '24 months', dado: 'History of recovery and retention actions, then anonymized' },
+        { prazo: '5 years', dado: 'Log of automated decisions, to answer review requests' },
+      ],
+      nota: 'Once these periods end, data is deleted or anonymized. The full table is in the [Privacy Policy](/privacidade#retencao).',
+    },
+    encarregado: {
+      eyebrow: 'Data protection officer',
+      titulo: 'Talk to the person responsible for data',
+      texto: 'Channel for requests, questions and complaints about personal data. CRAI replies within 15 days.',
+      pessoas: [
+        { papel: 'Data protection officer', nome: 'João Vitor Gava Pinheiro' },
+        { papel: 'Deputy', nome: 'Gabriel de Frias Ramirez' },
+      ],
+      email: 'agentia.startup@gmail.com',
+      escrever: 'Email the data protection officer',
+      anpd: 'You may also file a complaint with Brazil’s National Data Protection Authority (ANPD).',
+    },
+    documentos: {
+      eyebrow: 'Documents',
+      titulo: 'Read them in full',
+      itens: [
+        {
+          titulo: 'Privacy Policy',
+          texto: 'What data we process, why, on which legal basis, with whom, for how long, and your rights.',
+          versao: 'Version 1.0',
+          para: '/privacidade',
+          acao: 'Read document',
+        },
+        {
+          titulo: 'Terms of Use',
+          texto: 'The rules for the platform, the agent and the relationship between CRAI and your company.',
+          versao: 'Version 1.0',
+          para: '/termos',
+          acao: 'Read document',
+        },
+        {
+          titulo: 'Data Processing Agreement',
+          texto: 'An annex to each client’s contract, with the processing instructions and CRAI’s obligations as processor.',
+          versao: 'Sent with the contract',
+          para: '/contato',
+          acao: 'Ask the team',
+        },
+      ],
+    },
   },
 
   privacidade: privacidadeEn,

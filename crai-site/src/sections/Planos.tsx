@@ -32,7 +32,7 @@ const DESTINO: Record<Plano, string> = {
   premium: '/cadastro?plano=premium',
 }
 
-/** Standard e Premium lado a lado. O Standard é o card em destaque. Nenhum preço mensal. */
+/** Standard e Premium lado a lado. O Premium é o card em destaque, igual à seção de preço da Home. Nenhum preço mensal. */
 export function Planos() {
   const conteudo = useConteudo()
   const { planosPagina } = conteudo
@@ -42,10 +42,10 @@ export function Planos() {
     <div>
       <div className="mx-auto grid max-w-[896px] gap-4 min-[861px]:grid-cols-2">
         <Reveal className="h-full">
-          <CardPlano plano={standard} destaque />
+          <CardPlano plano={standard} />
         </Reveal>
         <Reveal delay={0.12} className="h-full">
-          <CardPlano plano={premium} />
+          <CardPlano plano={premium} destaque />
         </Reveal>
       </div>
 
@@ -67,6 +67,7 @@ function CardPlano({ plano, destaque = false }: { plano: PlanoInfo; destaque?: b
     <article className="flex h-full flex-col p-[22px] min-[421px]:p-7">
       <header className="flex min-h-[30px] items-center justify-between gap-3">
         <h2 className="m-0 text-[1.125rem] font-semibold">{plano.nome}</h2>
+        {plano.selo ? <span className="rounded-full bg-orange px-2.5 py-0.5 text-[12px] font-[650] text-ink">{plano.selo}</span> : null}
       </header>
 
       <h3 className="mt-[22px] text-[1.6rem] leading-[1.15] font-semibold tracking-[-0.02em] min-[421px]:text-[1.875rem]">

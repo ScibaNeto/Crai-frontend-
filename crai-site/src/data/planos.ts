@@ -15,6 +15,8 @@ export interface PlanoInfo {
   inclui: string
   itens: string[]
   cta: string
+  /** Selo no canto do card (ex.: "Mais completo"). */
+  selo?: string
 }
 
 /** Os dois planos, com o texto do idioma do copy recebido. Nenhum preço mensal. */

@@ -7,7 +7,6 @@ import { HeroCrai } from '../sections/home/HeroCrai'
 import { Numeros } from '../sections/home/Numeros'
 import { Parceiros } from '../sections/home/Parceiros'
 import { Preco } from '../sections/home/Preco'
-import { Roadmap } from '../sections/home/Roadmap'
 import { NaoFazemos } from '../sections/NaoFazemos'
 import { useConteudo } from '../lib/i18n'
 
@@ -23,7 +22,6 @@ export function Home() {
       <Preco />
       <NaoFazemos />
       <Parceiros />
-      <Roadmap />
       <Faq dados={faq} id="faq-home" />
       <CtaFinal />
     </>

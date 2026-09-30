@@ -12,7 +12,7 @@ const iniciais = (nome: string) =>
     .map((p) => p[0])
     .join('')
 
-/** Parceiros validadores: cards com monograma, cargo e empresa. Nenhum logotipo de terceiros. */
+/** Parceiros validadores: cards com foto (ou monograma, se não houver foto), cargo e empresa. Nenhum logotipo de terceiros. */
 export function Parceiros() {
   const { parceiros } = useConteudo().home
   return (
@@ -29,12 +29,26 @@ export function Parceiros() {
               transition={{ duration: 0.7, delay: i * 0.1, ease: EASE_EXPO }}
             >
               <Spotlight className="group h-full rounded-[18px] border border-line bg-slate/40 p-6 md:p-8">
-                <span
-                  aria-hidden="true"
-                  className="grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-orange to-amber text-[18px] font-[700] text-ink transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[-4deg]"
-                >
-                  {iniciais(p.nome)}
-                </span>
+                {p.foto ? (
+                  <span className="block h-20 w-20 rounded-full bg-gradient-to-br from-orange to-amber p-[2px] transition-transform duration-500 group-hover:scale-105">
+                    <img
+                      src={p.foto}
+                      alt={`Foto de ${p.nome}`}
+                      width={400}
+                      height={400}
+                      loading="lazy"
+                      decoding="async"
+                      className="foto-time h-full w-full rounded-full bg-ink object-cover object-center"
+                    />
+                  </span>
+                ) : (
+                  <span
+                    aria-hidden="true"
+                    className="grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-orange to-amber text-[18px] font-[700] text-ink transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[-4deg]"
+                  >
+                    {iniciais(p.nome)}
+                  </span>
+                )}
                 <p className="t-h3 mt-6">{p.nome}</p>
                 <p className="t-apoio mt-1 text-paper">
                   {p.papel} · <span className="text-amber">{p.empresa}</span>

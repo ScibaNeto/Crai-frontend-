@@ -24,6 +24,7 @@ export type ChaveSeo =
   | 'redefinirSenha'
   | 'privacidade'
   | 'termos'
+  | 'dados'
   | 'naoEncontrada'
 
 interface Rota {
@@ -45,6 +46,8 @@ export const ROTAS: Record<string, Rota> = {
   // Depois de preencher legal.pt.ts e legal.en.ts, voltar para indexar: true.
   '/privacidade': { chave: 'privacidade', indexar: false, frequencia: 'yearly', prioridade: 0.3 },
   '/termos': { chave: 'termos', indexar: false, frequencia: 'yearly', prioridade: 0.3 },
+  // Central de Privacidade e Segurança. Sem placeholders: pode ir para o Google desde já.
+  '/dados': { chave: 'dados', indexar: true, frequencia: 'yearly', prioridade: 0.5 },
   '/painel': { chave: 'painel', indexar: false },
   '/pagamento': { chave: 'pagamento', indexar: false },
   '/confirmacao': { chave: 'confirmacao', indexar: false },

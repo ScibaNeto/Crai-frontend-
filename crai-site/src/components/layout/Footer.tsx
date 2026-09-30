@@ -38,7 +38,9 @@ export function Footer() {
 
       <div className="container-site flex flex-col gap-2 border-t border-line py-6 md:flex-row md:items-center md:justify-between">
         <p className="t-apoio text-paper">{rodape.aviso}</p>
-        <p className="t-apoio text-silver">{rodape.lgpd}</p>
+        <Link to="/dados" className="nav-link t-apoio text-silver transition-colors hover:text-amber">
+          {rodape.lgpd}
+        </Link>
       </div>
 
       <p className="t-apoio container-site pb-8 text-center text-silver">{rodape.legal}</p>

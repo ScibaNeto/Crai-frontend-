@@ -5,6 +5,7 @@ import { Reveal, RevealWords } from '../components/motion/Reveal'
 import { Spotlight } from '../components/motion/Spotlight'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
+import { TextoRico } from '../components/ui/TextoRico'
 import { useConteudo } from '../lib/i18n'
 import { FluxoRecuperacao } from '../sections/FluxoRecuperacao'
 import { GrupoControle } from '../sections/GrupoControle'
@@ -153,7 +154,9 @@ export function Produto() {
                         <Icone size={22} />
                       </span>
                       <h3 className="t-h3 mt-8">{item.titulo}</h3>
-                      <p className="t-apoio mt-3 text-silver">{item.texto}</p>
+                      <p className="t-apoio mt-3 text-silver">
+                        <TextoRico texto={item.texto} />
+                      </p>
                     </Spotlight>
                   </Reveal>
                 </li>

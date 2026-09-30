@@ -1,6 +1,6 @@
 import { AnimatePresence, MotionConfig } from 'framer-motion'
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
-import { createBrowserRouter, RouterProvider, useLocation, useNavigationType, useOutlet } from 'react-router-dom'
+import { createBrowserRouter, Navigate, RouterProvider, useLocation, useNavigationType, useOutlet } from 'react-router-dom'
 import { Footer } from './components/layout/Footer'
 import { Header } from './components/layout/Header'
 import { PageTransition } from './components/motion/PageTransition'
@@ -12,6 +12,7 @@ import { SessaoProvider } from './lib/SessaoProvider'
 import { aplicarSeo } from './lib/seo'
 import { rotaDe } from './lib/site'
 import { Cadastro } from './routes/Cadastro'
+import { CentralPrivacidade } from './routes/CentralPrivacidade'
 import { Confirmacao } from './routes/Confirmacao'
 import { Contato } from './routes/Contato'
 import { Empresa } from './routes/Empresa'
@@ -129,6 +130,9 @@ const router = createBrowserRouter(
         { path: 'redefinir-senha', element: <RedefinirSenha /> },
         { path: 'privacidade', element: <Privacidade /> },
         { path: 'termos', element: <Termos /> },
+        { path: 'dados', element: <CentralPrivacidade /> },
+        // Endereço antigo da central.
+        { path: 'lgpd', element: <Navigate to="/dados" replace /> },
         { path: '*', element: <NotFound /> },
       ],
     },
