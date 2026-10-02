@@ -1,7 +1,7 @@
 import { mulberry32 } from '../lib/prng'
 import type { Conteudo } from './conteudo.pt'
 
-// Dados do painel de demonstração (NimbusFlow, fictícia). Tudo determinístico:
+// Dados do painel de demonstração (ChurnGuard, fictícia). Tudo determinístico:
 // séries escritas à mão ou geradas com seed fixa, calculadas uma vez no carregamento do módulo.
 // Nenhum texto visível vive aqui: motivos, status, riscos e casos são ids que apontam para o copy
 // (`conteudo.*.ts`), e os rótulos do eixo do tempo são estruturados para formatar no idioma atual.
@@ -125,9 +125,37 @@ export const periodos: Record<Periodo, { indicadores: Indicadores; serie: PontoS
 
 export const ordemPeriodos: Periodo[] = ['30d', '90d', '12m']
 
+export interface PontoAcumulado {
+  rotulo: RotuloSerie
+  controle: number // R$ que voltariam sozinhos até este ponto (ritmo do grupo de controle)
+  tratado: number // R$ recuperados com a CRAI até este ponto
+}
+
+/**
+ * Receita recuperada acumulada ao longo do período. O ritmo de cada linha vem das taxas da série e os
+ * totais fecham nos indicadores: a linha da CRAI termina na receita recuperada e a do controle em
+ * (recuperada − ganho incremental). A distância final entre as duas é o ganho incremental.
+ */
+export function serieAcumulada(periodo: Periodo): PontoAcumulado[] {
+  const { indicadores: ind, serie } = periodos[periodo]
+  const somaT = serie.reduce((s, p) => s + p.tratado, 0)
+  const somaC = serie.reduce((s, p) => s + p.controle, 0)
+  let t = 0
+  let c = 0
+  return serie.map((p) => {
+    t += p.tratado
+    c += p.controle
+    return {
+      rotulo: p.rotulo,
+      tratado: Math.round((ind.receitaRecuperada * t) / somaT),
+      controle: Math.round(((ind.receitaRecuperada - ind.ganhoIncremental) * c) / somaC),
+    }
+  })
+}
+
 export const serieReferencia = serie12m
 
-export const empresaPainel = 'NimbusFlow Tecnologia'
+export const empresaPainel = 'ChurnGuard Tecnologia'
 
 const janela = (dia: number, de: number, ate: number): JanelaEstimada => ({ dia, de, ate })
 

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useEffect, useId, useRef, useState } from 'react'
+import { cx } from '../lib/cx'
 import { useConteudo } from '../lib/i18n'
 import { useInView } from '../lib/useInView'
 import { useReducedMotion } from '../lib/useReducedMotion'
@@ -13,8 +14,6 @@ const CIRCULO =
 const XIS = 'M19 20 L29 30 M29 20 L19 30'
 const CHECK = 'M16.5 24.5 L21.5 29.5 M21.5 29.5 L31.5 18.5'
 
-const SILVER = '#A6AAAD'
-const LARANJA = '#EF9311'
 
 export function MorphIcon() {
   const { morph } = useConteudo().produto.recuperacao
@@ -38,25 +37,26 @@ export function MorphIcon() {
   }
 
   const transition = { duration: reduced ? 0 : 0.7, ease: [0.65, 0, 0.35, 1] as const }
-  const cor = confirmado ? LARANJA : SILVER
 
   return (
     <div ref={ref} onMouseEnter={repetir} className="flex items-center gap-5 rounded-[14px] border border-line bg-slate p-5 md:p-6">
-      <svg viewBox="0 0 48 48" width={72} height={72} role="img" aria-labelledby={titleId} className="shrink-0">
+      <svg viewBox="0 0 48 48" width={72} height={72} role="img" aria-labelledby={titleId} className={cx('shrink-0 transition-colors duration-700', confirmado ? 'text-orange' : 'text-silver')}>
         <title id={titleId}>{morph.titulo}</title>
         <motion.path
           initial={false}
-          animate={{ d: confirmado ? CIRCULO : FATURA, stroke: cor }}
+          animate={{ d: confirmado ? CIRCULO : FATURA }}
           transition={transition}
           fill="none"
+          stroke="currentColor"
           strokeWidth={2}
           strokeLinejoin="round"
         />
         <motion.path
           initial={false}
-          animate={{ d: confirmado ? CHECK : XIS, stroke: cor }}
+          animate={{ d: confirmado ? CHECK : XIS }}
           transition={transition}
           fill="none"
+          stroke="currentColor"
           strokeWidth={2.4}
           strokeLinecap="round"
           strokeLinejoin="round"

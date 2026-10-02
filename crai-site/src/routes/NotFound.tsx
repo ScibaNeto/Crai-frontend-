@@ -19,9 +19,9 @@ export function NotFound() {
         <svg viewBox="0 0 400 400" className="block h-auto w-full">
           <defs>
             <radialGradient id="blob-gradiente" cx="38%" cy="32%" r="78%">
-              <stop offset="0%" stopColor="#3B3935" />
-              <stop offset="58%" stopColor="#2B2926" />
-              <stop offset="100%" stopColor="#1A120A" />
+              <stop offset="0%" stopColor="var(--color-elev)" />
+              <stop offset="58%" stopColor="var(--color-slate)" />
+              <stop offset="100%" stopColor="var(--color-ink)" />
             </radialGradient>
           </defs>
           <path d={BLOB_A} fill="url(#blob-gradiente)" stroke="rgba(255,184,108,0.22)" strokeWidth="1">

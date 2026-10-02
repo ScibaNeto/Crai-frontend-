@@ -233,7 +233,7 @@ export function CentralPrivacidade() {
                 <p className="mt-8 border-t border-line pt-6 text-[17px] text-paper">{encarregado.email}</p>
                 <a
                   href={`mailto:${encarregado.email}`}
-                  className="btn-shine mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-orange px-5 text-[15px] font-[560] text-ink transition-[background-color,box-shadow] duration-150 hover:bg-amber hover:shadow-[0_10px_30px_-10px_rgba(239,147,17,0.7)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-amber"
+                  className="btn-shine mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-orange px-5 text-[15px] font-[560] text-on-accent transition-[background-color,box-shadow] duration-150 hover:bg-amber hover:shadow-[0_10px_30px_-10px_rgba(239,147,17,0.7)] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-amber"
                 >
                   {encarregado.escrever}
                   <IconArrowRight size={18} />

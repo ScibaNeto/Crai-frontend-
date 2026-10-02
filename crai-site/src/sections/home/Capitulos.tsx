@@ -50,7 +50,7 @@ function Capitulo({
         className="max-w-[34em]"
       >
         <p className="flex items-center gap-4">
-          <span className="text-[44px] leading-none font-[700] tracking-[-0.04em] text-transparent [-webkit-text-stroke:1px_rgba(255,184,108,0.7)] md:text-[56px]">
+          <span className="text-[44px] leading-none font-[700] tracking-[-0.04em] text-transparent [-webkit-text-stroke:1px_color-mix(in_srgb,var(--color-amber)_70%,transparent)] md:text-[56px]">
             {item.numero}
           </span>
           <span className="text-[12.5px] font-[600] tracking-[0.14em] text-amber uppercase">{item.rotulo}</span>

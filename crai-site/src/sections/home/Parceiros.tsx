@@ -44,7 +44,7 @@ export function Parceiros() {
                 ) : (
                   <span
                     aria-hidden="true"
-                    className="grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-orange to-amber text-[18px] font-[700] text-ink transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[-4deg]"
+                    className="grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-orange to-amber text-[18px] font-[700] text-on-accent transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[-4deg]"
                   >
                     {iniciais(p.nome)}
                   </span>

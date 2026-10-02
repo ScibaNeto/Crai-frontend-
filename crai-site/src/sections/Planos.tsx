@@ -67,7 +67,7 @@ function CardPlano({ plano, destaque = false }: { plano: PlanoInfo; destaque?: b
     <article className="flex h-full flex-col p-[22px] min-[421px]:p-7">
       <header className="flex min-h-[30px] items-center justify-between gap-3">
         <h2 className="m-0 text-[1.125rem] font-semibold">{plano.nome}</h2>
-        {plano.selo ? <span className="rounded-full bg-orange px-2.5 py-0.5 text-[12px] font-[650] text-ink">{plano.selo}</span> : null}
+        {plano.selo ? <span className="rounded-full bg-orange px-2.5 py-0.5 text-[12px] font-[650] text-on-accent">{plano.selo}</span> : null}
       </header>
 
       <h3 className="mt-[22px] text-[1.6rem] leading-[1.15] font-semibold tracking-[-0.02em] min-[421px]:text-[1.875rem]">
@@ -105,7 +105,7 @@ function CardPlano({ plano, destaque = false }: { plano: PlanoInfo; destaque?: b
           'transition-colors duration-150 motion-reduce:transition-none',
           'focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-orange',
           destaque
-            ? 'btn-shine relative border-orange bg-orange text-ink hover:border-amber hover:bg-amber hover:shadow-[0_10px_30px_-10px_rgba(239,147,17,0.7)]'
+            ? 'btn-shine relative border-orange bg-orange text-on-accent hover:border-amber hover:bg-amber hover:shadow-[0_10px_30px_-10px_rgba(239,147,17,0.7)]'
             : 'border-line bg-transparent text-paper hover:border-silver hover:bg-paper/[0.03]',
         )}
       >

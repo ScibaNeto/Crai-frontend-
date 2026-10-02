@@ -182,6 +182,7 @@ export const privacidadeEn: DocumentoLegal = {
             linhas: [
               ['Login session', 'local storage (localStorage)', 'keep the user signed in to the access, dashboard and payment areas', 'until the user signs out'],
               ['Chosen language', 'session storage (sessionStorage)', 'show the website in the selected language', 'until the tab is closed'],
+              ['Chosen theme (light or dark)', 'session storage (sessionStorage)', 'show the website in the selected theme', 'until the tab is closed'],
               ['Opening animation control', 'session storage (sessionStorage)', 'keep the animation from repeating in the same visit', 'until the tab is closed'],
             ],
           },

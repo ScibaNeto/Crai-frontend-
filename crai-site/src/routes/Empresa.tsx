@@ -65,7 +65,7 @@ export function Empresa() {
                 transition={{ duration: 0.6, delay: i * 0.08, ease: EASE_EXPO }}
               >
                 <Spotlight className="group h-full rounded-[18px] border border-line bg-slate/40 p-6">
-                  <span className="text-[34px] leading-none font-[700] tracking-[-0.04em] text-transparent [-webkit-text-stroke:1px_rgba(255,184,108,0.7)] transition-colors duration-500 group-hover:text-orange/30">
+                  <span className="text-[34px] leading-none font-[700] tracking-[-0.04em] text-transparent [-webkit-text-stroke:1px_color-mix(in_srgb,var(--color-amber)_70%,transparent)] transition-colors duration-500 group-hover:text-orange/30">
                     0{i + 1}
                   </span>
                   <p className="t-h3 mt-5">{v.nome}</p>

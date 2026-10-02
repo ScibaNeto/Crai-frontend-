@@ -30,8 +30,8 @@ export function VisualRecuperacao({ ativo }: { ativo: boolean }) {
 
   return (
     <div className="flex h-full flex-col justify-center gap-3 p-6 md:p-8">
-      <div className="flex items-center gap-3 rounded-[12px] border border-[#ff6b5b]/30 bg-[#ff6b5b]/[0.07] px-4 py-3 text-[14px]">
-        <IconCardFail size={20} className="text-[#ff8a7d]" />
+      <div className="flex items-center gap-3 rounded-[12px] border border-red/30 bg-red/[0.07] px-4 py-3 text-[14px]">
+        <IconCardFail size={20} className="text-red-soft" />
         <span className="text-paper">{capitulos.visual.falha}</span>
         <span className="ml-auto text-[12px] text-silver tabular">{f.brl(100)}</span>
       </div>
@@ -49,7 +49,7 @@ export function VisualRecuperacao({ ativo }: { ativo: boolean }) {
                   passo === i && 'shadow-[0_0_0_4px_rgba(239,147,17,0.12)]',
                 )}
               >
-                <span className={cx('grid h-7 w-7 place-items-center rounded-full transition-colors duration-500', aceso ? 'bg-orange text-ink' : 'bg-paper/10 text-silver')}>
+                <span className={cx('grid h-7 w-7 place-items-center rounded-full transition-colors duration-500', aceso ? 'bg-orange text-on-accent' : 'bg-paper/10 text-silver')}>
                   <Icon size={15} />
                 </span>
                 <span className={cx('text-[14px] transition-colors duration-500', aceso ? 'text-paper' : 'text-silver')}>{p}</span>
@@ -60,19 +60,19 @@ export function VisualRecuperacao({ ativo }: { ativo: boolean }) {
         })}
       </ol>
       <motion.div
-        className="mt-1 flex items-center gap-3 rounded-[12px] border border-[#5fd39a]/35 bg-[#5fd39a]/[0.08] px-4 py-3 text-[14px]"
+        className="mt-1 flex items-center gap-3 rounded-[12px] border border-green/35 bg-green/[0.08] px-4 py-3 text-[14px]"
         animate={{ opacity: concluido ? 1 : 0.25, scale: concluido ? 1 : 0.98 }}
         transition={{ duration: 0.5, ease: EASE_EXPO }}
       >
         <motion.span
-          className="grid h-6 w-6 place-items-center rounded-full bg-[#5fd39a] text-ink"
+          className="grid h-6 w-6 place-items-center rounded-full bg-green text-on-accent"
           animate={{ scale: concluido ? [0.4, 1.18, 1] : 0.6 }}
           transition={{ duration: 0.5 }}
         >
           <IconCheck size={14} />
         </motion.span>
         <span className="text-paper">{capitulos.visual.recuperado}</span>
-        <span className="ml-auto text-[12px] text-[#9fe6c2] tabular">+ {f.brl(100)}</span>
+        <span className="ml-auto text-[12px] text-green-soft tabular">+ {f.brl(100)}</span>
       </motion.div>
     </div>
   )
@@ -97,12 +97,12 @@ export function VisualRetencao({ ativo }: { ativo: boolean }) {
         <svg viewBox="0 0 180 100" className="w-full" aria-hidden="true">
           <defs>
             <linearGradient id={idGradiente} x1="0" x2="1">
-              <stop offset="0" stopColor="#5fd39a" />
+              <stop offset="0" stopColor="var(--color-green)" />
               <stop offset="0.55" stopColor="#ffb86c" />
               <stop offset="1" stopColor="#ef9311" />
             </linearGradient>
           </defs>
-          <path d="M20 90 A70 70 0 0 1 160 90" fill="none" stroke="rgba(166,170,173,0.16)" strokeWidth="12" strokeLinecap="round" />
+          <path d="M20 90 A70 70 0 0 1 160 90" fill="none" stroke="var(--color-silver)" strokeOpacity={0.16} strokeWidth="12" strokeLinecap="round" />
           <motion.path
             d="M20 90 A70 70 0 0 1 160 90"
             fill="none"
@@ -119,7 +119,7 @@ export function VisualRetencao({ ativo }: { ativo: boolean }) {
             y1="90"
             x2="90"
             y2="34"
-            stroke="#e8eaeb"
+            stroke="var(--color-paper)"
             strokeWidth="2.5"
             strokeLinecap="round"
             style={{ originX: 0.5, originY: 1 }}
@@ -127,7 +127,7 @@ export function VisualRetencao({ ativo }: { ativo: boolean }) {
             initial={false}
             transition={{ type: 'spring', stiffness: 120, damping: 14 }}
           />
-          <circle cx="90" cy="90" r="6" fill="#e8eaeb" />
+          <circle cx="90" cy="90" r="6" fill="var(--color-paper)" />
         </svg>
         <div className="-mt-2 text-center">
           <p className="text-[12px] tracking-[0.08em] text-silver uppercase">{visual.risco}</p>

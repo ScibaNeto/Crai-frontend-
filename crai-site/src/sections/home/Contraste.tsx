@@ -53,7 +53,7 @@ function Linha({ tentativas, ok, rotulo, titulo, texto, destaque }: { tentativas
                   <motion.span
                     className={cx(
                       'grid h-7 w-7 place-items-center rounded-full md:h-8 md:w-8',
-                      ok ? 'bg-[#5fd39a] text-ink' : 'bg-[#ff6b5b]/90 text-ink',
+                      ok ? 'bg-green text-on-accent' : 'bg-red/90 text-on-accent',
                     )}
                     initial={reduced ? false : { scale: 0, opacity: 0 }}
                     animate={rodar ? (ok ? { scale: [0, 1.25, 1], opacity: 1 } : { scale: [0, 1.15, 1], opacity: 1, x: [0, -3, 3, -2, 0] }) : undefined}

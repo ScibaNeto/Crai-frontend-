@@ -129,7 +129,7 @@ export function FluxoRecuperacao() {
         {/* Ponto final: confirmação em destaque, na largura do ciclo. */}
         <li className="lg:col-span-5 lg:col-start-1 lg:row-start-3">
           <Reveal delay={0.24} className="h-full">
-            <div className="relative h-full overflow-hidden rounded-[14px] border border-orange/45 bg-[linear-gradient(120deg,rgba(239,147,17,0.16),rgba(26,18,10,0.6)_62%)] p-5 shadow-[0_0_70px_-34px_rgba(239,147,17,0.9)] lg:p-6">
+            <div className="relative h-full overflow-hidden rounded-[14px] border border-orange/45 bg-[linear-gradient(120deg,rgba(239,147,17,0.16),color-mix(in_srgb,var(--color-ink)_60%,transparent)_62%)] p-5 shadow-[0_0_70px_-34px_rgba(239,147,17,0.9)] lg:p-6">
               <span
                 aria-hidden="true"
                 className="motion-decor pointer-events-none absolute -top-20 -right-16 h-52 w-52 rounded-full bg-[radial-gradient(circle,rgba(255,184,108,0.22),transparent_70%)]"
@@ -141,7 +141,7 @@ export function FluxoRecuperacao() {
                   <p className="t-apoio mt-2 text-silver">{resultado.texto}</p>
                 </div>
                 <div className="flex items-center gap-3 border-orange/25 sm:w-[170px] sm:shrink-0 sm:flex-col sm:items-start sm:gap-4 sm:border-l sm:pl-6">
-                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-orange text-ink">
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-orange text-on-accent">
                     <IconCheck size={20} strokeWidth={2.1} />
                   </span>
                   <span className="flex items-center gap-2.5">

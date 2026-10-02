@@ -15,7 +15,7 @@ function CardPlano({ plano }: { plano: PlanoHome }) {
     <div className="flex h-full flex-col p-6 md:p-8">
       <div className="flex items-center justify-between gap-3">
         <h3 className="t-h3">{plano.nome}</h3>
-        {plano.selo ? <span className="rounded-full bg-orange px-2.5 py-0.5 text-[12px] font-[650] text-ink">{plano.selo}</span> : null}
+        {plano.selo ? <span className="rounded-full bg-orange px-2.5 py-0.5 text-[12px] font-[650] text-on-accent">{plano.selo}</span> : null}
       </div>
       <p className="t-apoio mt-2 text-silver">{plano.resumo}</p>
       <p className="mt-8 flex items-end gap-2">

@@ -1,18 +1,16 @@
-import { AnimatePresence, LayoutGroup, motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { IconRefresh, IconShield, IconUserSignal } from '../components/icons/Icons'
 import { PageShell } from '../components/layout/PageShell'
-import { CountUp } from '../components/motion/CountUp'
 import { Skeleton } from '../components/motion/Skeleton'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
-import { cobrancas, empresaPainel, ordemPeriodos, periodos, riscosCancelamento, type Periodo } from '../data/mockPainel'
-import { cx, interpolar } from '../lib/cx'
+import { empresaPainel, ordemPeriodos, riscosCancelamento, type Periodo } from '../data/mockPainel'
+import { cx } from '../lib/cx'
 import { nomeExibicao } from '../lib/empresa'
-import { useConteudo, useFormato } from '../lib/i18n'
+import { useConteudo } from '../lib/i18n'
 import { useSessao } from '../lib/useSessao'
-import { ControleChart } from '../sections/ControleChart'
-import { StatusCobrancaTag } from '../sections/StatusCobrancaTag'
+import { PainelRecuperacao, SkeletonRecuperacao } from '../sections/PainelRecuperacao'
 
 type Aba = 'recuperacao' | 'retencao'
 
@@ -22,50 +20,6 @@ const ICONES_ABA: Record<Aba, typeof IconRefresh> = {
 }
 
 const bloco = 'rounded-[12px] border border-line bg-ink/40 transition-colors duration-300 hover:border-orange/30'
-
-function SkeletonRecuperacao() {
-  return (
-    <div aria-hidden="true">
-      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-        {[0, 1, 2, 3].map((i) => (
-          <div key={i} className={cx(bloco, 'p-4 md:p-5')}>
-            <Skeleton className="h-3.5 w-24" />
-            <Skeleton className="mt-4 h-7 w-28 md:w-32" />
-            <Skeleton className="mt-3 h-3 w-20" />
-          </div>
-        ))}
-      </div>
-      <div className={cx(bloco, 'mt-4 p-4 md:p-6')}>
-        <Skeleton className="h-4 w-56 max-w-full" />
-        <div className="relative mt-6 ml-10 aspect-[640/260]">
-          <Skeleton
-            className="absolute inset-0 rounded-none"
-            style={{ clipPath: 'polygon(0 62%, 14% 50%, 28% 40%, 44% 33%, 60% 27%, 78% 22%, 100% 18%, 100% 72%, 78% 70%, 56% 72%, 34% 70%, 14% 71%, 0 70%)' }}
-          />
-        </div>
-        <div className="mt-5 flex gap-6">
-          <Skeleton className="h-3 w-28" />
-          <Skeleton className="h-3 w-24" />
-        </div>
-      </div>
-      <div className={cx(bloco, 'mt-4 p-4 md:p-6')}>
-        <Skeleton className="h-4 w-36" />
-        <div className="mt-5 flex flex-col gap-4">
-          {[0, 1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="grid grid-cols-[2fr_1fr_1.5fr] items-center gap-4 md:grid-cols-[2fr_0.8fr_1.4fr_1.2fr_1fr_0.5fr]">
-              <Skeleton className="h-3.5 w-full max-w-[170px]" />
-              <Skeleton className="h-3.5 w-14" />
-              <Skeleton className="h-3.5 w-24" />
-              <Skeleton className="hidden h-3.5 w-24 md:block" />
-              <Skeleton className="hidden h-3.5 w-20 md:block" />
-              <Skeleton className="hidden h-3.5 w-6 md:block" />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
 
 function SkeletonRetencao() {
   return (
@@ -82,96 +36,6 @@ function SkeletonRetencao() {
         ))}
       </div>
     </div>
-  )
-}
-
-function Recuperacao({ periodo, somenteRecuperacao }: { periodo: Periodo; somenteRecuperacao: boolean }) {
-  const { painel } = useConteudo()
-  const f = useFormato()
-  const { indicadores: ind, serie } = periodos[periodo]
-  const t = painel.indicadores
-  const kpis = [
-    { id: 'risco', rotulo: t.risco, valor: ind.receitaEmRisco, detalhe: t.riscoDetalhe, formato: f.brlInteiro, destaque: false },
-    { id: 'recuperada', rotulo: t.recuperada, valor: ind.receitaRecuperada, detalhe: t.recuperadaDetalhe, formato: f.brlInteiro, destaque: false },
-    { id: 'ganho', rotulo: t.ganho, valor: ind.ganhoIncremental, detalhe: t.ganhoDetalhe, formato: f.brlInteiro, destaque: true },
-    {
-      id: 'taxa',
-      rotulo: t.taxa,
-      // Standard só paga a taxa da recuperação.
-      valor: somenteRecuperacao ? ind.taxaRecuperacao : ind.taxaCrai,
-      detalhe: somenteRecuperacao
-        ? t.taxaDetalheStandard
-        : interpolar(t.taxaDetalhe, { rec: f.brl(ind.taxaRecuperacao), ret: f.brl(ind.taxaRetencao) }),
-      formato: f.brl,
-      destaque: false,
-    },
-  ]
-
-  return (
-    <LayoutGroup id="painel-dados">
-      <motion.ul layout className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-        {kpis.map((k) => (
-          <motion.li layout key={k.id} className={cx(bloco, 'flex flex-col p-4 md:p-5')}>
-            <span className="t-apoio text-silver">{k.rotulo}</span>
-            <span className={cx('t-number-sm mt-3', k.destaque ? 'text-orange' : 'text-paper')}>
-              <CountUp value={k.valor} format={k.formato} />
-            </span>
-            <span className="mt-2 text-[13px] leading-[1.4] text-silver">{k.detalhe}</span>
-          </motion.li>
-        ))}
-      </motion.ul>
-
-      <motion.section layout className={cx(bloco, 'mt-4 p-4 md:p-6')} aria-labelledby="grafico-titulo">
-        <h2 id="grafico-titulo" className="text-[15px] font-[560] text-paper">
-          {painel.grafico.titulo}
-        </h2>
-        <p className="t-apoio mt-1 text-silver">{painel.grafico.descricao}</p>
-        <ControleChart
-          className="mt-6"
-          serie={serie}
-          titulo={painel.grafico.titulo}
-          descricao={painel.grafico.descricao}
-          rotulos={painel.grafico}
-        />
-      </motion.section>
-
-      <motion.section layout className={cx(bloco, 'mt-4')} aria-labelledby="tabela-titulo">
-        <h2 id="tabela-titulo" className="px-4 pt-4 text-[15px] font-[560] text-paper md:px-6 md:pt-5">
-          {painel.tabela.titulo}
-        </h2>
-        <div className="mt-3 overflow-x-auto" role="region" aria-labelledby="tabela-titulo" tabIndex={0}>
-          <table className="tabular w-full min-w-[780px] text-left text-[14px]">
-            <thead>
-              <tr className="border-b border-line text-silver">
-                {painel.tabela.colunas.map((coluna, i) => (
-                  <th key={coluna} scope="col" className={cx('px-4 py-3 font-[500] md:px-6', i === 1 && 'text-right')}>
-                    {coluna}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {cobrancas.map((c) => (
-                <tr key={c.id} className="border-b border-line transition-colors last:border-0 hover:bg-paper/[0.025]">
-                  <th scope="row" className="px-4 py-3 font-[450] text-paper md:px-6">
-                    {c.assinante}
-                  </th>
-                  <td className="px-4 py-3 text-right text-paper md:px-6">{f.brl(c.valor)}</td>
-                  <td className="px-4 py-3 text-silver md:px-6">{painel.motivos[c.motivo]}</td>
-                  <td className="px-4 py-3 text-silver md:px-6">
-                    {c.janela ? interpolar(painel.tabela.janela, { ...c.janela }) : painel.tabela.semJanela}
-                  </td>
-                  <td className="px-4 py-3 md:px-6">
-                    <StatusCobrancaTag status={c.status} />
-                  </td>
-                  <td className="px-4 py-3 text-silver md:px-6">{interpolar(painel.tabela.tentativa, { n: c.tentativa })}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </motion.section>
-    </LayoutGroup>
   )
 }
 
@@ -392,7 +256,7 @@ export function Painel() {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.22 }}
                   >
-                    {aba === 'recuperacao' ? <Recuperacao periodo={periodo} somenteRecuperacao={retencaoBloqueada} /> : retencaoBloqueada ? <RetencaoPremium /> : <Retencao />}
+                    {aba === 'recuperacao' ? <PainelRecuperacao periodo={periodo} somenteRecuperacao={retencaoBloqueada} /> : retencaoBloqueada ? <RetencaoPremium /> : <Retencao />}
                   </motion.div>
                 )}
               </AnimatePresence>

@@ -27,7 +27,7 @@ const linha = (p: string[]) => `M${p.join(' L')}`
 const area = (p: string[]) => `${linha(p)} L${W},${H} L0,${H} Z`
 
 const ICONE = {
-  ok: { Icon: IconCheck, cor: 'text-[#5fd39a] bg-[#5fd39a]/10' },
+  ok: { Icon: IconCheck, cor: 'text-green-soft bg-green/10' },
   agenda: { Icon: IconCalendar, cor: 'text-amber bg-amber/10' },
   risco: { Icon: IconActivity, cor: 'text-orange bg-orange/10' },
   msg: { Icon: IconMessage, cor: 'text-paper bg-paper/10' },
@@ -76,7 +76,7 @@ export function PainelMockup({ ativo = true }: { ativo?: boolean }) {
       <div aria-hidden="true" className="p-4 sm:p-5">
         <div className="flex items-center justify-between gap-3">
           <p className="text-[15px] font-[600] tracking-[-0.01em] text-paper">{mockup.titulo}</p>
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#5fd39a]/25 bg-[#5fd39a]/[0.07] px-2.5 py-1 text-[11px] text-[#9fe6c2]">
+          <span className="inline-flex items-center gap-2 rounded-full border border-green/25 bg-green/[0.07] px-2.5 py-1 text-[11px] text-green-soft">
             <span className="pulse-dot" />
             {mockup.status}
           </span>
@@ -119,12 +119,12 @@ export function PainelMockup({ ativo = true }: { ativo?: boolean }) {
           <svg viewBox={`0 0 ${W} ${H}`} className="mt-2 h-[92px] w-full sm:h-[110px]" preserveAspectRatio="none">
             <defs>
               <linearGradient id="mock-area" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0" stopColor="#ef9311" stopOpacity="0.38" />
-                <stop offset="1" stopColor="#ef9311" stopOpacity="0" />
+                <stop offset="0" stopColor="var(--color-orange)" stopOpacity="0.38" />
+                <stop offset="1" stopColor="var(--color-orange)" stopOpacity="0" />
               </linearGradient>
             </defs>
             {[0.25, 0.5, 0.75].map((f) => (
-              <line key={f} x1="0" x2={W} y1={H * f} y2={H * f} stroke="rgba(166,170,173,0.1)" />
+              <line key={f} x1="0" x2={W} y1={H * f} y2={H * f} stroke="var(--color-silver)" strokeOpacity={0.1} />
             ))}
             <motion.path
               d={area(TRATADO)}
@@ -136,7 +136,7 @@ export function PainelMockup({ ativo = true }: { ativo?: boolean }) {
             <motion.path
               d={linha(CONTROLE)}
               fill="none"
-              stroke="#a6aaad"
+              stroke="var(--color-silver)"
               strokeWidth="1.4"
               strokeDasharray="4 4"
               initial={{ opacity: 0 }}
@@ -146,7 +146,7 @@ export function PainelMockup({ ativo = true }: { ativo?: boolean }) {
             <motion.path
               d={linha(TRATADO)}
               fill="none"
-              stroke="#ef9311"
+              stroke="var(--color-orange)"
               strokeWidth="2.2"
               strokeLinecap="round"
               initial={reduced ? false : { pathLength: 0 }}
@@ -157,7 +157,7 @@ export function PainelMockup({ ativo = true }: { ativo?: boolean }) {
               cx={W}
               cy={Number(TRATADO[30].split(',')[1])}
               r="4"
-              fill="#ffb86c"
+              fill="var(--color-amber)"
               initial={{ scale: 0, opacity: 0 }}
               animate={desenhar ? { scale: 1, opacity: 1 } : undefined}
               transition={{ delay: 2.1, duration: 0.4 }}

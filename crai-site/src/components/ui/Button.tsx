@@ -22,7 +22,7 @@ const base =
   'relative inline-flex items-center justify-center gap-2 whitespace-nowrap font-[560] tracking-[-0.005em] transition-[background-color,border-color,color,transform,box-shadow] duration-150 ease-out active:scale-[0.985] focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-amber disabled:cursor-not-allowed disabled:opacity-60 select-none'
 
 const variants: Record<Variant, string> = {
-  primary: 'btn-shine rounded-[4px] bg-orange text-ink hover:bg-amber hover:shadow-[0_10px_30px_-10px_rgba(239,147,17,0.7)]',
+  primary: 'btn-shine rounded-[4px] bg-orange text-on-accent hover:bg-amber hover:shadow-[0_10px_30px_-10px_rgba(239,147,17,0.7)]',
   ghost: 'rounded-[4px] border border-graphite text-paper hover:border-silver hover:bg-paper/[0.03]',
   link: 'text-link rounded-none text-paper',
 }

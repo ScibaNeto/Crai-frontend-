@@ -109,6 +109,8 @@ export const conteudoPt = {
     sair: 'Sair',
     abrirMenu: 'Abrir menu',
     fecharMenu: 'Fechar menu',
+    temaClaro: 'Mudar para o tema claro',
+    temaEscuro: 'Mudar para o tema escuro',
     rodape: {
       descricao:
         'Software B2B que recupera parte da receita que empresas de SaaS perdem por churn e mostra o resultado em um painel.',
@@ -800,12 +802,41 @@ export const conteudoPt = {
       taxaDetalhe: 'Recuperação {rec} · Retenção {ret}',
       taxaDetalheStandard: '25% sobre o ganho incremental',
     },
-    grafico: {
-      titulo: 'Taxa de recuperação: controle × tratado',
-      descricao: 'Percentual da receita em risco recuperada por cada grupo no período selecionado.',
-      controle: 'Grupo de controle',
-      tratado: 'Grupo tratado',
+    // Abertura da aba de recuperação: o que voltou ao caixa, partido entre o que voltaria sozinho e o ganho da CRAI.
+    resumo: {
+      titulo: 'Voltou ao caixa',
+      deRisco: 'de {risco} em cobranças que falharam',
+      recuperado: '{p} recuperado',
+      barraAria: 'Receita em risco no período: {base} voltariam sozinhos, {ganho} de ganho incremental e {aberto} não recuperados.',
+      base: 'Voltaria sozinho',
+      baseDetalhe: 'O que o grupo de controle recupera sem ação',
       ganho: 'Ganho incremental',
+      ganhoDetalhe: 'O que a CRAI trouxe a mais',
+      aberto: 'Não recuperado',
+      abertoDetalhe: 'Em nova tentativa ou sem recuperação',
+    },
+    extrato: {
+      titulo: 'Extrato do período',
+      ganho: 'Ganho incremental',
+      taxaRecuperacao: 'Taxa de recuperação · 25%',
+      preservada: 'Receita preservada',
+      taxaRetencao: 'Taxa de retenção · 20%',
+      total: 'Taxa da CRAI',
+      fica: 'Fica com você',
+      nota: 'A taxa incide só sobre o que foi medido acima do grupo de controle.',
+    },
+    falhas: {
+      titulo: 'Por que falhou',
+      descricao: 'Motivo da falha nas {n} cobranças recentes.',
+      cobrancas: '{n} cobranças',
+    },
+    grafico: {
+      titulo: 'Recuperação acumulada: com a CRAI × grupo de controle',
+      descricao: 'A receita que voltou, somada ao longo do período. A distância entre as duas linhas é o ganho incremental.',
+      controle: 'Voltaria sozinho (grupo de controle)',
+      tratado: 'Com a CRAI',
+      ganho: 'Ganho incremental',
+      explorarAria: 'Gráfico interativo: passe o cursor ou use as setas para ler cada ponto.',
     },
     // Eixo do tempo: meses abreviados e semana numerada. Datas curtas saem de format.ts.
     meses: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
@@ -813,6 +844,12 @@ export const conteudoPt = {
     tabela: {
       titulo: 'Cobranças recentes',
       colunas: ['Assinante', 'Valor', 'Motivo da falha', 'Janela estimada', 'Status', 'Tentativa'],
+      // Painel: o motivo vai junto do assinante e a janela ganha a régua de 24h.
+      colunasPainel: ['Assinante', 'Valor', 'Janela estimada de saldo', 'Tentativa', 'Status'],
+      filtroAria: 'Filtrar cobranças por status',
+      todas: 'Todas',
+      janelaAria: 'Janela estimada: dia {dia}, das {de}h às {ate}h',
+      reguaHoras: ['0h', '12h', '24h'],
       tentativa: '{n}ª',
       janela: 'Dia {dia} · {de}h–{ate}h',
       semJanela: '—',
@@ -1185,7 +1222,7 @@ export const conteudoPt = {
         {
           id: 'cookies',
           titulo: 'Sem cookies, sem rastreamento',
-          texto: 'O site não usa cookies nem ferramentas de publicidade ou de análise de audiência. Só o armazenamento necessário para login e idioma.',
+          texto: 'O site não usa cookies nem ferramentas de publicidade ou de análise de audiência. Só o armazenamento necessário para login, idioma e tema.',
         },
         {
           id: 'cancelamento',

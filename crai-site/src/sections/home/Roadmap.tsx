@@ -20,7 +20,7 @@ export function Roadmap() {
 
         <div className="relative mt-14 lg:mt-20">
           {/* Trilho horizontal (desktop) */}
-          <div aria-hidden="true" className="absolute top-[9px] right-0 left-0 hidden h-px bg-[repeating-linear-gradient(90deg,rgba(166,170,173,0.35)_0_6px,transparent_6px_12px)] lg:block" />
+          <div aria-hidden="true" className="absolute top-[9px] right-0 left-0 hidden h-px bg-[repeating-linear-gradient(90deg,color-mix(in_srgb,var(--color-silver)_35%,transparent)_0_6px,transparent_6px_12px)] lg:block" />
           <motion.div
             aria-hidden="true"
             className="absolute top-[8.5px] left-0 hidden h-[2px] bg-gradient-to-r from-orange/40 to-orange lg:block"
@@ -54,7 +54,7 @@ export function Roadmap() {
                 <p className={cx('mt-0 text-[13px] font-[600] tabular lg:mt-6', e.estado === 'depois' ? 'text-silver' : 'text-amber')}>
                   {e.quando}
                   {e.estado === 'agora' ? (
-                    <span className="ml-2 rounded-full bg-orange px-2 py-0.5 text-[11px] font-[700] text-ink">{roadmap.agora}</span>
+                    <span className="ml-2 rounded-full bg-orange px-2 py-0.5 text-[11px] font-[700] text-on-accent">{roadmap.agora}</span>
                   ) : null}
                 </p>
                 <h3 className={cx('mt-2 text-[18px] font-[600] tracking-[-0.01em]', e.estado === 'depois' ? 'text-paper/80' : 'text-paper')}>

@@ -24,7 +24,7 @@ export function ErroInesperado() {
         {/* Link comum (não <Link>): recarrega a página e zera o estado que causou o erro. */}
         <a
           href="/"
-          className="inline-flex h-12 items-center justify-center rounded-[4px] bg-orange px-6 text-[16px] font-[560] text-ink transition-colors hover:bg-amber focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-amber"
+          className="inline-flex h-12 items-center justify-center rounded-[4px] bg-orange px-6 text-[16px] font-[560] text-on-accent transition-colors hover:bg-amber focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-amber"
         >
           {erroInesperado.inicio}
         </a>

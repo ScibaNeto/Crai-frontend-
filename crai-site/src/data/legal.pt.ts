@@ -203,6 +203,7 @@ export const privacidadePt: DocumentoLegal = {
             linhas: [
               ['Sessão de login', 'armazenamento local (localStorage)', 'manter o usuário conectado nas áreas de acesso, painel e pagamento', 'até o usuário sair da conta'],
               ['Idioma escolhido', 'armazenamento de sessão (sessionStorage)', 'exibir o site no idioma selecionado', 'até o fechamento da aba'],
+              ['Tema escolhido (claro ou escuro)', 'armazenamento de sessão (sessionStorage)', 'exibir o site no tema selecionado', 'até o fechamento da aba'],
               [
                 'Controle da animação de abertura',
                 'armazenamento de sessão (sessionStorage)',

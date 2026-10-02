@@ -7,8 +7,9 @@ import { useConteudo, useLang, useSetLang } from '../../lib/i18n'
 import { EASE_EXPO } from '../../lib/intro'
 import { isLang, LANG_HTML } from '../../lib/lang'
 import { useSessao } from '../../lib/useSessao'
+import { alternarTema, useTema } from '../../lib/tema'
 import { useReducedMotion } from '../../lib/useReducedMotion'
-import { IconArrowUpRight, IconClose, IconMenu } from '../icons/Icons'
+import { IconArrowUpRight, IconClose, IconMenu, IconMoon, IconSun } from '../icons/Icons'
 import { ScrollProgress } from '../motion/ScrollProgress'
 import { Button } from '../ui/Button'
 import { Wordmark } from '../ui/Wordmark'
@@ -51,6 +52,38 @@ function LanguageSwitch({ id, className }: { id: string; className?: string }) {
         )
       })}
     </div>
+  )
+}
+
+/** Claro / escuro: o ícone mostra o tema para o qual o clique leva. */
+function ThemeSwitch({ className }: { className?: string }) {
+  const { site } = useConteudo()
+  const tema = useTema()
+  const reduced = useReducedMotion()
+  const claro = tema === 'claro'
+  const rotulo = claro ? site.temaEscuro : site.temaClaro
+
+  return (
+    <button
+      type="button"
+      aria-label={rotulo}
+      title={rotulo}
+      onClick={alternarTema}
+      className={cx(
+        'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line text-silver transition-colors duration-150 hover:bg-paper/5 hover:text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber',
+        className,
+      )}
+    >
+      <motion.span
+        key={tema}
+        className="inline-flex"
+        initial={reduced ? false : { rotate: -60, opacity: 0 }}
+        animate={{ rotate: 0, opacity: 1 }}
+        transition={{ duration: 0.32, ease: EASE_EXPO }}
+      >
+        {claro ? <IconMoon size={18} /> : <IconSun size={18} />}
+      </motion.span>
+    </button>
   )
 }
 
@@ -161,6 +194,8 @@ export function Header() {
 
           <div className="flex items-center gap-2 lg:gap-3">
             <LanguageSwitch id="desktop" className="hidden lg:flex" />
+            {/* No celular a barra já está cheia: o seletor de tema vai para dentro do menu. */}
+            <ThemeSwitch className="max-lg:hidden" />
             {sessao ? (
               <>
                 {empresa ? (
@@ -231,7 +266,10 @@ export function Header() {
                   </motion.li>
                 ))}
                 <li className="flex items-center justify-between gap-4 pt-5">
-                  <LanguageSwitch id="mobile" className="-ml-2.5" />
+                  <span className="flex items-center gap-3">
+                    <LanguageSwitch id="mobile" className="-ml-2.5" />
+                    <ThemeSwitch />
+                  </span>
                   {sessao ? (
                     <Button variant="ghost" className="sm:hidden" onClick={onSair}>
                       {site.sair}
