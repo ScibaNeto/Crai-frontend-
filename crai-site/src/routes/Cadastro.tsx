@@ -394,8 +394,10 @@ export function Cadastro() {
                         label={e.site}
                         inputMode="url"
                         autoComplete="url"
+                        maxLength={255}
                         value={dadosEmpresa.site}
-                        onChange={(ev) => setDadosEmpresa({ ...dadosEmpresa, site: ev.target.value })}
+                        // Mesma regra do banco (empresas_site_check): sem espaços, aspas nem < >.
+                        onChange={(ev) => setDadosEmpresa({ ...dadosEmpresa, site: ev.target.value.replace(/[\s<>"']/g, '') })}
                       />
                       <Select
                         id="segmento"

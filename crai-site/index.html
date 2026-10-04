@@ -5,16 +5,9 @@
     <!-- Sem maximum-scale: bloquear o zoom prejudica a acessibilidade. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#1A120A" />
-    <!-- Tema escolhido (claro/escuro): aplicado antes da primeira pintura, para a página não piscar no
-         escuro. A chave e as cores espelham src/lib/tema.ts. -->
-    <script>
-      try {
-        if (sessionStorage.getItem('crai:tema') === 'claro') {
-          document.documentElement.dataset.theme = 'light'
-          document.querySelector('meta[name="theme-color"]').content = '#FAF6EF'
-        }
-      } catch (e) {}
-    </script>
+    <!-- Tema escolhido (claro/escuro): aplicado antes da primeira pintura. Fica em arquivo próprio
+         (public/tema-inicial.js) para a CSP poder proibir scripts embutidos. -->
+    <script src="/tema-inicial.js"></script>
 
     <!-- Padrões da home. O App troca título, descrição, canonical e robots a cada rota (src/lib/seo.ts).
          %SITE_URL% vem de VITE_SITE_URL no build (vite.config.ts). -->

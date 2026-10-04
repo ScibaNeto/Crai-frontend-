@@ -1,0 +1,2 @@
+# Fallback de SPA (Netlify e Cloudflare Pages): rota que não é arquivo serve o index.html.
+/*  /index.html  200

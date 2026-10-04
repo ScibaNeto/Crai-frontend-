@@ -6,7 +6,7 @@ export type Tema = 'escuro' | 'claro'
 export const TEMA_PADRAO: Tema = 'escuro'
 
 // Terceira exceção de armazenamento (depois do preloader e do idioma): o tema escolhido, só por sessão.
-// O script do index.html lê a mesma chave para aplicar o tema antes da primeira pintura.
+// O public/tema-inicial.js (carregado pelo index.html) lê a mesma chave para aplicar o tema antes da primeira pintura.
 export const TEMA_KEY = 'crai:tema'
 
 /** Cor da barra do navegador no celular (`<meta name="theme-color">`): o fundo de cada tema. */

@@ -25,6 +25,15 @@ O SQL completo está em [`migrations/`](migrations/).
   A empresa nunca fica sem `owner` (o banco bloqueia).
 - **Convites:** só `owner` / `admin` veem, criam, revogam e apagam. Só aceita quem estiver logado com o e-mail convidado.
 
+**Reforço de segurança (04/10/2026, migration `crai_reforco_seguranca`)**
+
+- Usuário logado não tem mais `TRUNCATE`, `TRIGGER` nem `REFERENCES` nas tabelas.
+- Convite: quem cria só informa `empresa_id`, `email`, `papel` e `convidado_por`. Token, validade e status são do banco.
+- `site`, `email_financeiro`, `avatar_url` e e-mail do convite têm formato validado (nada de `javascript:`, espaços, aspas ou `< >`).
+- Aceites (`aceite_termos_em`, `aceite_privacidade_em`, `aceite_comunicacao_em`): a data gravada é a do servidor. Termos e
+  privacidade não podem ser apagados nem alterados pelo usuário; o de comunicação pode ser revogado.
+- `criar_empresa`: no máximo 3 empresas criadas por usuário (o site cria 1).
+
 ## 3. Fluxo de cadastro
 
 O site faz isso em `src/lib/cadastro.ts`. Resumo:
@@ -83,6 +92,9 @@ Feita em 24/09/2026:
 1. Adicionar o domínio publicado em Site URL e Redirect URLs.
 2. Configurar um SMTP próprio e **religar a confirmação de e-mail**. O e-mail padrão do Supabase só entrega para
    membros da organização e tem limite baixo por hora.
+3. Authentication → Sign In / Providers → Email: senha mínima de 8 caracteres com letras e números, e ligar a
+   proteção contra senhas vazadas (exige plano Pro).
+4. Authentication → Attack Protection: ligar o CAPTCHA (Cloudflare Turnstile) no cadastro, login e recuperação de senha.
 
 ## 6. Mudou o banco?
 
@@ -107,6 +119,8 @@ Todos com dados de teste apagados depois.
 - ✔ Visitante não logado bloqueado
 - ✔ Token sai com `empresa_id` e `papel`
 - ✔ Ponta a ponta pelo site (localhost): usuário, perfil, empresa e vínculo gravados
+- ✔ Reforço de segurança (04/10/2026): aceite não retrodata nem apaga, `javascript:` recusado em site e avatar, convite com
+  token próprio recusado, e-mail de convite inválido recusado, 4ª empresa do mesmo usuário recusada
 
 ## 8. Próximos passos
 

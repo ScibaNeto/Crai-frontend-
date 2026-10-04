@@ -160,6 +160,11 @@ Tudo sobre tabelas, permissões, login e configuração do painel do Supabase es
 3. No painel do Supabase → Authentication → URL Configuration, adicione o domínio publicado em **Site URL** e em
    **Redirect URLs** (`https://seu-dominio/**`). Sem isso, os links de e-mail (confirmação, nova senha) voltam para
    `localhost`.
+4. Cabeçalhos de segurança e o fallback de SPA já vêm no repositório: `crai-site/vercel.json` (Vercel) e
+   `crai-site/public/_headers` + `_redirects` (Netlify, Cloudflare Pages). Os dois têm o mesmo conteúdo: mudou um, mude o
+   outro. A política de conteúdo (CSP) só libera o próprio site e o Supabase. Ao incluir um serviço externo (analytics,
+   fontes, vídeo, CAPTCHA), acrescente o domínio dele na CSP, senão o navegador bloqueia.
+   Por isso o site não pode ter `<script>` embutido no `index.html`: o do tema fica em `public/tema-inicial.js`.
 
 ## Time
 
