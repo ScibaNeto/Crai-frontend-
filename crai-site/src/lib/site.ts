@@ -1,8 +1,8 @@
 // Endereço e rotas do site. Lido pelo app (título, canonical, robots de cada página) e pelo
 // vite.config.ts (robots.txt e sitemap.xml gerados no build). Sem dependências de navegador nem de Vite.
 
-/** Domínio de produção usado quando `VITE_SITE_URL` não está definida. ⚠️ Confirmar o domínio final. */
-export const SITE_URL_PADRAO = 'https://www.crai.com.br'
+/** Domínio de produção usado quando `VITE_SITE_URL` não está definida. Domínio final: crai.ia.br (registrado na Locaweb). */
+export const SITE_URL_PADRAO = 'https://crai.ia.br'
 
 /** URL base sem barra no fim. */
 export function normalizarSiteUrl(url: string | undefined): string {

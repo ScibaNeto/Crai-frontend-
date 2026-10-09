@@ -1,0 +1,5 @@
+# Arquivos desta pasta têm hash no nome (JS, CSS, fontes) e nunca mudam de conteúdo:
+# o navegador pode guardar por 1 ano. Equivale à regra /assets/ do vercel.json.
+<IfModule mod_headers.c>
+  Header set Cache-Control "public, max-age=31536000, immutable"
+</IfModule>

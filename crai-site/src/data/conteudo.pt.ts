@@ -447,9 +447,9 @@ export const conteudoPt = {
         },
         {
           nome: 'Premium',
-          prefixo: '+',
-          taxa: 20,
-          unidade: 'da receita preservada',
+          prefixo: '',
+          taxa: 45,
+          unidade: 'soma das duas taxas',
           resumo: 'Tudo do Standard, somado à retenção.',
           itens: ['Tudo do Standard, com os 25%', 'Churn voluntário', 'Score de risco e ofertas', 'Janela de 6 meses por retenção', 'Integração por SDK'],
           selo: 'Mais completo',
@@ -764,8 +764,9 @@ export const conteudoPt = {
       nome: 'Premium',
       titulo: 'Recupere e retenha',
       resumo: 'Recuperação de cobranças somada à retenção de quem sinaliza que vai sair.',
-      // Não é "45%": são duas taxas sobre bases diferentes (no exemplo de R$ 50 mil de MRR, R$ 700 sobre R$ 3.250 de resultado).
-      valor: '25% + 20%',
+      // "45%" é a soma das duas taxas, que incidem sobre bases diferentes (25% do ganho incremental + 20% da receita
+      // preservada). Por isso a linha `detalhe` logo abaixo precisa continuar aparecendo junto do número.
+      valor: '45%',
       base: '',
       detalhe: '25% sobre o ganho incremental + 20% sobre a receita preservada',
       inclui: 'Tudo do Standard, e ainda:',

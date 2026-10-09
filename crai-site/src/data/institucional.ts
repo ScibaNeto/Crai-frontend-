@@ -3,7 +3,7 @@
 
 /**
  * Canal de contato e do encarregado (LGPD).
- * ⚠️ Trocar pelo e-mail do domínio (ex.: contato@crai.com.br) quando ele existir: basta mudar esta linha.
+ * ⚠️ Trocar pelo e-mail do domínio (ex.: contato@crai.ia.br) quando ele existir: basta mudar esta linha.
  */
 export const EMAIL_CONTATO = 'agentia.startup@gmail.com'
 

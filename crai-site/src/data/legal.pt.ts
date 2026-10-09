@@ -33,7 +33,7 @@ export const privacidadePt: DocumentoLegal = {
       id: 'quem-somos',
       titulo: '1. Quem somos',
       blocos: [
-        '1.1. Esta Política de Privacidade descreve como **[RAZÃO SOCIAL]**, nome fantasia CRAI, inscrita no CNPJ sob o nº [CNPJ], com sede na cidade de São Paulo, Estado de São Paulo, em [ENDEREÇO COMPLETO] ("CRAI"), trata dados pessoais no site crai.com.br e na plataforma CRAI, em conformidade com a Lei nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais, "LGPD") e com a Lei nº 12.965/2014 (Marco Civil da Internet).',
+        '1.1. Esta Política de Privacidade descreve como **[RAZÃO SOCIAL]**, nome fantasia CRAI, inscrita no CNPJ sob o nº [CNPJ], com sede na cidade de São Paulo, Estado de São Paulo, em [ENDEREÇO COMPLETO] ("CRAI"), trata dados pessoais no site crai.ia.br e na plataforma CRAI, em conformidade com a Lei nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais, "LGPD") e com a Lei nº 12.965/2014 (Marco Civil da Internet).',
         '1.2. A CRAI desenvolve uma plataforma de recuperação de receita e de retenção de clientes para empresas que vendem assinaturas.',
       ],
     },
@@ -275,7 +275,7 @@ export const termosPt: DocumentoLegal = {
       id: 'identificacao',
       titulo: 'Cláusula 1 — Identificação e aceitação',
       blocos: [
-        '1.1. Estes Termos de Uso ("Termos") regem o acesso e o uso do site crai.com.br e da plataforma CRAI, que compreende o painel, as integrações, as APIs e os agentes automatizados de recuperação e de retenção de receita (em conjunto, a "Plataforma").',
+        '1.1. Estes Termos de Uso ("Termos") regem o acesso e o uso do site crai.ia.br e da plataforma CRAI, que compreende o painel, as integrações, as APIs e os agentes automatizados de recuperação e de retenção de receita (em conjunto, a "Plataforma").',
         '1.2. A Plataforma é oferecida por **[RAZÃO SOCIAL]**, nome fantasia CRAI, inscrita no CNPJ sob o nº [CNPJ], com sede na cidade de São Paulo, Estado de São Paulo, em [ENDEREÇO COMPLETO] ("CRAI").',
         '1.3. A Plataforma é destinada exclusivamente a pessoas jurídicas. Ao criar uma conta, a pessoa física que realiza o cadastro declara ser maior de 18 anos e ter poderes para representar e obrigar a empresa em nome da qual atua.',
         '1.4. A aceitação destes Termos e a ciência da [Política de Privacidade](/privacidade) ocorrem por meio da marcação da caixa correspondente no cadastro. A data e a hora da aceitação ficam registradas. Quem não concordar com estes Termos não deve utilizar a Plataforma.',

@@ -18,7 +18,7 @@ export const privacidadeEn: DocumentoLegal = {
       id: 'quem-somos',
       titulo: '1. Who we are',
       blocos: [
-        '1.1. This Privacy Policy describes how **[LEGAL NAME]**, trading as CRAI, registered under CNPJ [CNPJ], headquartered in the city of São Paulo, State of São Paulo, at [FULL ADDRESS] ("CRAI"), processes personal data on the crai.com.br website and on the CRAI platform, in accordance with Law No. 13,709/2018 (Brazil’s General Data Protection Law, "LGPD") and Law No. 12,965/2014 (Brazilian Internet Civil Framework).',
+        '1.1. This Privacy Policy describes how **[LEGAL NAME]**, trading as CRAI, registered under CNPJ [CNPJ], headquartered in the city of São Paulo, State of São Paulo, at [FULL ADDRESS] ("CRAI"), processes personal data on the crai.ia.br website and on the CRAI platform, in accordance with Law No. 13,709/2018 (Brazil’s General Data Protection Law, "LGPD") and Law No. 12,965/2014 (Brazilian Internet Civil Framework).',
         '1.2. CRAI builds a revenue recovery and customer retention platform for companies that sell subscriptions.',
       ],
     },
@@ -244,7 +244,7 @@ export const termosEn: DocumentoLegal = {
       id: 'identificacao',
       titulo: 'Clause 1 — Identification and acceptance',
       blocos: [
-        '1.1. These Terms of Use ("Terms") govern access to and use of the crai.com.br website and the CRAI platform, which includes the dashboard, integrations, APIs and automated revenue recovery and retention agents (together, the "Platform").',
+        '1.1. These Terms of Use ("Terms") govern access to and use of the crai.ia.br website and the CRAI platform, which includes the dashboard, integrations, APIs and automated revenue recovery and retention agents (together, the "Platform").',
         '1.2. The Platform is offered by **[LEGAL NAME]**, trading as CRAI, registered under CNPJ [CNPJ], headquartered in the city of São Paulo, State of São Paulo, at [FULL ADDRESS] ("CRAI").',
         '1.3. The Platform is intended exclusively for legal entities. By creating an account, the individual who signs up declares to be over 18 and to have the authority to represent and bind the company on whose behalf they act.',
         '1.4. Acceptance of these Terms and acknowledgment of the [Privacy Policy](/privacidade) take place by checking the corresponding box during sign-up. The date and time of acceptance are recorded. Anyone who does not agree with these Terms should not use the Platform.',
