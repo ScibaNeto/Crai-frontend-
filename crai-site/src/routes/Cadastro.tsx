@@ -25,6 +25,7 @@ import { interpolar } from '../lib/cx'
 import { formatCNPJ, formatTelefone, somenteDigitos } from '../lib/format'
 import { useConteudo } from '../lib/i18n'
 import { EASE_EXPO } from '../lib/intro'
+import { supabaseConfigurado } from '../lib/supabase'
 import { useSessao } from '../lib/useSessao'
 import type { Plano } from '../lib/simulador'
 import { useReducedMotion } from '../lib/useReducedMotion'
@@ -58,7 +59,7 @@ export function Cadastro() {
   const reduced = useReducedMotion()
   const conteudo = useConteudo()
   const { cadastro, simuladorCopy } = conteudo
-  const { carregando, sessao, perfil, empresa, recarregar, sair } = useSessao()
+  const { carregando, sessao, perfil, empresa, falhaLeitura, recarregar, sair } = useSessao()
   const [etapa, setEtapa] = useState(0)
   const [direcao, setDirecao] = useState(1)
   // Segmento e faixa guardam o índice da opção, para o que foi digitado sobreviver à troca de idioma.
@@ -82,7 +83,9 @@ export function Cadastro() {
     aceitouComunicacao: false,
   })
   const [erros, setErros] = useState<Erros>({})
-  const [erroGeral, setErroGeral] = useState<CodigoErroCadastro | null>(null)
+  // Sem as variáveis do Supabase o cadastro não tem como funcionar: avisa já na abertura, e não só depois
+  // de a pessoa preencher as três etapas.
+  const [erroGeral, setErroGeral] = useState<CodigoErroCadastro | null>(supabaseConfigurado ? null : 'config')
   const [enviando, setEnviando] = useState(false)
   const [concluindo, setConcluindo] = useState(false)
   const [contaExistente, setContaExistente] = useState(false)
@@ -95,6 +98,16 @@ export function Cadastro() {
   const emailDaConta = sessao?.user.email ?? ''
   const tituloRef = useRef<HTMLHeadingElement>(null)
   const precisaFoco = useRef(false)
+  const ultimaTroca = useRef(0)
+
+  // Recarregar ou fechar a aba no meio do cadastro apagava tudo sem aviso: o navegador pede confirmação.
+  const preenchendo = Boolean(dadosEmpresa.razaoSocial || dadosEmpresa.cnpj || dadosResp.nome || dadosResp.email)
+  useEffect(() => {
+    if (!preenchendo || saindo || confirmarEmail) return
+    const avisar = (ev: BeforeUnloadEvent) => ev.preventDefault()
+    window.addEventListener('beforeunload', avisar)
+    return () => window.removeEventListener('beforeunload', avisar)
+  }, [preenchendo, saindo, confirmarEmail])
 
   // Volta do link de confirmação (ou sessão com cadastro incompleto): grava perfil e empresa pendentes.
   useEffect(() => {
@@ -110,11 +123,12 @@ export function Cadastro() {
             if (ativo) navigate('/pagamento')
           })
       })
-      .catch((erro: unknown) => {
+      .catch(async (erro: unknown) => {
+        const pendente = await temCadastroPendente().catch(() => false)
         if (!ativo) return
         setSaindo(false)
         setConcluindo(false)
-        setContaExistente(true)
+        setContaExistente(pendente)
         setErroGeral(codigoDoErro(erro))
       })
     return () => {
@@ -138,6 +152,7 @@ export function Cadastro() {
     if (n === etapa || n < 0 || n >= total) return
     setDirecao(n > etapa ? 1 : -1)
     precisaFoco.current = true
+    ultimaTroca.current = performance.now()
     setEtapa(n)
   }
 
@@ -177,7 +192,7 @@ export function Cadastro() {
   /** Atualiza o campo e some com o erro dele. */
   function limparErro(id: string) {
     if (erros[id]) setErros((atual) => ({ ...atual, [id]: undefined }))
-    if (erroGeral) setErroGeral(null)
+    if (erroGeral && erroGeral !== 'config') setErroGeral(null)
   }
 
   function montarDados(): DadosCadastro {
@@ -204,7 +219,8 @@ export function Cadastro() {
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (enviando) return
+    // Segundo clique de um duplo clique em "Continuar": cairia na etapa seguinte, que ainda nem apareceu.
+    if (enviando || performance.now() - ultimaTroca.current < 400) return
 
     const errosEtapa = validarEtapa(etapa)
     if (Object.keys(errosEtapa).length) {
@@ -310,12 +326,12 @@ export function Cadastro() {
   }
 
   // Enquanto a sessão carrega, não mostra o formulário de "criar conta" para quem talvez já esteja logado.
-  if (concluindo || (carregando && !enviando)) {
+  if (concluindo || ((carregando || falhaLeitura) && !enviando)) {
     return (
       <PageShell titulo={cadastro.titulo} lead={cadastro.lead}>
         <div className="container-site pb-24 md:pb-32">
           <Card className="max-w-[820px] p-5 sm:p-8 md:p-10" role="status" aria-live="polite">
-            <p className="t-body text-silver">{cadastro.concluindo}</p>
+            <p className="t-body text-silver">{concluindo ? cadastro.concluindo : cadastro.carregando}</p>
           </Card>
         </div>
       </PageShell>
@@ -491,6 +507,8 @@ export function Cadastro() {
                           autoComplete="new-password"
                           required
                           minLength={8}
+                          // O Supabase (bcrypt) recusa senhas acima de 72 caracteres.
+                          maxLength={72}
                           error={erros['resp-senha']}
                           value={dadosResp.senha}
                           onChange={(ev) => {

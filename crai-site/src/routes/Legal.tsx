@@ -1,9 +1,19 @@
+import { Link } from 'react-router-dom'
+import { IconChevronDown } from '../components/icons/Icons'
 import { PageShell } from '../components/layout/PageShell'
 import { TextoRico } from '../components/ui/TextoRico'
-import type { BlocoLegal, DocumentoLegal } from '../data/legal.pt'
-import { useConteudo } from '../lib/i18n'
+import { privacidadeEn, termosEn } from '../data/legal.en'
+import { privacidadePt, termosPt, type BlocoLegal, type DocumentoLegal } from '../data/legal.pt'
+import { useConteudo, useLang } from '../lib/i18n'
+
+// Os textos legais viajam com esta rota (e não no bundle inicial de todas as páginas).
+const DOCS = {
+  pt: { privacidade: privacidadePt, termos: termosPt },
+  en: { privacidade: privacidadeEn, termos: termosEn },
+}
 
 function Bloco({ bloco }: { bloco: BlocoLegal }) {
+  const { legalPagina } = useConteudo()
   if (typeof bloco === 'string') {
     return (
       <p className="t-body mt-4 text-silver">
@@ -26,8 +36,14 @@ function Bloco({ bloco }: { bloco: BlocoLegal }) {
     )
   }
   // Tabela rola na horizontal dentro do próprio bloco no celular; a página nunca.
+  // role/tabIndex: quem navega pelo teclado também consegue rolar a tabela.
   return (
-    <div className="mt-6 overflow-x-auto">
+    <div
+      role="region"
+      aria-label={legalPagina.tabelaAria}
+      tabIndex={0}
+      className="mt-6 overflow-x-auto rounded-[4px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber"
+    >
       <table className="t-apoio w-full min-w-[520px] border-collapse text-left">
         <thead>
           <tr>
@@ -54,7 +70,8 @@ function Bloco({ bloco }: { bloco: BlocoLegal }) {
   )
 }
 
-function PaginaLegal({ doc }: { doc: DocumentoLegal }) {
+function PaginaLegal({ doc, caminho }: { doc: DocumentoLegal; caminho: string }) {
+  const { legalPagina } = useConteudo()
   return (
     <PageShell
       titulo={doc.titulo}
@@ -79,6 +96,30 @@ function PaginaLegal({ doc }: { doc: DocumentoLegal }) {
         </nav>
 
         <div className="measure min-w-0 lg:col-span-8 lg:col-start-5">
+          {/* No celular e no tablet o sumário lateral some: o índice vira um bloco que abre e fecha. */}
+          <details className="group mb-10 rounded-[14px] border border-line bg-slate/40 lg:hidden">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-[14px] px-5 py-4 text-[15px] font-[560] text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber [&::-webkit-details-marker]:hidden">
+              {legalPagina.indice}
+              <IconChevronDown size={18} className="shrink-0 text-silver transition-transform duration-200 group-open:rotate-180" />
+            </summary>
+            <nav aria-label={doc.sumarioAria}>
+              <ol className="flex flex-col gap-3.5 border-t border-line px-5 py-5">
+                {doc.secoes.map((secao) => (
+                  <li key={secao.id}>
+                    <a
+                      href={`#${secao.id}`}
+                      // Fecha o índice antes de o navegador rolar: a seção de destino fica no lugar certo.
+                      onClick={(e) => e.currentTarget.closest('details')?.removeAttribute('open')}
+                      className="t-apoio block text-silver transition-colors hover:text-paper"
+                    >
+                      {secao.titulo}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          </details>
+
           {doc.secoes.map((secao) => (
             <section
               key={secao.id}
@@ -94,6 +135,22 @@ function PaginaLegal({ doc }: { doc: DocumentoLegal }) {
               ))}
             </section>
           ))}
+
+          {/* Os documentos se complementam: do fim de um, um clique leva ao outro e ao resumo em /dados. */}
+          <nav aria-label={legalPagina.relacionadosAria} className="border-t border-line pt-8">
+            <h2 className="t-apoio text-silver">{legalPagina.relacionadosTitulo}</h2>
+            <ul className="mt-4 flex flex-col gap-3">
+              {legalPagina.relacionados
+                .filter((link) => link.para !== caminho)
+                .map((link) => (
+                  <li key={link.para}>
+                    <Link to={link.para} className="text-link t-body">
+                      {link.rotulo}
+                    </Link>
+                  </li>
+                ))}
+            </ul>
+          </nav>
         </div>
       </div>
     </PageShell>
@@ -101,9 +158,9 @@ function PaginaLegal({ doc }: { doc: DocumentoLegal }) {
 }
 
 export function Privacidade() {
-  return <PaginaLegal doc={useConteudo().privacidade} />
+  return <PaginaLegal doc={DOCS[useLang()].privacidade} caminho="/privacidade" />
 }
 
 export function Termos() {
-  return <PaginaLegal doc={useConteudo().termos} />
+  return <PaginaLegal doc={DOCS[useLang()].termos} caminho="/termos" />
 }

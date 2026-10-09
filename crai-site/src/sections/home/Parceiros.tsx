@@ -33,7 +33,7 @@ export function Parceiros() {
                   <span className="block h-20 w-20 rounded-full bg-gradient-to-br from-orange to-amber p-[2px] transition-transform duration-500 group-hover:scale-105">
                     <img
                       src={p.foto}
-                      alt={`Foto de ${p.nome}`}
+                      alt={p.nome}
                       width={400}
                       height={400}
                       loading="lazy"

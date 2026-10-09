@@ -15,6 +15,8 @@ export interface SessaoValor {
   sessao: Session | null
   perfil: Perfil | null
   empresa: Empresa | null
+  /** true quando a leitura de perfil/empresa falhou e ainda não há empresa carregada: não é "sem empresa". */
+  falhaLeitura: boolean
   /** Relê perfil e empresa (ex.: logo depois de concluir o cadastro). */
   recarregar: () => Promise<void>
   sair: () => Promise<void>

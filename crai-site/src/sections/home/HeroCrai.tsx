@@ -27,7 +27,7 @@ export function HeroCrai() {
   return (
     <section className="relative flex min-h-[min(100svh,920px)] items-center overflow-hidden" aria-labelledby="hero-titulo">
       <AmbientBackground />
-      <div className="container-site relative grid items-center gap-14 pt-10 pb-24 md:pt-16 lg:grid-cols-12 lg:gap-10 lg:pb-28">
+      <div className="container-site relative grid grid-cols-1 items-center gap-14 pt-10 pb-24 md:pt-16 lg:grid-cols-12 lg:gap-10 lg:pb-28">
         <div className="lg:col-span-6">
           <motion.p className="chip" {...entra(0.05)}>
             <span className="chip__tag">{hero.selo.tag}</span>

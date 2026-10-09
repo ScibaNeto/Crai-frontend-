@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { interpolar } from '../../lib/cx'
 import { useConteudo } from '../../lib/i18n'
 import { MarcaRodape } from '../../sections/MarcaRodape'
 import { Reveal } from '../motion/Reveal'
@@ -43,7 +44,21 @@ export function Footer() {
         </Link>
       </div>
 
-      <p className="t-apoio container-site pb-8 text-center text-silver">{rodape.legal}</p>
+      {/* Base do site: direitos autorais e os documentos legais, sempre a um clique. */}
+      <div className="container-site flex flex-col gap-4 border-t border-line py-6 md:flex-row md:items-center md:justify-between">
+        <p className="t-apoio text-silver">{interpolar(rodape.legal, { ano: new Date().getFullYear() })}</p>
+        <nav aria-label={rodape.documentosAria}>
+          <ul className="flex flex-wrap gap-x-6 gap-y-3">
+            {rodape.documentos.map((doc) => (
+              <li key={doc.para}>
+                <Link to={doc.para} className="nav-link t-apoio text-paper transition-colors hover:text-amber">
+                  {doc.rotulo}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
 
       <MarcaRodape />
     </footer>

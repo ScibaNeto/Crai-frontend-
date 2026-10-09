@@ -1,5 +1,5 @@
 import { RevealWords } from '../components/motion/Reveal'
-import { useState, type CSSProperties, type FormEvent } from 'react'
+import { useState, type ClipboardEvent, type CSSProperties, type FormEvent } from 'react'
 import { IconArrowRight } from '../components/icons/Icons'
 import { CountUp } from '../components/motion/CountUp'
 import { Button } from '../components/ui/Button'
@@ -36,19 +36,35 @@ export function Simulador() {
   const r = simular(mrr, plano)
   // No Premium, o total exibido é a soma das parcelas já arredondadas (senão R$ 251 + R$ 451 aparecia como R$ 701).
   const taxaExibida = plano === 'premium' ? Math.round(r.taxaStandard) + Math.round(r.taxaRetencao) : r.taxaCrai
+  // "Fica com você" sai das parcelas como aparecem na tela (reais inteiros), para a conta do card fechar:
+  // com MRR de R$ 12.300, ganho R$ 246 − taxa R$ 62 aparecia como R$ 185. No Standard a receita preservada é 0.
+  const ficaExibido = Math.round(r.ganhoIncrementalRS) + Math.round(r.receitaPreservada) - Math.round(taxaExibida)
 
   function onMrr(e: FormEvent<HTMLInputElement>) {
     const campo = e.currentTarget
     let digitos = somenteDigitos(campo.value)
     // Backspace/Delete em cima do separador de milhar não mudava os dígitos e o campo "travava":
-    // nesse caso apaga o dígito vizinho ao separador.
-    if (digitos === String(mrr) && campo.value.length < f.numero(mrr).length) {
+    // nesse caso apaga o dígito vizinho ao separador. Só vale para apagar: colar "50000" por cima de
+    // "50.000" também deixa os mesmos dígitos num texto mais curto, e perdia um dígito (virava 5.000).
+    const tipo = (e.nativeEvent as InputEvent).inputType
+    const apagando = tipo === 'deleteContentBackward' || tipo === 'deleteContentForward'
+    if (apagando && digitos === String(mrr) && campo.value.length < f.numero(mrr).length) {
       const antesDoCursor = somenteDigitos(campo.value.slice(0, campo.selectionStart ?? campo.value.length)).length
-      const tipo = (e.nativeEvent as InputEvent).inputType
       const alvo = tipo === 'deleteContentForward' ? antesDoCursor : antesDoCursor - 1
       if (alvo >= 0) digitos = digitos.slice(0, alvo) + digitos.slice(alvo + 1)
     }
     setMrr(Number(digitos.slice(0, 9)))
+  }
+
+  /** Valor colado com centavos ("R$ 50.000,00", "50,000.00", "50000.00"): descarta os centavos, senão virava 5.000.000. */
+  function onColar(e: ClipboardEvent<HTMLInputElement>) {
+    const m = e.clipboardData
+      .getData('text')
+      .trim()
+      .match(/^(?:R\$\s*)?([\d.,\s]*\d)[.,]\d{1,2}$/)
+    if (!m) return
+    e.preventDefault()
+    setMrr(Number(somenteDigitos(m[1]).slice(0, 9)))
   }
 
   const opcoesPlano = s.planos as { value: Plano; label: string }[]
@@ -70,6 +86,7 @@ export function Simulador() {
               autoComplete="off"
               value={mrr ? f.numero(mrr) : ''}
               onChange={onMrr}
+              onPaste={onColar}
               className="tabular text-[20px] font-[560]"
             />
 
@@ -93,11 +110,7 @@ export function Simulador() {
               <span>{f.brlInteiro(MAX)}</span>
             </div>
 
-            <p className="t-apoio mt-3 min-h-[21px] text-silver" role="status">
-              {r.foraDaFaixa ? s.foraDaFaixa : ''}
-            </p>
-
-            <Toggle className="mt-6" id="sim-plano" label={s.planoRotulo} options={opcoesPlano} value={plano} onChange={setPlano} />
+            <Toggle className="mt-8" id="sim-plano" label={s.planoRotulo} options={opcoesPlano} value={plano} onChange={setPlano} />
           </Card>
 
           <Card className="flex flex-col p-6 md:p-8 lg:col-span-7">
@@ -140,7 +153,7 @@ export function Simulador() {
               <div className="border-t border-line pt-6 sm:col-span-2">
                 <dt className="t-apoio text-silver">{s.saidas.fica}</dt>
                 <dd className="t-number mt-3 text-orange">
-                  <CountUp value={r.ficaComVoce} format={f.brlInteiro} />
+                  <CountUp value={ficaExibido} format={f.brlInteiro} />
                 </dd>
               </div>
             </dl>

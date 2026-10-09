@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { useEffect, useId, useState } from 'react'
 import { IconBolt, IconCalendar, IconCardFail, IconCheck, IconMessage, IconPlug, IconScale } from '../../components/icons/Icons'
 import { cx } from '../../lib/cx'
-import { useConteudo, useFormato } from '../../lib/i18n'
+import { useConteudo, useFormato, useLang } from '../../lib/i18n'
 import { EASE_EXPO } from '../../lib/intro'
 import { useReducedMotion } from '../../lib/useReducedMotion'
 
@@ -81,6 +81,7 @@ export function VisualRecuperacao({ ativo }: { ativo: boolean }) {
 /** 02 — retenção: sinais chegam, o medidor de risco sobe, a oferta desliza. */
 export function VisualRetencao({ ativo }: { ativo: boolean }) {
   const { visual } = useConteudo().home.capitulos
+  const lang = useLang()
   const reduced = useReducedMotion()
   // Id único por instância: com "gauge" fixo, duas cópias na página disputavam o mesmo gradiente.
   const idGradiente = `gauge-${useId().replace(/:/g, '')}`
@@ -132,7 +133,7 @@ export function VisualRetencao({ ativo }: { ativo: boolean }) {
         <div className="-mt-2 text-center">
           <p className="text-[12px] tracking-[0.08em] text-silver uppercase">{visual.risco}</p>
           <p className="text-[30px] font-[700] tracking-[-0.03em] text-paper tabular">
-            {score.toFixed(2).replace('.', ',')}
+            {lang === 'pt' ? score.toFixed(2).replace('.', ',') : score.toFixed(2)}
             {nSinais === visual.sinais.length ? <span className="ml-2 align-middle text-[13px] font-[600] text-orange">{visual.riscoAlto}</span> : null}
           </p>
         </div>

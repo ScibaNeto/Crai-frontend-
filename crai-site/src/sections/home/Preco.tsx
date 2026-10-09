@@ -18,7 +18,7 @@ function CardPlano({ plano }: { plano: PlanoHome }) {
         {plano.selo ? <span className="rounded-full bg-orange px-2.5 py-0.5 text-[12px] font-[650] text-on-accent">{plano.selo}</span> : null}
       </div>
       <p className="t-apoio mt-2 text-silver">{plano.resumo}</p>
-      <p className="mt-8 flex items-end gap-2">
+      <p className="mt-8 flex flex-wrap items-end gap-2">
         <span className={cx('text-[72px] leading-[0.9] font-[700] tracking-[-0.05em]', destaque ? 'text-gradient' : 'text-paper')}>
           {plano.prefixo}
           <CountUp value={plano.taxa} format={(v) => String(Math.round(v))} duration={1100} />%
@@ -55,7 +55,7 @@ export function Preco() {
       <div className="container-site">
         <CabecalhoSecao id="preco-titulo" eyebrow={preco.eyebrow} titulo={preco.titulo} lead={preco.lead} />
 
-        <div className="mt-14 grid gap-5 lg:grid-cols-3">
+        <div className="mt-14 grid grid-cols-1 gap-5 lg:grid-cols-3">
           {preco.planos.map((p, i) => (
             <Reveal key={p.nome} delay={i * 0.1} className="h-full">
               <CardPlano plano={p} />

@@ -72,8 +72,10 @@ export function ControleChart({ serie, titulo, descricao, rotulos, className }: 
   const fimC = ptsControle[fim]
   const ganhoFinal = serie[fim].tratado - serie[fim].controle
 
-  const passoRotulo = Math.max(1, Math.ceil(serie.length / 6))
-  const rotulosX = serie.filter((_, i) => i % passoRotulo === 0 || i === fim).map((p) => rotular(p.rotulo))
+  // Até 6 rótulos no eixo X, espalhados por toda a série. Cada um é posicionado na fração exata do seu ponto
+  // (antes eram distribuídos por igual e ficavam sob o ponto errado: "Ago" aparecia embaixo de "Jul").
+  const nRotulos = Math.min(6, serie.length)
+  const indicesX = [...new Set(Array.from({ length: nRotulos }, (_, k) => (nRotulos === 1 ? 0 : Math.round((k * fim) / (nRotulos - 1)))))]
 
   const areaControle = `${caminhoSuave(ptsControle)} L${W} ${y0} L0 ${y0} Z`
 
@@ -245,13 +247,24 @@ export function ControleChart({ serie, titulo, descricao, rotulos, className }: 
         </div>
       </div>
 
-      <div aria-hidden="true" className="mt-3 flex justify-between pr-[66px] font-mono text-[11px] text-silver sm:pr-[70px] sm:pl-[58px]">
-        {rotulosX.map((rotulo, i) => (
-          // No mobile, só rótulos alternados (e sempre o último) para não encavalar.
-          <span key={rotulo} className={i % 2 === 1 && i !== rotulosX.length - 1 ? 'hidden sm:inline' : undefined}>
-            {rotulo}
-          </span>
-        ))}
+      <div aria-hidden="true" className="mt-3 pr-[66px] font-mono text-[11px] text-silver sm:pr-[70px] sm:pl-[58px]">
+        <div className="relative h-4">
+          {indicesX.map((indice, i) => (
+            <span
+              key={indice}
+              style={{ left: `${fim ? (indice / fim) * 100 : 0}%` }}
+              className={[
+                'absolute top-0 whitespace-nowrap',
+                // O primeiro encosta à esquerda e o último à direita; os do meio ficam centrados no ponto.
+                indice === 0 ? '' : indice === fim ? '-translate-x-full' : '-translate-x-1/2',
+                // No mobile, só rótulos alternados (e sempre o último) para não encavalar.
+                i % 2 === 1 && i !== indicesX.length - 1 ? 'max-sm:hidden' : '',
+              ].join(' ')}
+            >
+              {rotular(serie[indice].rotulo)}
+            </span>
+          ))}
+        </div>
       </div>
 
       <ul className="t-apoio mt-5 flex flex-wrap gap-x-6 gap-y-2 text-silver">

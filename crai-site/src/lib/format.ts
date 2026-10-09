@@ -94,7 +94,11 @@ export function formatDocumento(valor: string) {
 }
 
 export function formatTelefone(valor: string) {
-  const d = somenteDigitos(valor).slice(0, 11)
+  let d = somenteDigitos(valor)
+  // "+55 11 98765-4321" ou "5511987654321" colados/autopreenchidos: descarta o código do país, senão o campo
+  // mostrava "(55) 11987-6543" e esse número errado era salvo. Um DDD 55 digitado à mão (11 dígitos) não muda.
+  if (d.startsWith('55') && (d.length === 13 || (d.length === 12 && valor.trim().startsWith('+')))) d = d.slice(2)
+  d = d.slice(0, 11)
   return aplicarMascara(d, d.length > 10 ? '(##) #####-####' : '(##) ####-####')
 }
 

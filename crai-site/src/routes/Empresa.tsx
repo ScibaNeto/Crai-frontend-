@@ -68,7 +68,7 @@ export function Empresa() {
                   <span className="text-[34px] leading-none font-[700] tracking-[-0.04em] text-transparent [-webkit-text-stroke:1px_color-mix(in_srgb,var(--color-amber)_70%,transparent)] transition-colors duration-500 group-hover:text-orange/30">
                     0{i + 1}
                   </span>
-                  <p className="t-h3 mt-5">{v.nome}</p>
+                  <p className="t-h3 mt-5 lg:max-xl:text-[18px]">{v.nome}</p>
                   <p className="t-apoio mt-3 text-silver">{v.texto}</p>
                 </Spotlight>
               </motion.li>

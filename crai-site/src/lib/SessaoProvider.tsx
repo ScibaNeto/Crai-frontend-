@@ -35,6 +35,8 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
   const [sessao, setSessao] = useState<Session | null>(null)
   const [perfil, setPerfil] = useState<Perfil | null>(null)
   const [empresa, setEmpresa] = useState<Empresa | null>(null)
+  // Leituras seguidas que falharam (0 = a última deu certo).
+  const [falhas, setFalhas] = useState(0)
 
   const ultimoUsuario = useRef<string | null | undefined>(undefined)
   // Cada evento do auth dispara uma leitura assíncrona. Só a mais recente pode gravar o estado:
@@ -47,6 +49,7 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
       setSessao(null)
       setPerfil(null)
       setEmpresa(null)
+      setFalhas(0)
       setCarregando(false)
       return
     }
@@ -57,16 +60,25 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
       setSessao(s)
       setPerfil(dados.perfil)
       setEmpresa(dados.empresa)
+      setFalhas(0)
     } catch (erro) {
       // Falha de leitura: mantém perfil/empresa que já estavam carregados para o mesmo usuário
       // (em vez de apagar a empresa e mandar quem já tem conta de volta ao cadastro).
       if (minha !== leituraAtual.current) return
       console.error('[CRAI] Falha ao ler perfil/empresa:', erro)
       setSessao(s)
+      setFalhas((n) => n + 1)
     } finally {
       if (minha === leituraAtual.current) setCarregando(false)
     }
   }, [])
+
+  // Leitura falhou: tenta de novo sozinha a cada 5 s. Até lá as páginas tratam como "carregando", não como "sem empresa".
+  useEffect(() => {
+    if (!falhas || !sessao) return
+    const t = window.setTimeout(() => void carregarDados(sessao), 5000)
+    return () => window.clearTimeout(t)
+  }, [falhas, sessao, carregarDados])
 
   useEffect(() => {
     if (!supabaseConfigurado) return
@@ -116,8 +128,8 @@ export function SessaoProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const valor = useMemo<SessaoValor>(
-    () => ({ carregando, sessao, perfil, empresa, recarregar, sair }),
-    [carregando, sessao, perfil, empresa, recarregar, sair],
+    () => ({ carregando, sessao, perfil, empresa, falhaLeitura: falhas > 0 && !empresa, recarregar, sair }),
+    [carregando, sessao, perfil, empresa, falhas, recarregar, sair],
   )
 
   return <SessaoContext.Provider value={valor}>{children}</SessaoContext.Provider>

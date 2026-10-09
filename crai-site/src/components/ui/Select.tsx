@@ -25,7 +25,7 @@ export function Select({ id, label, options, hint, wrapperClassName, className, 
           id={id}
           aria-describedby={hintId}
           className={cx(
-            'peer w-full cursor-pointer appearance-none rounded-t-[4px] border-0 border-b border-graphite bg-slate/45 py-2.5 pr-10 pl-3 text-[16px] text-paper outline-none transition-colors hover:border-silver disabled:cursor-not-allowed disabled:text-silver disabled:hover:border-graphite',
+            'peer w-full cursor-pointer appearance-none rounded-t-[4px] border-0 border-b border-silver/70 bg-slate/45 py-2.5 pr-10 pl-3 text-[16px] text-paper outline-none transition-colors hover:border-silver disabled:cursor-not-allowed disabled:text-silver disabled:hover:border-silver/70',
             className,
           )}
           {...rest}

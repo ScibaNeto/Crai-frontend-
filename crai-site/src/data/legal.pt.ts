@@ -3,6 +3,8 @@
 // ⚠️ Os campos [ENTRE COLCHETES] são dados de constituição da empresa e precisam ser preenchidos antes da
 // publicação. Nos textos, **negrito** e [rótulo](/rota ou mailto:) viram marcação (components/ui/TextoRico.tsx).
 
+import { DOCUMENTOS_LEGAIS, EMAIL_CONTATO } from './institucional'
+
 /** Parágrafo (string), subtítulo, lista ou tabela. */
 export type BlocoLegal =
   | string
@@ -19,11 +21,12 @@ export interface DocumentoLegal {
   secoes: { id: string; titulo: string; blocos: BlocoLegal[] }[]
 }
 
-const EMAIL = '[agentia.startup@gmail.com](mailto:agentia.startup@gmail.com)'
+const EMAIL = `[${EMAIL_CONTATO}](mailto:${EMAIL_CONTATO})`
+const VIGENCIA = `Versão ${DOCUMENTOS_LEGAIS.versao} · Vigência a partir de ${DOCUMENTOS_LEGAIS.vigencia.pt}`
 
 export const privacidadePt: DocumentoLegal = {
   titulo: 'Política de Privacidade',
-  vigencia: 'Versão 1.0 · Vigência a partir de [DD/MM/AAAA]',
+  vigencia: VIGENCIA,
   sumarioAria: 'Seções da política',
   secoes: [
     {
@@ -202,12 +205,29 @@ export const privacidadePt: DocumentoLegal = {
             colunas: ['Item', 'Onde fica', 'Para que serve', 'Duração'],
             linhas: [
               ['Sessão de login', 'armazenamento local (localStorage)', 'manter o usuário conectado nas áreas de acesso, painel e pagamento', 'até o usuário sair da conta'],
-              ['Idioma escolhido', 'armazenamento de sessão (sessionStorage)', 'exibir o site no idioma selecionado', 'até o fechamento da aba'],
-              ['Tema escolhido (claro ou escuro)', 'armazenamento de sessão (sessionStorage)', 'exibir o site no tema selecionado', 'até o fechamento da aba'],
+              ['Idioma escolhido', 'armazenamento local (localStorage)', 'exibir o site no idioma selecionado', 'até você trocar de idioma ou apagar os dados do navegador'],
+              [
+                'Tema escolhido (claro ou escuro)',
+                'armazenamento local (localStorage)',
+                'exibir o site no tema selecionado',
+                'até você trocar de tema ou apagar os dados do navegador',
+              ],
+              [
+                'Ciência do aviso de privacidade',
+                'armazenamento local (localStorage)',
+                'não repetir o aviso de cookies e privacidade depois que você o fecha',
+                'até a publicação de nova versão dos documentos ou até você apagar os dados do navegador',
+              ],
               [
                 'Controle da animação de abertura',
                 'armazenamento de sessão (sessionStorage)',
                 'evitar que a animação se repita na mesma visita',
+                'até o fechamento da aba',
+              ],
+              [
+                'Controle de recarga da página',
+                'armazenamento de sessão (sessionStorage)',
+                'recarregar a página uma única vez quando um arquivo do site não chega ao navegador',
                 'até o fechamento da aba',
               ],
             ],
@@ -248,7 +268,7 @@ export const privacidadePt: DocumentoLegal = {
 
 export const termosPt: DocumentoLegal = {
   titulo: 'Termos de Uso',
-  vigencia: 'Versão 1.0 · Vigência a partir de [DD/MM/AAAA]',
+  vigencia: VIGENCIA,
   sumarioAria: 'Cláusulas dos termos',
   secoes: [
     {

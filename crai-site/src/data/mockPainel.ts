@@ -110,7 +110,7 @@ const inicio30d = new Date(2026, 7, 14)
 
 export const periodos: Record<Periodo, { indicadores: Indicadores; serie: PontoSerie[] }> = {
   '30d': {
-    indicadores: indicadores(5120, 2940, 1030, 2180),
+    indicadores: indicadores(5120, 2940, 1030, 2300),
     serie: gerarSerie(3017, 15, (i) => ({ tipo: 'data', data: somarDias(inicio30d, i * 2) })),
   },
   '90d': {

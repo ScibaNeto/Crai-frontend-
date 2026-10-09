@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState, type FormEvent } from 'react'
 import { createPortal } from 'react-dom'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { Redirecionar } from '../components/Redirecionar'
 import { IconCheck } from '../components/icons/Icons'
 import { PageShell } from '../components/layout/PageShell'
 import { CountUp } from '../components/motion/CountUp'
@@ -61,9 +62,9 @@ function CarregandoPix({ estado }: { estado: EstadoQr }) {
 export function Pagamento() {
   const lang = useLang()
   const { pagamento } = useConteudo()
-  const { carregando, sessao, empresa } = useSessao()
+  const { carregando, sessao, empresa, falhaLeitura } = useSessao()
 
-  if (carregando) {
+  if (carregando || falhaLeitura) {
     return (
       <PageShell titulo={pagamento.titulo} lead={pagamento.lead}>
         <div className="container-site pb-24 md:pb-32">
@@ -74,8 +75,8 @@ export function Pagamento() {
       </PageShell>
     )
   }
-  if (!sessao) return <Navigate to="/entrar?proximo=/pagamento" replace />
-  if (!empresa) return <Navigate to="/cadastro" replace />
+  if (!sessao) return <Redirecionar to="/entrar?proximo=/pagamento" replace />
+  if (!empresa) return <Redirecionar to="/cadastro" replace />
   return <PagamentoForm key={lang} empresa={empresa} email={sessao.user.email ?? ''} />
 }
 
@@ -85,6 +86,7 @@ function PagamentoForm({ empresa, email }: { empresa: Empresa; email: string }) 
   const conteudo = useConteudo()
   const { pagamento } = conteudo
   const f = useFormato()
+  const estimativa = simular(mrrEstimado(empresa.faixa_mrr), empresa.plano)
   // A cobrança ainda é simulada (sem PSP): os dados bancários não são enviados nem salvos.
   const [form, setForm] = useState(() => ({
     titular: empresa.razao_social,
@@ -94,13 +96,14 @@ function PagamentoForm({ empresa, email }: { empresa: Empresa; email: string }) 
     conta: '',
     chavePix: empresa.email_financeiro ?? email,
     diaApuracao: pagamento.dias[0],
-    limitePorCobranca: 2000,
+    // O limite sugerido nunca fica abaixo da estimativa mostrada ao lado (antes: limite de R$ 2.000 com
+    // estimativa de até R$ 8.400). Arredonda para cima, de mil em mil.
+    limitePorCobranca: Math.max(2000, Math.ceil(estimativa.taxaCrai / 1000) * 1000),
     autorizado: false,
   }))
   const [erroAutorizo, setErroAutorizo] = useState(false)
   const [estado, setEstado] = useState<EstadoQr>('ocioso')
   const plano = getPlanos(conteudo)[empresa.plano]
-  const estimativa = simular(mrrEstimado(empresa.faixa_mrr), empresa.plano)
   // Linha 0: taxa da recuperação (os dois planos). Linha 1: taxa da retenção (só Premium).
   const linhasResumo = empresa.plano === 'premium' ? pagamento.resumo.linhas : pagamento.resumo.linhas.slice(0, 1)
   const c = pagamento.campos
@@ -142,6 +145,10 @@ function PagamentoForm({ empresa, email }: { empresa: Empresa; email: string }) 
         <form onSubmit={onSubmit} noValidate className="lg:col-span-7">
           <Card className="p-5 sm:p-8 md:p-10">
             <h2 className="t-h3">{pagamento.formTitulo}</h2>
+            {/* O aviso de demonstração também fica onde os dados bancários são digitados, não só na faixa do rodapé. */}
+            <p role="note" className="t-apoio mt-3 text-amber">
+              {pagamento.demo}
+            </p>
             <div className="mt-8 grid gap-x-6 gap-y-6 sm:grid-cols-2">
               <Field
                 id="titular"
@@ -154,7 +161,6 @@ function PagamentoForm({ empresa, email }: { empresa: Empresa; email: string }) 
               <Field
                 id="documento"
                 label={c.documento}
-                inputMode="numeric"
                 className="tabular"
                 value={form.documento}
                 onChange={(e) => setForm({ ...form, documento: formatDocumento(e.target.value) })}
@@ -177,7 +183,6 @@ function PagamentoForm({ empresa, email }: { empresa: Empresa; email: string }) 
               <Field
                 id="conta"
                 label={c.conta}
-                inputMode="numeric"
                 className="tabular"
                 value={form.conta}
                 onChange={(e) => setForm({ ...form, conta: e.target.value.replace(/[^\d-]/g, '').slice(0, 12) })}

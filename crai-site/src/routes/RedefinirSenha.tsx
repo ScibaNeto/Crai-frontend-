@@ -53,7 +53,11 @@ export function RedefinirSenha() {
 
   let corpo
   if (carregando) {
-    corpo = <p className="t-body text-silver">…</p>
+    corpo = (
+      <p role="status" className="t-body text-silver">
+        {copy.carregando}
+      </p>
+    )
   } else if (!sessao || linkInvalido) {
     corpo = (
       <div className="flex flex-col items-start gap-6">
@@ -85,6 +89,8 @@ export function RedefinirSenha() {
           autoComplete="new-password"
           required
           minLength={8}
+          // O Supabase (bcrypt) recusa senhas acima de 72 caracteres.
+          maxLength={72}
           error={erro ?? undefined}
           value={senha}
           onChange={(ev) => {
@@ -94,7 +100,8 @@ export function RedefinirSenha() {
         />
         {erroAuth ? (
           <p role="alert" className="t-apoio text-amber">
-            {conteudo.entrar.erros[erroAuth]}
+            {/* O erro genérico do login diz "não foi possível entrar"; aqui o que falhou foi salvar a senha. */}
+            {erroAuth === 'desconhecido' ? copy.erro : conteudo.entrar.erros[erroAuth]}
           </p>
         ) : null}
         <div className="border-t border-line pt-6">

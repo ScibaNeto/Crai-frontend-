@@ -54,10 +54,38 @@ function seoEstatico(siteUrl: string, indexar: boolean): Plugin {
   }
 }
 
+/** Pré-carrega o único subconjunto de Inter que o site usa em pt/en (latin): a fonte deixa de esperar o CSS. */
+function preloadFonte(): Plugin {
+  return {
+    name: 'crai-preload-fonte',
+    transformIndexHtml: {
+      order: 'post',
+      handler(_html, ctx) {
+        const arquivo = Object.keys(ctx.bundle ?? {}).find((f) => /inter-latin-opsz-normal-[\w-]+\.woff2$/.test(f))
+        if (!arquivo) return []
+        return [{ tag: 'link', attrs: { rel: 'preload', as: 'font', type: 'font/woff2', href: `/${arquivo}`, crossorigin: '' }, injectTo: 'head-prepend' }]
+      },
+    },
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig(({ mode, command }) => {
   const siteUrl = normalizarSiteUrl(loadEnv(mode, process.cwd(), 'VITE_').VITE_SITE_URL)
   return {
-    plugins: [react(), tailwindcss(), seoEstatico(siteUrl, command === 'build' && ehProducao(mode))],
+    plugins: [react(), tailwindcss(), seoEstatico(siteUrl, command === 'build' && ehProducao(mode)), preloadFonte()],
+    build: {
+      rolldownOptions: {
+        output: {
+          codeSplitting: {
+            groups: [
+              { name: 'react', test: /node_modules[\\/](react|react-dom|react-router|react-router-dom|@remix-run|scheduler)[\\/]/, priority: 20 },
+              { name: 'motion', test: /node_modules[\\/](framer-motion|motion-dom|motion-utils)[\\/]/, priority: 20 },
+              { name: 'site', test: /src[\\/](components|lib|sections|data)[\\/]/, minShareCount: 3, priority: 10 },
+            ],
+          },
+        },
+      },
+    },
   }
 })

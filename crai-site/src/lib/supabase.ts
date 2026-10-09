@@ -35,3 +35,20 @@ export function getSupabase(): Promise<SupabaseClient<Database>> {
     })
   return cliente
 }
+
+/**
+ * true se o navegador guarda uma sessão do Supabase (chave `sb-<projeto>-auth-token`). Serve para o cabeçalho
+ * não mostrar "Entrar / Criar conta" a quem provavelmente está logado enquanto a sessão ainda é conferida.
+ * Só olha o nome da chave; não lê o token.
+ */
+export function temSessaoGuardada(): boolean {
+  try {
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const chave = window.localStorage.key(i)
+      if (chave?.startsWith('sb-') && chave.endsWith('-auth-token')) return true
+    }
+  } catch {
+    // localStorage bloqueado: trata como visitante.
+  }
+  return false
+}

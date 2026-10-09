@@ -2,14 +2,14 @@ import type { InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from 'rea
 import { cx } from '../../lib/cx'
 
 const controle =
-  'peer w-full rounded-t-[4px] border-0 border-b border-graphite bg-slate/45 px-3 pt-2.5 pb-2.5 text-[16px] text-paper outline-none transition-colors placeholder:text-silver/70 hover:border-silver disabled:cursor-not-allowed disabled:text-silver disabled:hover:border-graphite'
+  'peer w-full rounded-t-[4px] border-0 border-b border-silver/70 bg-slate/45 px-3 pt-2.5 pb-2.5 text-[16px] text-paper outline-none transition-colors placeholder:text-silver hover:border-silver disabled:cursor-not-allowed disabled:text-silver disabled:hover:border-silver/70'
 
 /** Sublinhado laranja de 2px que cresce a partir do centro no foco (10.7). */
 export function FocusLine() {
   return (
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 -bottom-px h-0.5 origin-center scale-x-0 bg-orange transition-transform duration-[220ms] ease-[var(--ease-expo)] peer-focus:scale-x-100"
+      className="pointer-events-none absolute inset-x-0 -bottom-px h-0.5 origin-center scale-x-0 bg-orange transition-transform duration-[220ms] [[data-theme='light']_&]:bg-amber ease-[var(--ease-expo)] peer-focus:scale-x-100"
     />
   )
 }
@@ -67,20 +67,30 @@ interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string
   hint?: ReactNode
   wrapperClassName?: string
+  /** Mensagem de validação, como no Field. */
+  error?: string
 }
 
-export function TextArea({ id, label, hint, wrapperClassName, className, ...rest }: TextAreaProps) {
-  const hintId = hint ? `${id}-dica` : undefined
+export function TextArea({ id, label, hint, wrapperClassName, className, error, ...rest }: TextAreaProps) {
+  const hintId = error ? `${id}-erro` : hint ? `${id}-dica` : undefined
   return (
     <div className={cx('flex flex-col', wrapperClassName)}>
       <label htmlFor={id} className="t-apoio mb-2 text-silver">
         {label}
       </label>
       <div className="relative">
-        <textarea id={id} aria-describedby={hintId} className={cx(controle, 'min-h-36 resize-y leading-[1.55]', className)} {...rest} />
+        <textarea
+          id={id}
+          aria-describedby={hintId}
+          aria-invalid={error ? true : undefined}
+          className={cx(controle, 'min-h-36 resize-y leading-[1.55]', error ? 'border-amber hover:border-amber' : undefined, className)}
+          {...rest}
+        />
         <FocusLine />
       </div>
-      {hint ? (
+      {error ? (
+        <ErroCampo id={`${id}-erro`}>{error}</ErroCampo>
+      ) : hint ? (
         <p id={hintId} className="t-apoio mt-2 text-silver">
           {hint}
         </p>
@@ -107,7 +117,7 @@ export function Checkbox({ id, label, hint, wrapperClassName, error, ...rest }: 
           type="checkbox"
           aria-describedby={hintId}
           aria-invalid={error ? true : undefined}
-          className="peer h-5 w-5 cursor-pointer appearance-none rounded-[4px] border border-silver/60 bg-transparent transition-colors checked:border-paper checked:bg-paper hover:border-silver focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber"
+          className="peer h-5 w-5 cursor-pointer appearance-none rounded-[4px] border border-silver/80 bg-transparent transition-colors checked:border-paper checked:bg-paper hover:border-silver focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber"
           {...rest}
         />
         <svg

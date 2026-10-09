@@ -34,6 +34,9 @@ export function Confirmacao() {
 
       <h1 className="t-h1 mt-10 max-w-[16em]">{confirmacao.titulo}</h1>
       <p className="t-body measure mt-5 text-silver">{interpolar(confirmacao.texto, { dia })}</p>
+      <p role="note" className="t-apoio measure mt-4 text-amber">
+        {pagamento.demo}
+      </p>
 
       <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
         {confirmacao.links.map((link) => (

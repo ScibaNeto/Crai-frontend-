@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
-import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Redirecionar } from '../components/Redirecionar'
 import { PageShell } from '../components/layout/PageShell'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
@@ -16,7 +17,11 @@ const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 /** Só aceita caminhos internos em ?proximo=, para o login não virar redirecionamento aberto. */
 function destinoSeguro(valor: string | null): string {
   // Recusa também "/\\..." — o navegador lê "/\\" como "//" (outro domínio) e a navegação quebrava.
-  return valor && /^\/(?![/\\])/.test(valor) ? valor : '/painel'
+  if (!valor || !/^\/(?![/\\])/.test(valor)) return '/painel'
+  // O navegador ignora TAB e quebras de linha na URL ("/\t/site" vira "//site"): confere a origem já resolvida.
+  const url = new URL(valor, window.location.origin)
+  if (url.origin !== window.location.origin || url.pathname === '/entrar') return '/painel'
+  return url.pathname + url.search + url.hash
 }
 
 export function Entrar() {
@@ -35,7 +40,7 @@ export function Entrar() {
   const [linkEnviado, setLinkEnviado] = useState(false)
 
   // Já logado: não faz sentido ver o formulário.
-  if (!carregando && sessao && !enviando) return <Navigate to={proximo} replace />
+  if (!carregando && sessao && !enviando) return <Redirecionar to={proximo} replace />
 
   function validar(exigeSenha: boolean) {
     const novos: typeof erros = {}
@@ -56,16 +61,17 @@ export function Entrar() {
       await entrar(email, senha)
       // Conta criada com confirmação de e-mail e nunca concluída: grava perfil e empresa agora.
       // Se falhar (ex.: CNPJ já usado), o cadastro mostra o erro e deixa corrigir.
+      let concluiu = false
       if (await temCadastroPendente()) {
         try {
-          await concluirCadastroPendente()
+          concluiu = await concluirCadastroPendente()
         } catch {
           navigate('/cadastro', { replace: true })
           return
         }
       }
       await recarregar()
-      navigate(proximo, { replace: true })
+      navigate(concluiu ? '/pagamento' : proximo, { replace: true })
     } catch (erro) {
       setErroGeral(codigoErroAuth(erro))
       setEnviando(false)

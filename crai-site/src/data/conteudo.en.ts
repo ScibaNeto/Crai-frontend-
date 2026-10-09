@@ -1,5 +1,7 @@
 import type { Conteudo } from './conteudo.pt'
-import { privacidadeEn, termosEn } from './legal.en'
+import { DOCUMENTOS_LEGAIS, EMAIL_CONTATO } from './institucional'
+
+const { versao: VERSAO_DOCS, vigencia: VIGENCIA_DOCS } = DOCUMENTOS_LEGAIS
 
 // English copy. Not a literal translation: shorter, same dry tone, no promise that is not in the Portuguese.
 // Legal names stay in Portuguese (LGPD, Decreto 11.034/2022) with a short gloss. Currency is always BRL.
@@ -82,7 +84,7 @@ export const conteudoEn: Conteudo = {
     dados: {
       titulo: 'Data, privacy and security (LGPD) | CRAI',
       descricao:
-        'How CRAI protects SaaS and subscriber data: models trained without client data, per-company isolation, encrypted Pix keys, subprocessors and data protection officer.',
+        'How CRAI protects SaaS and subscriber data: models trained without client data, per-company isolation, encrypted Pix keys and subprocessors.',
     },
     naoEncontrada: {
       titulo: 'Page not found | CRAI',
@@ -142,9 +144,34 @@ export const conteudoEn: Conteudo = {
       ],
       aviso: 'Beta version — no payment is processed.',
       lgpd: 'Data handled under the LGPD (Brazil’s data protection law), with minimal collection and a stated purpose.',
-      legal: '© 2026 CRAI. Beta version.',
+      legal: '© {ano} CRAI. Beta version.',
+      documentosAria: 'Legal documents',
+      documentos: [
+        { rotulo: 'Terms of Use', para: '/termos' },
+        { rotulo: 'Privacy Policy', para: '/privacidade' },
+        { rotulo: 'Cookies and storage', para: '/privacidade#cookies' },
+      ],
       marca: 'Revenue recovery and retention for Brazilian SaaS, billed only on what comes back.',
     },
+    avisoPrivacidade: {
+      aria: 'Cookie and privacy notice',
+      titulo: 'No tracking cookies',
+      texto:
+        'CRAI does not use advertising or audience analytics cookies. We keep in your browser only what is essential for sign-in, language and theme. See the [Terms of Use](/termos) and the [Privacy Policy](/privacidade#cookies).',
+      aceitar: 'Got it',
+    },
+  },
+
+  legalPagina: {
+    indice: 'Document contents',
+    tabelaAria: 'Table (scroll sideways)',
+    relacionadosAria: 'Other documents',
+    relacionadosTitulo: 'See also',
+    relacionados: [
+      { rotulo: 'Terms of Use', para: '/termos' },
+      { rotulo: 'Privacy Policy', para: '/privacidade' },
+      { rotulo: 'Privacy and security, in plain language', para: '/dados' },
+    ],
   },
 
   home: {
@@ -703,14 +730,14 @@ export const conteudoEn: Conteudo = {
       nome: 'Premium',
       titulo: 'Recover and retain',
       resumo: 'Recovery of failed charges combined with retention of those signaling they will leave.',
-      valor: '45%',
+      valor: '25% + 20%',
       base: '',
       detalhe: '25% of the incremental gain + 20% of preserved revenue',
       inclui: 'Everything in Standard, plus:',
       itens: [
         'Cancellation risk signals',
         'Retention action with no friction on cancellation',
-        '6-month measurement window on preserved revenue',
+        '6-month attribution window on preserved revenue',
         'SDK integration',
       ],
       cta: 'Start with Premium',
@@ -738,7 +765,6 @@ export const conteudoEn: Conteudo = {
     taxaDetalheStandard: '25% of the incremental gain',
     taxaDetalhePremium: '{rec} from recovery + {ret} from retention',
     premissas: 'Estimate based on CRAI’s model assumptions (10% failure, 20% incremental gain and, on Premium, preserved revenue of 4.5% of MRR). The real result is measured against a control group.',
-    foraDaFaixa: 'Outside the range CRAI serves today.',
     acao: { rotulo: 'Create account', para: '/cadastro' },
   },
 
@@ -900,6 +926,7 @@ export const conteudoEn: Conteudo = {
     finalizar: 'Go to payment',
     enviando: 'Creating account…',
     concluindo: 'Finishing your sign-up…',
+    carregando: 'Loading…',
     temConta: 'Already have an account?',
     entrar: 'Sign in',
     jaTemConta: {
@@ -935,8 +962,6 @@ export const conteudoEn: Conteudo = {
     },
     mock: {
       cobranca: 'Pix Automático',
-      mensagem:
-        'Hi, CRAI team. We have about 500 subscribers and want to understand how preserved revenue is measured on Premium and how long integration takes.',
     },
   },
 
@@ -986,6 +1011,8 @@ export const conteudoEn: Conteudo = {
     irPainel: 'Go to dashboard',
     linkInvalido: 'This link has expired or was already used. Request a new one on the sign-in page.',
     irEntrar: 'Go to sign in',
+    carregando: 'Checking the link…',
+    erro: 'We could not save the new password. Try again or request a new link on the sign-in page.',
   },
   pagamento: {
     titulo: 'Billing authorization',
@@ -1088,7 +1115,15 @@ export const conteudoEn: Conteudo = {
 
   contatoPagina: {
     titulo: 'Contact',
-    lead: 'Talk to the CRAI team. The form comes pre-filled with demo data.',
+    lead: 'Talk to the CRAI team. The message goes out from your own email, already filled in.',
+    email: EMAIL_CONTATO,
+    exemplos: { nome: 'Ana Ribeiro', email: 'ana@yourcompany.com', empresa: 'Your SaaS name', mensagem: 'Tell us what you need to know.' },
+    erros: {
+      nome: 'Enter your name.',
+      email: 'Enter a valid email.',
+      mensagem: 'Write your message.',
+    },
+    assuntoEmail: '[CRAI website] {assunto}',
     campos: {
       nome: 'Name',
       email: 'Email',
@@ -1098,10 +1133,12 @@ export const conteudoEn: Conteudo = {
     },
     assuntos: ['I want to understand Premium', 'Question about measurement', 'Integration and data', 'Something else'],
     enviar: 'Send message',
-    privacidade: 'We only use this data to reply to your message, as described in the [Privacy Policy](/privacidade).',
+    privacidade:
+      'When you send, your email app opens with the message ready; nothing you type is stored on this website. We only use this data to reply, as described in the [Privacy Policy](/privacidade).',
     sucesso: {
-      titulo: 'Message recorded',
-      texto: 'This is a demo site, so nothing was sent. In a real environment, the team would reply to the email given.',
+      titulo: 'One step left: send the email',
+      texto: 'We opened your email app with the message ready for {email}. If it did not open, write to that address directly.',
+      abrir: 'Open the email again',
       editar: 'Edit message',
     },
     lateral: {
@@ -1133,7 +1170,9 @@ export const conteudoEn: Conteudo = {
     titulo: 'Privacy and security',
     lead: 'How CRAI protects your SaaS’s data and your subscribers’ data, in plain language. The full documents are at the end of the page.',
     selo: 'LGPD',
-    atualizado: 'Documents at version 1.0 · updated September 2026',
+    atualizado: `Documents at version ${VERSAO_DOCS} · effective from ${VIGENCIA_DOCS.en}`,
+    atalhos: 'Read in full: [Terms of Use](/termos) · [Privacy Policy](/privacidade)',
+    tabelaAria: 'Subprocessors table (scroll sideways)',
     indiceAria: 'On this page',
     indice: [
       { rotulo: 'Commitments', para: '#compromissos' },
@@ -1305,7 +1344,7 @@ export const conteudoEn: Conteudo = {
         { papel: 'Data protection officer', nome: 'João Vitor Gava Pinheiro' },
         { papel: 'Deputy', nome: 'Gabriel de Frias Ramirez' },
       ],
-      email: 'agentia.startup@gmail.com',
+      email: EMAIL_CONTATO,
       escrever: 'Email the data protection officer',
       anpd: 'You may also file a complaint with Brazil’s National Data Protection Authority (ANPD).',
     },
@@ -1316,14 +1355,14 @@ export const conteudoEn: Conteudo = {
         {
           titulo: 'Privacy Policy',
           texto: 'What data we process, why, on which legal basis, with whom, for how long, and your rights.',
-          versao: 'Version 1.0',
+          versao: `Version ${VERSAO_DOCS} · ${VIGENCIA_DOCS.en}`,
           para: '/privacidade',
           acao: 'Read document',
         },
         {
           titulo: 'Terms of Use',
           texto: 'The rules for the platform, the agent and the relationship between CRAI and your company.',
-          versao: 'Version 1.0',
+          versao: `Version ${VERSAO_DOCS} · ${VIGENCIA_DOCS.en}`,
           para: '/termos',
           acao: 'Read document',
         },
@@ -1337,7 +1376,4 @@ export const conteudoEn: Conteudo = {
       ],
     },
   },
-
-  privacidade: privacidadeEn,
-  termos: termosEn,
 }

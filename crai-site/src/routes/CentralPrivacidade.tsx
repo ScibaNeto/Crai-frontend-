@@ -44,6 +44,10 @@ export function CentralPrivacidade() {
       {/* Data dos documentos e atalhos para as seções */}
       <div className="container-site pb-14 md:pb-20">
         <p className="t-apoio text-silver">{c.atualizado}</p>
+        {/* Os documentos completos ficam no fim da página; aqui em cima, a um clique. */}
+        <p className="t-body mt-3 text-paper">
+          <TextoRico texto={c.atalhos} />
+        </p>
         <nav aria-label={c.indiceAria} className="mt-6">
           <ul className="flex flex-wrap gap-2">
             {c.indice.map((item) => (
@@ -160,7 +164,12 @@ export function CentralPrivacidade() {
           <CabecalhoSecao id="suboperadores-titulo" eyebrow={suboperadores.eyebrow} titulo={suboperadores.titulo} lead={suboperadores.lead} />
           <Reveal className="mt-12">
             {/* A tabela rola na horizontal dentro do bloco no celular; a página nunca. */}
-            <div className="overflow-x-auto rounded-[18px] border border-line bg-slate/40">
+            <div
+              role="region"
+              aria-label={c.tabelaAria}
+              tabIndex={0}
+              className="overflow-x-auto rounded-[18px] border border-line bg-slate/40 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber"
+            >
               <table className="w-full min-w-[560px] border-collapse text-left">
                 <thead>
                   <tr>

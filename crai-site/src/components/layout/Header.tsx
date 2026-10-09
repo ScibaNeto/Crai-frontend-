@@ -6,6 +6,7 @@ import { nomeExibicao } from '../../lib/empresa'
 import { useConteudo, useLang, useSetLang } from '../../lib/i18n'
 import { EASE_EXPO } from '../../lib/intro'
 import { isLang, LANG_HTML } from '../../lib/lang'
+import { temSessaoGuardada } from '../../lib/supabase'
 import { useSessao } from '../../lib/useSessao'
 import { alternarTema, useTema } from '../../lib/tema'
 import { useReducedMotion } from '../../lib/useReducedMotion'
@@ -129,12 +130,17 @@ function NavPill() {
 /** Header fixo; ganha vidro mais denso depois de 24px de rolagem. Filete de progresso no topo. */
 export function Header() {
   const { site } = useConteudo()
-  const { sessao, empresa, sair } = useSessao()
+  const { carregando, sessao, empresa, sair } = useSessao()
+  // Quem tem sessão guardada via "Entrar / Criar conta" por ~1 s até a sessão ser conferida: nesse intervalo
+  // os botões de conta ficam fora da tela. Visitante sem sessão guardada vê os botões desde o primeiro quadro.
+  const [sessaoGuardada] = useState(temSessaoGuardada)
+  const conferindoSessao = carregando && sessaoGuardada
   const navigate = useNavigate()
   const reduced = useReducedMotion()
   const [rolou, setRolou] = useState(() => window.scrollY > 24)
   const [aberto, setAberto] = useState(false)
   const botaoMenu = useRef<HTMLButtonElement>(null)
+  const cabecalho = useRef<HTMLElement>(null)
   const [desenho, setDesenho] = useState(0)
   const { pathname } = useLocation()
   const [rotaAnterior, setRotaAnterior] = useState(pathname)
@@ -163,6 +169,31 @@ export function Header() {
     return () => window.removeEventListener('keydown', onKey)
   }, [aberto])
 
+  // Menu aberto: a página por trás não rola, e passar para o desktop fecha o menu (senão a rolagem ficava presa).
+  useEffect(() => {
+    if (!aberto) return
+    const raiz = document.documentElement
+    const antes = raiz.style.overflow
+    raiz.style.overflow = 'hidden'
+    const desktop = window.matchMedia('(min-width: 1024px)')
+    const aoMudar = () => {
+      if (desktop.matches) setAberto(false)
+    }
+    // Foco ou toque fora do cabeçalho fecha o menu (antes o Tab seguia pela página escondida atrás dele).
+    const fora = (e: Event) => {
+      if (!cabecalho.current?.contains(e.target as Node)) setAberto(false)
+    }
+    desktop.addEventListener('change', aoMudar)
+    document.addEventListener('focusin', fora)
+    document.addEventListener('pointerdown', fora)
+    return () => {
+      raiz.style.overflow = antes
+      desktop.removeEventListener('change', aoMudar)
+      document.removeEventListener('focusin', fora)
+      document.removeEventListener('pointerdown', fora)
+    }
+  }, [aberto])
+
   const redesenhar = () => setDesenho((n) => n + 1)
 
   async function onSair() {
@@ -178,6 +209,7 @@ export function Header() {
           'header-shell fixed inset-x-0 top-0 z-50 border-b',
           rolou || aberto ? 'is-scrolled border-line' : 'border-transparent bg-transparent',
         )}
+        ref={cabecalho}
       >
         <div className="container-site flex h-16 items-center justify-between gap-6">
           <Link
@@ -196,23 +228,23 @@ export function Header() {
             <LanguageSwitch id="desktop" className="hidden lg:flex" />
             {/* No celular a barra já está cheia: o seletor de tema vai para dentro do menu. */}
             <ThemeSwitch className="max-lg:hidden" />
-            {sessao ? (
+            {conferindoSessao ? null : sessao ? (
               <>
                 {empresa ? (
                   <span className="t-apoio hidden max-w-[16ch] truncate text-silver xl:inline" title={nomeExibicao(empresa)}>
                     {nomeExibicao(empresa)}
                   </span>
                 ) : null}
-                <Button variant="ghost" size="sm" className="hidden rounded-full sm:inline-flex" onClick={onSair}>
+                <Button variant="ghost" size="sm" className="rounded-full max-sm:hidden" onClick={onSair}>
                   {site.sair}
                 </Button>
               </>
             ) : (
               <>
-                <Button to="/entrar" variant="ghost" size="sm" className="hidden rounded-full border-transparent sm:inline-flex">
+                <Button to="/entrar" variant="ghost" size="sm" className="rounded-full border-transparent max-sm:hidden">
                   {site.entrar}
                 </Button>
-                <Button to="/cadastro" size="sm" className="hidden rounded-full sm:inline-flex">
+                <Button to="/cadastro" size="sm" className="rounded-full max-sm:hidden">
                   {site.criarConta}
                 </Button>
               </>
@@ -222,7 +254,7 @@ export function Header() {
               type="button"
               className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-line text-paper hover:bg-paper/5 lg:hidden"
               aria-expanded={aberto}
-              aria-controls="menu-mobile"
+              aria-controls={aberto ? 'menu-mobile' : undefined}
               aria-label={aberto ? site.fecharMenu : site.abrirMenu}
               onClick={() => setAberto((v) => !v)}
             >
@@ -270,7 +302,7 @@ export function Header() {
                     <LanguageSwitch id="mobile" className="-ml-2.5" />
                     <ThemeSwitch />
                   </span>
-                  {sessao ? (
+                  {conferindoSessao ? null : sessao ? (
                     <Button variant="ghost" className="sm:hidden" onClick={onSair}>
                       {site.sair}
                     </Button>

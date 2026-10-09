@@ -1,6 +1,7 @@
 import { AnimatePresence, MotionConfig } from 'framer-motion'
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createBrowserRouter, Navigate, RouterProvider, useLocation, useNavigationType, useOutlet } from 'react-router-dom'
+import { AvisoPrivacidade } from './components/layout/AvisoPrivacidade'
 import { Footer } from './components/layout/Footer'
 import { Header } from './components/layout/Header'
 import { PageTransition } from './components/motion/PageTransition'
@@ -11,21 +12,8 @@ import { deveMostrarPreloader, marcarPreloaderVisto } from './lib/preloader'
 import { SessaoProvider } from './lib/SessaoProvider'
 import { aplicarSeo } from './lib/seo'
 import { rotaDe } from './lib/site'
-import { Cadastro } from './routes/Cadastro'
-import { CentralPrivacidade } from './routes/CentralPrivacidade'
-import { Confirmacao } from './routes/Confirmacao'
-import { Contato } from './routes/Contato'
-import { Empresa } from './routes/Empresa'
-import { Entrar } from './routes/Entrar'
 import { ErroInesperado } from './routes/ErroInesperado'
 import { Home } from './routes/Home'
-import { Privacidade, Termos } from './routes/Legal'
-import { NotFound } from './routes/NotFound'
-import { Pagamento } from './routes/Pagamento'
-import { Painel } from './routes/Painel'
-import { Planos } from './routes/Planos'
-import { Produto } from './routes/Produto'
-import { RedefinirSenha } from './routes/RedefinirSenha'
 
 /** Posição de rolagem de cada entrada do histórico (location.key), para o Voltar/Avançar devolver o lugar. */
 const posicoesRolagem = new Map<string, number>()
@@ -41,16 +29,36 @@ function rolarPara({ hash, y }: DestinoRolagem) {
   else window.scrollTo(0, y)
 }
 
+/** A primeira página montada não rouba o foco: o primeiro Tab continua sendo o "Pular para o conteúdo". */
+let jaMontouPagina = false
+
 /**
  * Congela o outlet da página que está saindo, para a animação de saída não trocar de conteúdo no meio.
  * Ao montar (depois que a página anterior saiu), rola para o destino: topo, âncora da URL (#secao) ou,
  * no Voltar/Avançar, a posição em que o usuário estava.
  */
+
 function OutletCongelado({ destino }: { destino: DestinoRolagem }) {
   const outlet = useOutlet()
   const [congelado] = useState(outlet)
   const [destinoInicial] = useState(destino)
-  useLayoutEffect(() => rolarPara(destinoInicial), [destinoInicial])
+  const [focarInicial] = useState(jaMontouPagina)
+  useLayoutEffect(() => {
+    rolarPara(destinoInicial)
+    jaMontouPagina = true
+    // Troca de página: o foco sai do link clicado (que ficou para trás) e vai para o conteúdo novo.
+    if (focarInicial) document.getElementById('conteudo')?.focus({ preventScroll: true })
+    // A fonte pode chegar depois da montagem e mudar a altura do texto acima da âncora: rola de novo.
+    if (!destinoInicial.hash || !document.fonts) return
+    let vivo = true
+    const y = window.scrollY
+    void document.fonts.ready.then(() => {
+      if (vivo && Math.abs(window.scrollY - y) < 2) rolarPara(destinoInicial)
+    })
+    return () => {
+      vivo = false
+    }
+  }, [destinoInicial, focarInicial])
   return congelado
 }
 
@@ -80,6 +88,16 @@ function RootLayout() {
     }
   }, [location.key])
 
+  // Mesma página, só o #hash mudou (índice de capítulos, sumário, CTA, Voltar/Avançar): o OutletCongelado
+  // não remonta, então a rolagem é feita aqui.
+  const anterior = useRef(location)
+  useLayoutEffect(() => {
+    const antes = anterior.current
+    anterior.current = location
+    if (antes === location || antes.pathname !== location.pathname) return
+    if (location.hash || antes.hash) rolarPara({ hash: location.hash, y: 0 })
+  }, [location])
+
   const salvo = tipoNavegacao === 'POP' ? posicoesRolagem.get(location.key) : undefined
   const destino: DestinoRolagem = salvo !== undefined ? { hash: '', y: salvo } : { hash: location.hash, y: 0 }
 
@@ -96,6 +114,7 @@ function RootLayout() {
           {site.pularConteudo}
         </a>
         <Header />
+        <AvisoPrivacidade />
         <main id="conteudo" tabIndex={-1} className="min-h-[70vh] pt-16 outline-none">
           <AnimatePresence mode="wait">
             <PageTransition key={location.pathname}>
@@ -116,24 +135,26 @@ const router = createBrowserRouter(
       path: '/',
       element: <RootLayout />,
       errorElement: <ErroInesperado />,
+      // Primeira carga numa rota lazy: nada na tela até o chunk chegar (igual a hoje, enquanto o JS baixa).
+      hydrateFallbackElement: <></>,
       children: [
         { index: true, element: <Home /> },
-        { path: 'produto', element: <Produto /> },
-        { path: 'planos', element: <Planos /> },
-        { path: 'painel', element: <Painel /> },
-        { path: 'cadastro', element: <Cadastro /> },
-        { path: 'pagamento', element: <Pagamento /> },
-        { path: 'confirmacao', element: <Confirmacao /> },
-        { path: 'empresa', element: <Empresa /> },
-        { path: 'contato', element: <Contato /> },
-        { path: 'entrar', element: <Entrar /> },
-        { path: 'redefinir-senha', element: <RedefinirSenha /> },
-        { path: 'privacidade', element: <Privacidade /> },
-        { path: 'termos', element: <Termos /> },
-        { path: 'dados', element: <CentralPrivacidade /> },
+        { path: 'produto', lazy: () => import('./routes/Produto').then((m) => ({ Component: m.Produto })) },
+        { path: 'planos', lazy: () => import('./routes/Planos').then((m) => ({ Component: m.Planos })) },
+        { path: 'painel', lazy: () => import('./routes/Painel').then((m) => ({ Component: m.Painel })) },
+        { path: 'cadastro', lazy: () => import('./routes/Cadastro').then((m) => ({ Component: m.Cadastro })) },
+        { path: 'pagamento', lazy: () => import('./routes/Pagamento').then((m) => ({ Component: m.Pagamento })) },
+        { path: 'confirmacao', lazy: () => import('./routes/Confirmacao').then((m) => ({ Component: m.Confirmacao })) },
+        { path: 'empresa', lazy: () => import('./routes/Empresa').then((m) => ({ Component: m.Empresa })) },
+        { path: 'contato', lazy: () => import('./routes/Contato').then((m) => ({ Component: m.Contato })) },
+        { path: 'entrar', lazy: () => import('./routes/Entrar').then((m) => ({ Component: m.Entrar })) },
+        { path: 'redefinir-senha', lazy: () => import('./routes/RedefinirSenha').then((m) => ({ Component: m.RedefinirSenha })) },
+        { path: 'privacidade', lazy: () => import('./routes/Legal').then((m) => ({ Component: m.Privacidade })) },
+        { path: 'termos', lazy: () => import('./routes/Legal').then((m) => ({ Component: m.Termos })) },
+        { path: 'dados', lazy: () => import('./routes/CentralPrivacidade').then((m) => ({ Component: m.CentralPrivacidade })) },
         // Endereço antigo da central.
         { path: 'lgpd', element: <Navigate to="/dados" replace /> },
-        { path: '*', element: <NotFound /> },
+        { path: '*', lazy: () => import('./routes/NotFound').then((m) => ({ Component: m.NotFound })) },
       ],
     },
   ],

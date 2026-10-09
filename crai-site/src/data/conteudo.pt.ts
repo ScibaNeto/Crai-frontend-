@@ -1,7 +1,10 @@
 // Todo o copy visível do site, em pt-BR. Componentes não carregam strings de texto próprias.
 // `conteudo.en.ts` é tipado como `Conteudo`: chave faltando em inglês quebra o build.
+// Os textos legais ficam em legal.pt.ts / legal.en.ts e viajam só com as páginas /termos e /privacidade (routes/Legal.tsx).
 
-import { privacidadePt, termosPt } from './legal.pt'
+import { DOCUMENTOS_LEGAIS, EMAIL_CONTATO } from './institucional'
+
+const { versao: VERSAO_DOCS, vigencia: VIGENCIA_DOCS } = DOCUMENTOS_LEGAIS
 
 export const conteudoPt = {
   idioma: {
@@ -17,7 +20,7 @@ export const conteudoPt = {
     home: {
       titulo: 'CRAI — Recuperação de receita e retenção para SaaS',
       descricao:
-        'A CRAI recupera cobranças falhas por Pix Automático e ajuda a reter assinantes de SaaS brasileiros. Você só paga sobre a receita que volta.',
+        'A CRAI recupera por Pix Automático as cobranças que falharam e ajuda a reter assinantes de SaaS brasileiros. Você só paga sobre a receita que volta.',
     },
     produto: {
       titulo: 'Como a CRAI funciona | CRAI',
@@ -82,7 +85,7 @@ export const conteudoPt = {
     dados: {
       titulo: 'Dados, privacidade e segurança (LGPD) | CRAI',
       descricao:
-        'Como a CRAI protege os dados de SaaS e de assinantes: modelos treinados sem dados de clientes, isolamento por empresa, chave Pix cifrada, suboperadores e encarregado.',
+        'Como a CRAI protege os dados de SaaS e de assinantes: modelos treinados sem dados de clientes, isolamento por empresa, chave Pix cifrada e suboperadores.',
     },
     naoEncontrada: {
       titulo: 'Página não encontrada | CRAI',
@@ -143,9 +146,39 @@ export const conteudoPt = {
       ],
       aviso: 'Versão beta — nenhum pagamento é processado.',
       lgpd: 'Dados tratados conforme a LGPD, com coleta mínima e finalidade declarada.',
-      legal: '© 2026 CRAI. Versão beta.',
-      marca: 'Recuperação e retenção de receita para SaaS brasileiro, cobrada só pelo que volta.',
+      // {ano} é o ano corrente (Footer.tsx).
+      legal: '© {ano} CRAI. Versão beta.',
+      // Base do site: os documentos ficam a um clique de qualquer página.
+      documentosAria: 'Documentos legais',
+      documentos: [
+        { rotulo: 'Termos de Uso', para: '/termos' },
+        { rotulo: 'Política de Privacidade', para: '/privacidade' },
+        { rotulo: 'Cookies e armazenamento', para: '/privacidade#cookies' },
+      ],
+      marca: 'Recuperação e retenção de receita para SaaS brasileiros, cobradas só sobre o que volta.',
     },
+    // Aviso de privacidade (components/layout/AvisoPrivacidade.tsx). O site não usa cookies nem rastreamento,
+    // então é um aviso de ciência, e não um pedido de consentimento. Se um dia entrar analytics, vira consentimento.
+    avisoPrivacidade: {
+      aria: 'Aviso de cookies e privacidade',
+      titulo: 'Sem cookies de rastreamento',
+      texto:
+        'A CRAI não usa cookies de publicidade nem de análise de audiência. Guardamos no seu navegador só o essencial para login, idioma e tema. Veja os [Termos de Uso](/termos) e a [Política de Privacidade](/privacidade#cookies).',
+      aceitar: 'Entendi',
+    },
+  },
+
+  // Páginas /termos e /privacidade (o texto dos documentos fica em legal.pt.ts).
+  legalPagina: {
+    indice: 'Índice do documento',
+    tabelaAria: 'Tabela (role para os lados)',
+    relacionadosAria: 'Outros documentos',
+    relacionadosTitulo: 'Veja também',
+    relacionados: [
+      { rotulo: 'Termos de Uso', para: '/termos' },
+      { rotulo: 'Política de Privacidade', para: '/privacidade' },
+      { rotulo: 'Privacidade e segurança, em linguagem direta', para: '/dados' },
+    ],
   },
 
   home: {
@@ -731,14 +764,15 @@ export const conteudoPt = {
       nome: 'Premium',
       titulo: 'Recupere e retenha',
       resumo: 'Recuperação de cobranças somada à retenção de quem sinaliza que vai sair.',
-      valor: '45%',
+      // Não é "45%": são duas taxas sobre bases diferentes (no exemplo de R$ 50 mil de MRR, R$ 700 sobre R$ 3.250 de resultado).
+      valor: '25% + 20%',
       base: '',
       detalhe: '25% sobre o ganho incremental + 20% sobre a receita preservada',
       inclui: 'Tudo do Standard, e ainda:',
       itens: [
         'Sinais de risco de cancelamento',
         'Ação de retenção sem fricção no cancelamento',
-        'Janela de apuração de 6 meses sobre a receita preservada',
+        'Janela de atribuição de 6 meses sobre a receita preservada',
         'Integração por SDK',
       ],
       cta: 'Começar com Premium',
@@ -767,7 +801,6 @@ export const conteudoPt = {
     taxaDetalhePremium: '{rec} da recuperação + {ret} da retenção',
     premissas:
       'Estimativa baseada em premissas do modelo da CRAI (falha de 10%, ganho incremental de 20% e, no Premium, receita preservada de 4,5% do MRR). O resultado real é apurado contra grupo de controle.',
-    foraDaFaixa: 'Fora da faixa que a CRAI atende hoje.',
     acao: { rotulo: 'Criar conta', para: '/cadastro' },
   },
 
@@ -946,6 +979,7 @@ export const conteudoPt = {
     finalizar: 'Ir para o pagamento',
     enviando: 'Criando conta…',
     concluindo: 'Concluindo seu cadastro…',
+    carregando: 'Carregando…',
     temConta: 'Já tem conta?',
     entrar: 'Entrar',
     jaTemConta: {
@@ -979,11 +1013,9 @@ export const conteudoPt = {
       texto: 'Enviamos um link de confirmação para {email}. Abra o link neste mesmo navegador para concluir o cadastro e seguir para o pagamento.',
       voltar: 'Voltar ao início',
     },
-    // Valores de demonstração que dependem do idioma (o resto vive em mockCadastro.ts).
+    // Valor fixo exibido no cadastro (campo desabilitado "forma de cobrança").
     mock: {
       cobranca: 'Pix Automático',
-      mensagem:
-        'Olá, time da CRAI. Temos cerca de 500 assinantes e queremos entender como funciona a apuração da receita preservada no Premium e quanto tempo leva a integração.',
     },
   },
 
@@ -1033,6 +1065,8 @@ export const conteudoPt = {
     irPainel: 'Ir para o painel',
     linkInvalido: 'Este link expirou ou já foi usado. Peça um novo na tela de login.',
     irEntrar: 'Ir para o login',
+    carregando: 'Verificando o link…',
+    erro: 'Não foi possível salvar a nova senha. Tente de novo ou peça um novo link na tela de login.',
   },
   pagamento: {
     titulo: 'Autorização de cobrança',
@@ -1136,7 +1170,17 @@ export const conteudoPt = {
 
   contatoPagina: {
     titulo: 'Contato',
-    lead: 'Fale com o time da CRAI. O formulário já vem preenchido com dados de demonstração.',
+    lead: 'Fale com o time da CRAI. A mensagem sai pelo seu próprio e-mail, já preenchida.',
+    email: EMAIL_CONTATO,
+    // Texto de exemplo dentro dos campos vazios (placeholder).
+    exemplos: { nome: 'Ana Ribeiro', email: 'ana@suaempresa.com.br', empresa: 'Nome do seu SaaS', mensagem: 'Conte o que você precisa saber.' },
+    erros: {
+      nome: 'Informe seu nome.',
+      email: 'Informe um e-mail válido.',
+      mensagem: 'Escreva a mensagem.',
+    },
+    // Assunto do e-mail montado pelo formulário (o corpo é a mensagem seguida da assinatura).
+    assuntoEmail: '[Site CRAI] {assunto}',
     campos: {
       nome: 'Nome',
       email: 'E-mail',
@@ -1146,10 +1190,12 @@ export const conteudoPt = {
     },
     assuntos: ['Quero entender o Premium', 'Dúvida sobre a medição', 'Integração e dados', 'Outro assunto'],
     enviar: 'Enviar mensagem',
-    privacidade: 'Usamos esses dados só para responder à sua mensagem, conforme a [Política de Privacidade](/privacidade).',
+    privacidade:
+      'Ao enviar, seu aplicativo de e-mail abre com a mensagem pronta; nada do que você digita fica guardado neste site. Usamos esses dados só para responder, conforme a [Política de Privacidade](/privacidade).',
     sucesso: {
-      titulo: 'Mensagem registrada',
-      texto: 'Este é um site demonstrativo, então nada foi enviado. Em um ambiente real, o time responderia no e-mail informado.',
+      titulo: 'Falta só enviar o e-mail',
+      texto: 'Abrimos o seu aplicativo de e-mail com a mensagem pronta para {email}. Se ele não abriu, escreva direto para esse endereço.',
+      abrir: 'Abrir o e-mail de novo',
       editar: 'Editar mensagem',
     },
     lateral: {
@@ -1183,7 +1229,9 @@ export const conteudoPt = {
     titulo: 'Privacidade e segurança',
     lead: 'Como a CRAI protege os dados do seu SaaS e dos seus assinantes, em linguagem direta. Os documentos completos estão no fim da página.',
     selo: 'LGPD',
-    atualizado: 'Documentos na versão 1.0 · atualizado em setembro de 2026',
+    atualizado: `Documentos na versão ${VERSAO_DOCS} · em vigor a partir de ${VIGENCIA_DOCS.pt}`,
+    atalhos: 'Leia na íntegra: [Termos de Uso](/termos) · [Política de Privacidade](/privacidade)',
+    tabelaAria: 'Tabela de suboperadores (role para os lados)',
     indiceAria: 'Nesta página',
     indice: [
       { rotulo: 'Compromissos', para: '#compromissos' },
@@ -1355,7 +1403,7 @@ export const conteudoPt = {
         { papel: 'Encarregado', nome: 'João Vitor Gava Pinheiro' },
         { papel: 'Substituto', nome: 'Gabriel de Frias Ramirez' },
       ],
-      email: 'agentia.startup@gmail.com',
+      email: EMAIL_CONTATO,
       escrever: 'Escrever para o encarregado',
       anpd: 'Você também pode apresentar reclamação à Autoridade Nacional de Proteção de Dados (ANPD).',
     },
@@ -1366,14 +1414,14 @@ export const conteudoPt = {
         {
           titulo: 'Política de Privacidade',
           texto: 'Quais dados tratamos, para quê, com qual base legal, com quem, por quanto tempo e os seus direitos.',
-          versao: 'Versão 1.0',
+          versao: `Versão ${VERSAO_DOCS} · ${VIGENCIA_DOCS.pt}`,
           para: '/privacidade',
           acao: 'Ler documento',
         },
         {
           titulo: 'Termos de Uso',
           texto: 'As regras da plataforma, do agente e da relação entre a CRAI e a sua empresa.',
-          versao: 'Versão 1.0',
+          versao: `Versão ${VERSAO_DOCS} · ${VIGENCIA_DOCS.pt}`,
           para: '/termos',
           acao: 'Ler documento',
         },
@@ -1387,9 +1435,6 @@ export const conteudoPt = {
       ],
     },
   },
-
-  privacidade: privacidadePt,
-  termos: termosPt,
 }
 
 export type Conteudo = typeof conteudoPt

@@ -61,7 +61,7 @@ export function IndiceCapitulos({ aria, itens }: IndiceCapitulosProps) {
                 ativo === item.id ? 'text-paper' : 'text-silver hover:text-paper',
               )}
             >
-              <span className={cx('tabular text-[11px]', ativo === item.id ? 'text-orange' : 'text-graphite')}>0{i + 1}</span>
+              <span className={cx('tabular text-[11px]', ativo === item.id ? 'text-orange' : 'text-silver')}>0{i + 1}</span>
               {item.rotulo}
             </a>
           </li>

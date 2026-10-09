@@ -103,7 +103,7 @@ function CardPlano({ plano, destaque = false }: { plano: PlanoInfo; destaque?: b
         className={cx(
           'mt-2 flex h-12 w-full items-center justify-center rounded-full border text-[0.975rem] font-semibold',
           'transition-colors duration-150 motion-reduce:transition-none',
-          'focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-orange',
+          'focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-amber',
           destaque
             ? 'btn-shine relative border-orange bg-orange text-on-accent hover:border-amber hover:bg-amber hover:shadow-[0_10px_30px_-10px_rgba(239,147,17,0.7)]'
             : 'border-line bg-transparent text-paper hover:border-silver hover:bg-paper/[0.03]',

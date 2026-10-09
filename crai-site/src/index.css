@@ -38,7 +38,7 @@
   --color-graphite: #aaa49a;
   --color-silver: #5d5850;
   --color-paper: #1f160c;
-  --color-amber: #b25a00; /* escurecido: no claro ele é quase sempre texto */
+  --color-amber: #a35000; /* escurecido: no claro ele é quase sempre texto (4,5:1 também sobre o slate) */
   --color-line: rgba(31, 22, 12, 0.13);
   --color-green: #37b87c;
   --color-green-soft: #14704a;
@@ -947,6 +947,7 @@
   .device {
     position: relative;
     display: grid;
+    grid-template-columns: minmax(0, 1fr); /* sem isto o mockup impõe a própria largura mínima à coluna */
     place-items: center;
     perspective: 1600px;
   }
@@ -1286,10 +1287,17 @@
 }
 /* O laranja da marca continua nos preenchimentos; como texto sobre o creme ele precisa de mais contraste. */
 :root[data-theme='light'] .text-orange {
-  color: #c2620a;
+  color: #a35000;
+}
+/* No claro o âmbar é escuro: o hover do botão primário (bg-amber) ficava marrom com texto preto (3,8:1). */
+:root[data-theme='light'] .hover\:bg-amber:hover {
+  background-color: #ffb86c;
+}
+:root[data-theme='light'] .hover\:border-amber:hover {
+  border-color: #ffb86c;
 }
 :root[data-theme='light'] .text-gradient {
-  background-image: linear-gradient(100deg, #c2620a 0%, #e07f0c 40%, #a85200 60%, #e07f0c 100%);
+  background-image: linear-gradient(100deg, #c2620a 0%, #cc6d0a 40%, #a85200 60%, #cc6d0a 100%);
 }
 :root[data-theme='light'] .nav-pill {
   background: rgba(255, 255, 255, 0.55);

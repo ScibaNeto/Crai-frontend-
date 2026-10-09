@@ -6,9 +6,6 @@ export const PREMISSAS = {
   receitaPreservadaSobreMrr: 0.045, // default derivado do cliente de referência — confirmar
 }
 
-// confirmar: faixa de MRR atendida hoje
-export const FAIXA_ATENDIDA = { min: 25_000, max: 500_000 }
-
 export type Plano = 'standard' | 'premium'
 
 export interface ResultadoSimulacao {
@@ -19,7 +16,6 @@ export interface ResultadoSimulacao {
   taxaRetencao: number
   taxaCrai: number
   ficaComVoce: number
-  foraDaFaixa: boolean
 }
 
 const centavos = (valor: number) => Math.round(valor * 100) / 100
@@ -51,6 +47,5 @@ export function simular(mrr: number, plano: Plano, premissas = PREMISSAS): Resul
     taxaRetencao: premium ? centavos(taxaRetencao) : 0,
     taxaCrai: centavos(premium ? custoPremium : taxaStandard),
     ficaComVoce: centavos(premium ? liquidoPremium : liquidoStandard),
-    foraDaFaixa: base < FAIXA_ATENDIDA.min || base > FAIXA_ATENDIDA.max,
   }
 }

@@ -9,7 +9,7 @@ import { Planos as SecaoPlanos } from '../sections/Planos'
 import { Simulador } from '../sections/Simulador'
 
 export function Planos() {
-  const { hash } = useLocation()
+  const { hash, key } = useLocation()
   const reduced = useReducedMotion()
   const { planosPagina } = useConteudo()
 
@@ -19,7 +19,7 @@ export function Planos() {
       document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' })
     }, 320)
     return () => window.clearTimeout(t)
-  }, [hash, reduced])
+  }, [hash, key, reduced])
 
   return (
     <PageShell titulo={planosPagina.titulo} lead={planosPagina.lead}>

@@ -30,7 +30,7 @@ export function Faq({ dados, id = 'faq' }: { dados?: FaqDados; id?: string } = {
                     id={botaoId}
                     type="button"
                     aria-expanded={open}
-                    aria-controls={painelId}
+                    aria-controls={open ? painelId : undefined}
                     onClick={() => setAberto(open ? null : i)}
                     className="flex w-full items-center justify-between gap-6 rounded-[4px] py-6 text-left font-display text-[19px] leading-[1.3] text-paper md:text-[22px] transition-colors hover:text-amber focus-visible:outline-offset-2"
                   >

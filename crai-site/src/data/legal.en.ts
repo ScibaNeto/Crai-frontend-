@@ -1,14 +1,16 @@
+import { DOCUMENTOS_LEGAIS, EMAIL_CONTATO } from './institucional'
 import type { DocumentoLegal } from './legal.pt'
 
 // English version of the legal documents (version 1.0). Same structure and placeholders as legal.pt.ts;
 // the Portuguese text prevails.
 
 const NOTA = 'This English version is provided for convenience. In case of any conflict, the Portuguese version prevails.'
-const EMAIL = '[agentia.startup@gmail.com](mailto:agentia.startup@gmail.com)'
+const EMAIL = `[${EMAIL_CONTATO}](mailto:${EMAIL_CONTATO})`
+const VIGENCIA = `Version ${DOCUMENTOS_LEGAIS.versao} · Effective from ${DOCUMENTOS_LEGAIS.vigencia.en}`
 
 export const privacidadeEn: DocumentoLegal = {
   titulo: 'Privacy Policy',
-  vigencia: 'Version 1.0 · Effective from [DD/MM/YYYY]',
+  vigencia: VIGENCIA,
   nota: NOTA,
   sumarioAria: 'Policy sections',
   secoes: [
@@ -181,9 +183,21 @@ export const privacidadeEn: DocumentoLegal = {
             colunas: ['Item', 'Where it lives', 'What it is for', 'Duration'],
             linhas: [
               ['Login session', 'local storage (localStorage)', 'keep the user signed in to the access, dashboard and payment areas', 'until the user signs out'],
-              ['Chosen language', 'session storage (sessionStorage)', 'show the website in the selected language', 'until the tab is closed'],
-              ['Chosen theme (light or dark)', 'session storage (sessionStorage)', 'show the website in the selected theme', 'until the tab is closed'],
+              ['Chosen language', 'local storage (localStorage)', 'show the website in the selected language', 'until you switch language or clear your browser data'],
+              ['Chosen theme (light or dark)', 'local storage (localStorage)', 'show the website in the selected theme', 'until you switch theme or clear your browser data'],
+              [
+                'Privacy notice acknowledgement',
+                'local storage (localStorage)',
+                'keep the cookie and privacy notice from showing again after you close it',
+                'until a new version of the documents is published or you clear your browser data',
+              ],
               ['Opening animation control', 'session storage (sessionStorage)', 'keep the animation from repeating in the same visit', 'until the tab is closed'],
+              [
+                'Page reload control',
+                'session storage (sessionStorage)',
+                'reload the page a single time when a file of the website fails to reach the browser',
+                'until the tab is closed',
+              ],
             ],
           },
         },
@@ -222,7 +236,7 @@ export const privacidadeEn: DocumentoLegal = {
 
 export const termosEn: DocumentoLegal = {
   titulo: 'Terms of Use',
-  vigencia: 'Version 1.0 · Effective from [DD/MM/YYYY]',
+  vigencia: VIGENCIA,
   nota: NOTA,
   sumarioAria: 'Clauses of the terms',
   secoes: [
