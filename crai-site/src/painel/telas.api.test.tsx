@@ -12,7 +12,9 @@ import App from './App'
 import { ErroApi, api, nomePadraoDaChave } from './data/api'
 import type { ChaveApi, ChavesDaEmpresa } from './data/tipos'
 import { AVISO_DA_CHAVE, MARCADOR_DA_CHAVE } from './routes/Api'
+import { COMO_A_API_FUNCIONA, textosDoComoFunciona } from './routes/api/ComoFunciona'
 import { O_QUE_A_API_FAZ } from './routes/api/OQueAApiFaz'
+import { EN } from './i18n/en'
 
 const fetchEspiao = vi.fn(async () => {
   throw new Error('a demonstração não pode chamar a rede')
@@ -99,9 +101,15 @@ describe('aba API em demonstração: a página, de cima para baixo', () => {
     fireEvent.click(endereco.getByRole('button', { name: 'Copiar' }))
     await waitFor(() => expect(copiar).toHaveBeenCalledWith('https://api.exemplo-crai.com.br'))
 
-    // Os três blocos, nesta ordem, e nenhuma tabela.
+    // Os quatro blocos, nesta ordem, e nenhuma tabela. "Como a API funciona" vem primeiro:
+    // o contexto antes das ferramentas (pedido do professor do TCC, 13/10/2026).
     await waitFor(() => expect(campos().length).toBeGreaterThan(0), ESPERA)
-    expect(screen.getAllByRole('region').map((r) => r.getAttribute('aria-label'))).toEqual(['Endereço da API', 'Chave de API', 'Exemplo de uso'])
+    expect(screen.getAllByRole('region').map((r) => r.getAttribute('aria-label'))).toEqual([
+      'Como a API funciona',
+      'Endereço da API',
+      'Chave de API',
+      'Exemplo de uso',
+    ])
     expect(document.querySelector('table')).toBeNull()
     // A explicação mora no painel: a página não tem parágrafo explicativo solto.
     const paragrafos = Array.from(document.querySelectorAll('main p')).map((p) => p.textContent ?? '')
@@ -204,6 +212,62 @@ describe('aba API em demonstração: a página, de cima para baixo', () => {
     expect(screen.getByRole('button', { name: 'Copiar exemplo do evento' })).toBeTruthy()
     // A chave é secreta e só sai do servidor da empresa (S8).
     expect(screen.getByText(/Esta chamada sai do servidor da sua empresa\. A chave é secreta/)).toBeTruthy()
+  })
+
+  it('"Como a API funciona" fica aberto na aba: os 4 passos, as 5 chamadas, as regras e as respostas', async () => {
+    abrir('/api')
+    const cartao = within(await screen.findByRole('region', { name: 'Como a API funciona' }, ESPERA))
+    expect(cartao.getByRole('heading', { name: 'Como a API funciona' })).toBeTruthy()
+
+    // Os passos, numerados e na ordem do caminho de uma chamada.
+    const passos = cartao.getAllByRole('list')[0]
+    expect(passos.tagName).toBe('OL')
+    expect(within(passos).getAllByRole('listitem')).toHaveLength(4)
+    for (const p of COMO_A_API_FUNCIONA.passos.itens) {
+      expect(cartao.getByText(p.titulo)).toBeTruthy()
+      expect(cartao.getByText(p.texto)).toBeTruthy()
+    }
+
+    // As cinco chamadas, com método e caminho, e o que acontece depois de cada uma.
+    for (const ch of COMO_A_API_FUNCIONA.chamadas.itens) {
+      expect(cartao.getByText(`${ch.metodo} ${ch.caminho}`)).toBeTruthy()
+      expect(cartao.getByText(ch.texto)).toBeTruthy()
+    }
+    expect(COMO_A_API_FUNCIONA.chamadas.itens.map((c) => `${c.metodo} ${c.caminho}`)).toEqual([
+      'POST /clientes',
+      'POST /clientes/lote',
+      'PATCH /clientes/{id}',
+      'DELETE /clientes/{id}',
+      'POST /eventos',
+    ])
+
+    for (const r of COMO_A_API_FUNCIONA.regras.itens) expect(cartao.getByText(r)).toBeTruthy()
+    for (const r of COMO_A_API_FUNCIONA.respostas.itens) {
+      expect(cartao.getByText(r.codigo)).toBeTruthy()
+      expect(cartao.getByText(r.texto)).toBeTruthy()
+    }
+    expect(fetchEspiao).not.toHaveBeenCalled()
+  })
+
+  it('"Como a API funciona" diz as regras que o backend aplica, sem prometer o que ele não faz', () => {
+    const regras = COMO_A_API_FUNCIONA.regras.itens.join(' ')
+    // Os números são os do backend: 600 eventos/min por chave, 5 chaves ativas,
+    // messageId por 30 dias e Idempotency-Key por 7.
+    expect(regras).toContain('600 eventos por minuto por chave')
+    expect(regras).toContain('5 chaves ativas')
+    expect(regras).toContain('messageId (por 30 dias)')
+    expect(regras).toContain('Idempotency-Key (por 7 dias)')
+    // A API informa; quem decide falar com o cliente é a CRAI.
+    expect(regras).toContain('A API só informa a CRAI.')
+    // O cancelamento não apaga o cliente.
+    const cancelar = COMO_A_API_FUNCIONA.chamadas.itens.find((c) => c.metodo === 'DELETE')
+    expect(cancelar?.texto).toContain('o registro fica')
+    expect(COMO_A_API_FUNCIONA.respostas.itens.map((r) => r.codigo)).toEqual(['200 / 201', '401', '404', '409', '413', '422', '429'])
+  })
+
+  it('todo texto de "Como a API funciona" tem tradução para o inglês', () => {
+    const faltando = textosDoComoFunciona().filter((texto) => !(texto in EN))
+    expect(faltando).toEqual([])
   })
 
   it('o painel "O que a API faz" diz o que a API passou a fazer, e o que ela não faz', () => {

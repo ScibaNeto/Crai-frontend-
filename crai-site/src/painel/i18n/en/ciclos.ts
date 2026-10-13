@@ -189,4 +189,50 @@ export const ciclos: Record<string, string> = {
   'Cuidado com os dados': 'Be careful with data',
   'Envie só os campos que a documentação pede. Nunca envie CPF, dados de cartão ou senhas.':
     'Send only the fields the documentation asks for. Never send CPF, card details, or passwords.',
+
+  // routes/api/ComoFunciona.tsx (o cartão "Como a API funciona", traduzido na hora de mostrar)
+  'Como a API funciona': 'How the API works',
+  'O caminho de cada chamada, do seu sistema até o painel.': 'The path of each call, from your system to the dashboard.',
+  'O caminho de uma chamada': 'The path of a call',
+  'O seu sistema envia': 'Your system sends',
+  'A chamada sai do servidor da sua empresa, com a chave no cabeçalho Authorization.':
+    "The call comes from your company's server, with the key in the Authorization header.",
+  'A CRAI confere a chave': 'CRAI checks the key',
+  'É a chave que diz de qual empresa é a chamada. Nada no corpo escolhe a empresa.':
+    'The key tells which company the call belongs to. Nothing in the body chooses the company.',
+  'Os dados são validados': 'The data is validated',
+  'Com as mesmas regras da planilha. Um campo errado volta com o nome do campo e o motivo.':
+    'With the same rules as the spreadsheet. A wrong field comes back with the field name and the reason.',
+  'A base e o risco se atualizam': 'The base and the risk update',
+  'O cliente passa a contar no cálculo de risco da sua base e aparece neste painel.':
+    "The customer starts counting in your base's risk calculation and shows up in this dashboard.",
+  'O que cada chamada faz': 'What each call does',
+  'Cadastra um cliente. Se ele já existe, atualiza os dados dele.': 'Creates a customer. If they already exist, updates their data.',
+  'Envia vários clientes de uma vez. Uma linha com erro volta em "rejeitados", com o motivo; as outras entram.':
+    'Sends many customers at once. A row with an error comes back in "rejeitados", with the reason; the others go in.',
+  'Muda só o que veio, como o plano ou a mensalidade. O histórico de uso do cliente fica como está.':
+    "Changes only what was sent, such as the plan or the monthly fee. The customer's usage history stays as it is.",
+  'Avisa que o cliente cancelou. Ele sai da lista de risco, mas o registro fica: é ele que ensina o sistema a reconhecer os próximos.':
+    'Reports that the customer cancelled. They leave the risk list, but the record stays: it is what teaches the system to recognize the next ones.',
+  'Avisa o que o cliente fez, como abrir a página de cancelamento. O evento passa pela análise de risco, e a CRAI decide se faz uma oferta, pelas regras da sua configuração.':
+    'Reports what the customer did, such as opening the cancellation page. The event goes through the risk analysis, and CRAI decides whether to make an offer, following the rules in your settings.',
+  'Regras que protegem a integração': 'Rules that protect the integration',
+  'Cada chave enxerga só os clientes da sua empresa. Um cliente de outra empresa responde como se não existisse.':
+    "Each key sees only your company's customers. A customer from another company responds as if it didn't exist.",
+  'Um reenvio não conta duas vezes: nos eventos, pelo messageId (por 30 dias); nos clientes, pelo cabeçalho Idempotency-Key (por 7 dias).':
+    "A resend doesn't count twice: for events, by the messageId (for 30 days); for customers, by the Idempotency-Key header (for 7 days).",
+  'Até 600 eventos por minuto por chave. Acima disso, a resposta diz em quantos segundos tentar de novo.':
+    'Up to 600 events per minute per key. Above that, the response says in how many seconds to try again.',
+  'Até 5 chaves ativas por empresa, só no plano Premium. Uma chave revogada para de funcionar na hora.':
+    'Up to 5 active keys per company, only on the Premium plan. A revoked key stops working immediately.',
+  'A API só informa a CRAI. Quem decide se e quando falar com o cliente é a CRAI, e a mensagem segue o modo de envio da sua configuração.':
+    'The API only informs CRAI. CRAI decides whether and when to contact the customer, and the message follows the sending mode in your settings.',
+  'Respostas que o seu sistema pode receber': 'Responses your system can receive',
+  'Deu certo.': 'It worked.',
+  'Chave ausente, errada ou revogada.': 'Key missing, wrong, or revoked.',
+  'Cliente não encontrado nesta empresa.': 'Customer not found in this company.',
+  'Conflito, como um id de recorrência já ligado a outro cliente.': 'Conflict, such as a recurrence id already linked to another customer.',
+  'Lote grande demais. Divida em partes menores.': 'Batch too large. Split it into smaller parts.',
+  'Dado inválido. A resposta diz o campo e o motivo.': 'Invalid data. The response says the field and the reason.',
+  'Limite de eventos atingido. Espere o tempo indicado e envie de novo.': 'Event limit reached. Wait the indicated time and send again.',
 }

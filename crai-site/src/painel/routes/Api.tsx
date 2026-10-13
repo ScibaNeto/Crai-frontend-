@@ -7,6 +7,7 @@ import { ENDERECO_DA_API, ErroApi, agoraDaTela, api } from '../data/api'
 import type { ChaveApi, ChavesDaEmpresa } from '../data/tipos'
 import { fmt } from '../lib/format'
 import { t } from '../lib/idioma'
+import { CartaoComoFunciona } from './api/ComoFunciona'
 import { PainelOQueAApiFaz } from './api/OQueAApiFaz'
 import { Aviso, campo } from './configuracao/comuns'
 
@@ -139,6 +140,8 @@ export function PaginaApi() {
           {t('O que a API faz')}
         </Button>
       </div>
+
+      <CartaoComoFunciona />
 
       <Card as="section" className="p-5 md:p-6" aria-label={t('Endereço da API')}>
         <h3 className="t-h3 text-paper">{t('Endereço da API')}</h3>
