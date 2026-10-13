@@ -1,6 +1,7 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import { defineConfig, loadEnv, type Plugin } from 'vite'
+import { fileURLToPath } from 'node:url'
+import { defineConfig, loadEnv, type Connect, type Plugin } from 'vite'
 import { normalizarSiteUrl, ROTAS } from './src/lib/site.ts'
 
 /** Produção de verdade: na Vercel/Netlify só o deploy de produção; fora delas, qualquer `vite build`. */
@@ -69,13 +70,50 @@ function preloadFonte(): Plugin {
   }
 }
 
+/**
+ * O painel do cliente (/app) é uma segunda página do mesmo build: `app/index.html`, com o código em
+ * `src/painel/`. Ele tem as próprias rotas (/app/involuntario, /app/configuracao...), então qualquer
+ * endereço abaixo de /app que não seja um arquivo serve o `app/index.html`. Em produção quem faz isso
+ * é a hospedagem (public/.htaccess na Locaweb; public/_redirects e vercel.json nas outras); aqui é o servidor de desenvolvimento e o `preview`.
+ */
+function painelDoCliente(): Plugin {
+  const paraOApp: Connect.NextHandleFunction = (req, _res, next) => {
+    const caminho = (req.url ?? '').split('?')[0]
+    const ehArquivo = /\.[a-z0-9]+$/i.test(caminho)
+    if ((caminho === '/app' || caminho.startsWith('/app/')) && !ehArquivo) {
+      req.url = '/app/index.html' + (req.url ?? '').slice(caminho.length)
+    }
+    next()
+  }
+  return {
+    name: 'crai-painel-do-cliente',
+    configureServer(server) {
+      server.middlewares.use(paraOApp)
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(paraOApp)
+    },
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig(({ mode, command }) => {
   const siteUrl = normalizarSiteUrl(loadEnv(mode, process.cwd(), 'VITE_').VITE_SITE_URL)
   return {
-    plugins: [react(), tailwindcss(), seoEstatico(siteUrl, command === 'build' && ehProducao(mode)), preloadFonte()],
+    plugins: [
+      react(),
+      tailwindcss(),
+      seoEstatico(siteUrl, command === 'build' && ehProducao(mode)),
+      preloadFonte(),
+      painelDoCliente(),
+    ],
     build: {
       rolldownOptions: {
+        // Duas páginas no mesmo build: o site (index.html) e o painel do cliente (app/index.html).
+        input: {
+          site: fileURLToPath(new URL('./index.html', import.meta.url)),
+          app: fileURLToPath(new URL('./app/index.html', import.meta.url)),
+        },
         output: {
           codeSplitting: {
             groups: [

@@ -27,6 +27,8 @@ npm run dev                  # http://localhost:5173
 | `npm run build` | Checa os tipos (`tsc -b`) e gera o site final em `dist/` |
 | `npm run preview` | Serve o conteúdo de `dist/` para conferir o build |
 | `npm run lint` | Procura problemas no código (oxlint) |
+| `npm test` | Testes do painel do cliente (`src/painel/`): não precisam de backend nem do Supabase |
+| `npm run test:vivo` | Testes do painel contra o backend da CRAI no ar, em modo de desenvolvimento |
 
 > Rode `npm run build` e `npm run lint` antes de cada commit. Os dois precisam passar sem erro.
 
@@ -39,10 +41,14 @@ Ficam em `crai-site/.env.local`, que **não vai para o git**. O modelo é o `cra
 | `VITE_SUPABASE_URL` | Project Settings → API |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Project Settings → API Keys (começa com `sb_publishable_`) |
 | `VITE_SITE_URL` | Não é do Supabase: domínio de produção, sem barra no fim (canonical, Open Graph, robots, sitemap) |
+| `VITE_CRAI_API_URL` | Não é do Supabase: endereço do backend da CRAI, sem barra no fim (em produção, `https://api.crai.com.br`). É o que o painel do cliente (`/app`) chama |
 
 - A chave *publishable* pode ficar no navegador: quem protege os dados são as regras de acesso (RLS) do banco.
 - **Nunca** coloque a chave `service_role` / *secret* no frontend.
 - Sem `.env.local` o site abre normalmente; só cadastro e login avisam que estão indisponíveis.
+- Sem `VITE_CRAI_API_URL` o painel do cliente abre só com dados de demonstração.
+- Mudou o endereço do backend? Libere o novo em `connect-src`, no `public/_headers` e no `vercel.json`: a política de
+  segurança do site bloqueia qualquer chamada a um endereço que não esteja lá, e o erro não aparece no backend.
 
 ## 3. Páginas (rotas)
 
@@ -58,7 +64,8 @@ Ficam em `crai-site/.env.local`, que **não vai para o git**. O modelo é o `cra
 | `/redefinir-senha` | Recuperação de senha | Supabase Auth |
 | `/pagamento` | Autorização do Pix Automático (exige login) | Empresa real; **cobrança ainda simulada** |
 | `/confirmacao` | Fim do fluxo de pagamento | — |
-| `/painel` | Painel do cliente (beta) | Nome e plano reais; **números de demonstração** |
+| `/painel` | Prévia do painel, para quem ainda não entrou. Quem está logado e tem empresa é levado ao `/app` | **Dados de demonstração** |
+| `/app` e o que vem abaixo (`/app/involuntario`, `/app/voluntario`, `/app/configuracao`…) | **Painel do cliente**: exige login e empresa. É outra página do mesmo build (ver seção 4) | Backend da CRAI (`VITE_CRAI_API_URL`), com o token do login; empresa e equipe vêm do Supabase |
 | `/privacidade` | Política de Privacidade | Texto fixo (`src/data/legal.pt.ts` / `legal.en.ts`) |
 | `/termos` | Termos de Uso | Texto fixo (`src/data/legal.pt.ts` / `legal.en.ts`) |
 
@@ -76,8 +83,10 @@ CRAI frontend/
     ├── .env.example         modelo das variáveis de ambiente
     ├── .gitignore           o que não vai para o git (node_modules, dist, .env…)
     ├── index.html           página base (título, favicon)
+    ├── app/index.html       página do painel do cliente (/app): segunda entrada do build
     ├── package.json         dependências e comandos
     ├── public/              arquivos servidos como estão (favicon, fotos do time)
+    ├── vitest.config.ts     testes do painel (npm test); vitest.vivo.config.ts é o teste contra o backend
     ├── supabase/
     │   ├── README.md        banco de dados: tabelas, permissões, configuração
     │   └── migrations/      SQL do banco
@@ -86,6 +95,10 @@ CRAI frontend/
         ├── App.tsx          rotas, layout e título de cada página
         ├── index.css        estilos globais e tema (Tailwind)
         ├── routes/          uma página por rota (Home.tsx, Cadastro.tsx, Painel.tsx…)
+        ├── painel/          o painel do cliente (/app): app próprio, com rotas, estilos e testes próprios
+        │   ├── data/        a única camada que fala com o backend (api.ts, http.ts) e com o login (sessao.ts)
+        │   ├── routes/      as páginas do painel (visão geral, involuntário, voluntário, simulação, configuração…)
+        │   └── index.css    os tokens de cor e de letra do painel (tema claro e escuro)
         ├── sections/        blocos reaproveitados dentro das páginas (Simulador, Planos, Faq…)
         │   └── home/        seções da página inicial (HeroCrai, PainelMockup, Capitulos, Contraste, Preco…)
         ├── components/
@@ -108,6 +121,25 @@ CRAI frontend/
             ├── i18n.tsx, lang.ts     troca de idioma
             └── format.ts, chart.ts…  formatação de números e gráficos
 ```
+
+**O painel do cliente (`/app`)**
+
+O painel é uma segunda página do mesmo build: `app/index.html` carrega `src/painel/main.tsx`. Ele não divide estilos
+nem roteador com o site, só o endereço, a sessão do Supabase (o login é o `/entrar` do site) e o cliente em
+`src/lib/supabase.ts`.
+
+- **Login:** sem sessão, o painel manda a pessoa ao `/entrar?proximo=/app/...` e volta depois. Sessão sem empresa vai
+  ao `/cadastro`. "Sair", no painel, encerra a sessão do site.
+- **Quem fala com o backend:** só `src/painel/data/`. O token é o da sessão do Supabase (`sessao.ts`); o backend lê
+  dele a empresa, o papel e o plano (ver [`crai-site/supabase/README.md`](crai-site/supabase/README.md), seção 4).
+- **Hospedagem:** endereço abaixo de `/app` que não é arquivo serve o `app/index.html` (`public/_redirects` para
+  Cloudflare Pages e Netlify, `vercel.json` para a Vercel). No `npm run dev` e no `npm run preview` quem faz isso é o
+  `vite.config.ts`.
+- **TypeScript:** o painel tem o próprio projeto (`tsconfig.painel.json`); o do site (`tsconfig.app.json`) o exclui.
+- **Textos:** o painel é só em português, e os textos dele ficam nos componentes de `src/painel/`. A regra do
+  `conteudo.pt.ts` vale para o site.
+- **Sem o Supabase configurado** o painel usa o login de desenvolvimento do backend (`POST /dev/token`, que só existe
+  com o backend em modo de desenvolvimento). É o que os testes ao vivo usam.
 
 **Regras da casa**
 

@@ -1,4 +1,5 @@
 # Hospedagem Locaweb (Apache). Espelha o vercel.json e o public/_headers:
+# connect-src: além do Supabase, o backend da CRAI (o painel em /app chama a API em api.crai.ia.br).
 # mudou um cabeçalho lá? Mude igual aqui.
 
 AddDefaultCharset UTF-8
@@ -28,6 +29,12 @@ AddDefaultCharset UTF-8
   # Arquivo de /assets/ que não existe é 404 de verdade (não devolve o index.html no lugar de um JS).
   RewriteRule ^assets/ - [L]
 
+  # Painel do cliente: outra página do mesmo build (app/index.html), com as próprias rotas
+  # (/app/involuntario, /app/configuracao...). Endereço abaixo de /app que não é arquivo serve ela.
+  RewriteRule ^app/?$ app/index.html [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^app/ app/index.html [L]
+
   # SPA: rota que não é arquivo nem pasta serve o index.html (o React Router resolve a página).
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
@@ -35,7 +42,7 @@ AddDefaultCharset UTF-8
 </IfModule>
 
 <IfModule mod_headers.c>
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.crai.ia.br; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
   Header always set Strict-Transport-Security "max-age=31536000"
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "DENY"

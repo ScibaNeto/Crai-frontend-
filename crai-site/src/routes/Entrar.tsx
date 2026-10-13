@@ -28,7 +28,9 @@ export function Entrar() {
   const { entrar: copy } = useConteudo()
   const navigate = useNavigate()
   const [params] = useSearchParams()
-  const proximo = destinoSeguro(params.get('proximo'))
+  // Lido UMA vez, na chegada. Esta página continua montada durante a animação de saída; se relesse o
+  // endereço, depois de mandar a pessoa ao destino ela não acharia mais o `proximo` e a mandaria ao /painel.
+  const [proximo] = useState(() => destinoSeguro(params.get('proximo')))
   const { carregando, sessao, recarregar } = useSessao()
 
   const [modo, setModo] = useState<'entrar' | 'recuperar'>('entrar')

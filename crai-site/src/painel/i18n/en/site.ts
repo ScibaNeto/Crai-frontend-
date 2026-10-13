@@ -1,0 +1,20 @@
+/** Tradução para o inglês: o que só existe no painel dentro do site (login real, sessão, sair). */
+export const site: Record<string, string> = {
+  'Entre na sua conta para abrir o painel.': 'Sign in to your account to open the dashboard.',
+  'A sua conta ainda não tem uma empresa. Termine o cadastro no site para abrir o painel.': "Your account doesn't have a company yet. Finish signing up on the website to open the dashboard.",
+  'A sua empresa ainda não tem a assinatura ativa. Conclua a assinatura no site para abrir o painel.': "Your company doesn't have an active subscription yet. Finish subscribing on the website to open the dashboard.",
+  'Não foi possível falar com o serviço de login. Confira a conexão e tente de novo.': "Couldn't reach the sign-in service. Check your connection and try again.",
+  'A sua conta tem uma empresa, mas o login não a informou ao painel. Saia da conta no site e entre de novo. Se continuar, fale com a CRAI.': "Your account has a company, but the sign-in didn't pass it to the dashboard. Sign out on the website and sign in again. If it keeps happening, contact CRAI.",
+  'Não foi possível ler o cadastro da sua empresa. Tente de novo em instantes.': "Couldn't read your company's registration. Try again in a moment.",
+  'Não encontramos o cadastro da sua empresa.': "We couldn't find your company's registration.",
+  'Pessoa sem nome no cadastro': 'Person with no name on file',
+  'A empresa precisa de pelo menos um dono. Passe a propriedade a outra pessoa antes.': 'The company needs at least one owner. Transfer ownership to someone else first.',
+  'Só o dono muda papéis.': 'Only the owner can change roles.',
+  'Não foi possível mudar o papel agora. Tente de novo em instantes.': "Couldn't change the role right now. Try again in a moment.",
+  'Seu papel não permite mudar o papel desta pessoa.': "Your role doesn't allow changing this person's role.",
+  'Não foi possível conferir o seu login agora.': "Couldn't check your sign-in right now.",
+  'Saindo do painel…': 'Leaving the dashboard…',
+  'Conferindo o seu login…': 'Checking your sign-in…',
+  'Sair da conta': 'Sign out',
+  'Sua empresa': 'Your company',
+}

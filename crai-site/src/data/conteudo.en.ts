@@ -429,7 +429,7 @@ export const conteudoEn: Conteudo = {
           taxa: 45,
           unidade: 'both fees combined',
           resumo: 'Everything in Standard, plus retention.',
-          itens: ['All of Standard, with its 25%', 'Voluntary churn', 'Risk score and offers', '6-month window per retention', 'SDK integration'],
+          itens: ['All of Standard, with its 25%', 'Voluntary churn', 'Risk score and offers', '6-month window per retention', 'SDK and API integration'],
           selo: 'Most complete',
         },
       ],
@@ -738,7 +738,7 @@ export const conteudoEn: Conteudo = {
         'Cancellation risk signals',
         'Retention action with no friction on cancellation',
         '6-month attribution window on preserved revenue',
-        'SDK integration',
+        'SDK and API integration',
       ],
       cta: 'Start with Premium',
       selo: 'Most complete',
@@ -882,6 +882,7 @@ export const conteudoEn: Conteudo = {
   cadastro: {
     titulo: 'Create account',
     lead: 'Fill in your company details and who will manage the account. It takes about two minutes.',
+    aviso: 'Demo phase: until launch, use only fictitious data. The plan you choose defines what shows up in the dashboard.',
     stepperAria: 'Sign-up steps',
     etapaDe: 'Step {n} of {total}',
     etapas: ['Company', 'Owner', 'Operation'],
@@ -1157,6 +1158,14 @@ export const conteudoEn: Conteudo = {
     texto: 'The page you are looking for does not exist or has moved. Your revenue does not have to go with it.',
     inicio: { rotulo: 'Back to home', para: '/' },
     simulacao: { rotulo: 'Run a simulation', para: '/planos#simulador' },
+  },
+
+  areaDoCliente: {
+    abrindo: 'Opening your dashboard…',
+    falhou: 'We could not open the dashboard.',
+    texto: 'The dashboard address did not respond as expected. Try again; if it keeps happening, get in touch.',
+    tentar: 'Try again',
+    inicio: 'Back to home',
   },
 
   erroInesperado: {

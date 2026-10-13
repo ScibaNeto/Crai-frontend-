@@ -72,10 +72,20 @@ await supabase.rpc('aceitar_convite', { p_token: tokenDoLink })   // o convidado
 
 ## 4. Token de login (JWT)
 
-Todo token de login traz `empresa_id` e `papel` da empresa ativa. Quem coloca esses dados no token é a função
-`public.custom_access_token_hook`. O backend (FastAPI) lê a empresa direto do token.
+Todo token de login traz, da empresa ativa do usuário:
 
-> Se o backend esperar outro nome (ex.: `tenant_id`), basta trocar a chave dentro dessa função.
+| Claim | Valor | Quem lê |
+|---|---|---|
+| `empresa_id` | id da empresa | o site |
+| `tenant_id` | o mesmo id da empresa | o backend da CRAI (é o nome que ele procura; sem ela responde 401 `sem_tenant`) |
+| `papel` | `owner`, `admin` ou `membro` | o backend (membro só lê) e o painel |
+| `plano` | `essencial` (o `standard` do site) ou `premium` | o backend (gerar chave de API é do premium) e o painel |
+
+Quem coloca esses dados no token é a função `public.custom_access_token_hook`
+(`migrations/20261006224158_crai_token_tenant_plano.sql`). O backend (FastAPI) lê tudo direto do token e confere a
+assinatura pelas chaves públicas do projeto (ES256). Usuário sem empresa ativa recebe o token sem nenhuma das quatro.
+
+> Mudou o papel ou o plano de alguém? O token antigo continua valendo até renovar (no máximo 1 hora) ou até o próximo login.
 
 ## 5. Configuração no painel do Supabase
 
@@ -118,6 +128,8 @@ Todos com dados de teste apagados depois.
 - ✔ Último `owner` não consegue sair
 - ✔ Visitante não logado bloqueado
 - ✔ Token sai com `empresa_id` e `papel`
+- ✔ Token sai também com `tenant_id` e `plano` (06/10/2026): conferido chamando o hook para um usuário de plano `premium` e
+  um de plano `standard` (vira `essencial`), e para um usuário inexistente (nenhuma das quatro claims)
 - ✔ Ponta a ponta pelo site (localhost): usuário, perfil, empresa e vínculo gravados
 - ✔ Reforço de segurança (04/10/2026): aceite não retrodata nem apaga, `javascript:` recusado em site e avatar, convite com
   token próprio recusado, e-mail de convite inválido recusado, 4ª empresa do mesmo usuário recusada
@@ -127,4 +139,4 @@ Todos com dados de teste apagados depois.
 - Painel com números reais (hoje só nome e plano são reais).
 - Cobrança real no `/pagamento` (hoje simulada, sem provedor de pagamento).
 - Tela para convidar membros da equipe.
-- Backend FastAPI validando o token e usando `empresa_id` como tenant.
+- ~~Backend FastAPI validando o token~~ — feito em 06/10/2026: o backend lê `tenant_id`, `papel` e `plano` do token (seção 4).

@@ -11,6 +11,7 @@ import { nomeExibicao } from '../lib/empresa'
 import { useConteudo } from '../lib/i18n'
 import { useSessao } from '../lib/useSessao'
 import { PainelRecuperacao, SkeletonRecuperacao } from '../sections/PainelRecuperacao'
+import { IrParaOApp } from './IrParaOApp'
 
 type Aba = 'recuperacao' | 'retencao'
 
@@ -102,10 +103,23 @@ function RetencaoPremium() {
   )
 }
 
+/** O painel de verdade só existe na publicação que sabe o endereço do backend da CRAI. */
+const PAINEL_REAL_LIGADO = String(import.meta.env.VITE_CRAI_API_URL ?? '').trim() !== ''
+
+/**
+ * Quem tem conta e empresa vai para o painel de verdade (/app), que mostra os números do backend da
+ * CRAI. Esta página fica como a PRÉVIA para quem ainda não entrou: os mesmos blocos, com dados fictícios.
+ */
 export function Painel() {
+  const { sessao, empresa } = useSessao()
+  if (PAINEL_REAL_LIGADO && sessao && empresa) return <IrParaOApp destino="/app/" />
+  return <PainelDeDemonstracao />
+}
+
+function PainelDeDemonstracao() {
   const { painel } = useConteudo()
   const { empresa } = useSessao()
-  // Logado com empresa: o cabeçalho é da empresa real; os números seguem de demonstração até a integração.
+  // Logado sem empresa não chega aqui com empresa; o nome é sempre o de demonstração.
   const nomeEmpresa = empresa ? nomeExibicao(empresa) : empresaPainel
   const retencaoBloqueada = empresa?.plano === 'standard'
   const [periodo, setPeriodo] = useState<Periodo>('30d')

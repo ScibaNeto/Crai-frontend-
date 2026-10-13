@@ -1,2 +1,8 @@
-# Fallback de SPA (Netlify e Cloudflare Pages): rota que não é arquivo serve o index.html.
+# O painel do cliente (/app) é uma segunda página do build (app/index.html), com as próprias rotas:
+# qualquer endereço abaixo de /app serve essa página. Tem de vir ANTES da regra geral.
+# O destino é /app/ (e não /app/index.html) porque a Cloudflare Pages ignora regra que aponta para
+# um index.html (ela tira o "index.html" do endereço e a regra cairia nela mesma).
+/app/*  /app/  200
+# Fallback de SPA do site (Netlify): rota que não é arquivo serve o index.html. A Cloudflare Pages
+# ignora esta linha, com um aviso, e faz o mesmo sozinha (site sem 404.html é tratado como SPA).
 /*  /index.html  200

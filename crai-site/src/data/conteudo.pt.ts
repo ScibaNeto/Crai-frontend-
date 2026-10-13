@@ -451,7 +451,7 @@ export const conteudoPt = {
           taxa: 45,
           unidade: 'soma das duas taxas',
           resumo: 'Tudo do Standard, somado à retenção.',
-          itens: ['Tudo do Standard, com os 25%', 'Churn voluntário', 'Score de risco e ofertas', 'Janela de 6 meses por retenção', 'Integração por SDK'],
+          itens: ['Tudo do Standard, com os 25%', 'Churn voluntário', 'Score de risco e ofertas', 'Janela de 6 meses por retenção', 'Integração por SDK e API'],
           selo: 'Mais completo',
         },
       ],
@@ -774,7 +774,7 @@ export const conteudoPt = {
         'Sinais de risco de cancelamento',
         'Ação de retenção sem fricção no cancelamento',
         'Janela de atribuição de 6 meses sobre a receita preservada',
-        'Integração por SDK',
+        'Integração por SDK e API',
       ],
       cta: 'Começar com Premium',
       selo: 'Mais completo',
@@ -924,6 +924,8 @@ export const conteudoPt = {
   cadastro: {
     titulo: 'Criar conta',
     lead: 'Preencha os dados da empresa e de quem vai administrar a conta. Leva cerca de dois minutos.',
+    aviso:
+      'Fase de demonstração: até o lançamento, use apenas dados fictícios. O plano escolhido define o que aparece no painel.',
     stepperAria: 'Etapas do cadastro',
     etapaDe: 'Etapa {n} de {total}',
     etapas: ['Empresa', 'Responsável', 'Operação'],
@@ -1215,6 +1217,14 @@ export const conteudoPt = {
     texto: 'O endereço que você procurou não existe ou foi movido. Mas a sua receita não precisa ir embora junto.',
     inicio: { rotulo: 'Voltar para o início', para: '/' },
     simulacao: { rotulo: 'Fazer uma simulação', para: '/planos#simulador' },
+  },
+
+  areaDoCliente: {
+    abrindo: 'Abrindo o seu painel…',
+    falhou: 'Não foi possível abrir o painel.',
+    texto: 'O endereço do painel não respondeu como esperado. Tente de novo; se continuar, fale com a gente.',
+    tentar: 'Tentar de novo',
+    inicio: 'Voltar para o início',
   },
 
   erroInesperado: {

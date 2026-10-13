@@ -154,6 +154,8 @@ const router = createBrowserRouter(
         { path: 'dados', lazy: () => import('./routes/CentralPrivacidade').then((m) => ({ Component: m.CentralPrivacidade })) },
         // Endereço antigo da central.
         { path: 'lgpd', element: <Navigate to="/dados" replace /> },
+        // O painel do cliente é outra página do build (app/index.html): o navegador precisa carregá-la.
+        { path: 'app/*', lazy: () => import('./routes/IrParaOApp').then((m) => ({ Component: m.IrParaOApp })) },
         { path: '*', lazy: () => import('./routes/NotFound').then((m) => ({ Component: m.NotFound })) },
       ],
     },

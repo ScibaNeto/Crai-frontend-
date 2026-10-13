@@ -342,6 +342,10 @@ export function Cadastro() {
     <PageShell titulo={cadastro.titulo} lead={cadastro.lead}>
       <div className="container-site pb-24 md:pb-32">
         <Card className="max-w-[820px] p-5 sm:p-8 md:p-10">
+          {/* Até o lançamento (início de 2027) o painel é de demonstração: os dados ficam no ambiente de testes da CRAI. */}
+          <p role="note" className="t-apoio mb-8 text-amber">
+            {cadastro.aviso}
+          </p>
           <Stepper steps={cadastro.etapas} current={etapa} onStepClick={irPara} label={cadastro.stepperAria} />
 
           <form onSubmit={onSubmit} noValidate className="mt-10">

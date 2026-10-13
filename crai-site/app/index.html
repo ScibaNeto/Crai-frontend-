@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#1A120A" />
+    <title>CRAI · Painel</title>
+    <!-- O tema guardado (claro ou escuro) é aplicado ANTES da primeira pintura, para a tela não
+         piscar escura ao abrir no claro. Fica em arquivo próprio (public/app-tema-inicial.js)
+         porque a política de segurança do site (CSP) proíbe script embutido na página. -->
+    <script src="/app-tema-inicial.js"></script>
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/painel/main.tsx"></script>
+  </body>
+</html>
