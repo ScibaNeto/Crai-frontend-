@@ -8,7 +8,6 @@ import {
   IconDownload,
   IconPulse,
   IconSend,
-  IconShield,
   IconUndo,
   IconUsers,
   IconX,
@@ -367,29 +366,6 @@ export function SeloSaude({ geral, compacto = false }: { geral: ReturnType<typeo
       )}
       {geral === 'ok' ? t('Tudo funcionando') : t('Precisa de atenção')}
     </span>
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/* Grupo de controle: planejado                                        */
-/* ------------------------------------------------------------------ */
-
-export function GrupoDeControle() {
-  return (
-    <div className="anim-entrada flex h-full flex-col justify-between rounded-[18px] border border-dashed border-graphite/70 p-5">
-      <div className="flex items-start justify-between gap-3">
-        <span className="t-label text-silver">{t('Comparação com grupo de controle')}</span>
-        <Badge>{t('Planejado')}</Badge>
-      </div>
-      <div className="mt-3">
-        <p className="text-apoio leading-[1.5] text-paper">
-          {t('Esta tela mostra o que foi recuperado e mantido. Medir quanto disso aconteceu por causa da CRAI exige comparar com clientes que não recebem a ação.')}
-        </p>
-        <p className="t-label mt-2 flex items-center gap-1.5 text-silver">
-          <IconShield width={14} height={14} /> {t('Entra numa próxima versão.')}
-        </p>
-      </div>
-    </div>
   )
 }
 

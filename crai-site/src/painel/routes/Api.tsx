@@ -141,8 +141,6 @@ export function PaginaApi() {
         </Button>
       </div>
 
-      <CartaoComoFunciona />
-
       <Card as="section" className="p-5 md:p-6" aria-label={t('Endereço da API')}>
         <h3 className="t-h3 text-paper">{t('Endereço da API')}</h3>
         <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -289,6 +287,9 @@ export function PaginaApi() {
           </div>
         ) : null}
       </Card>
+
+      {/* Por último, fechado: o contexto fica à mão sem empurrar as ferramentas para baixo. */}
+      <CartaoComoFunciona />
 
       {explicacao ? <PainelOQueAApiFaz onFechar={fecharExplicacao} /> : null}
     </div>

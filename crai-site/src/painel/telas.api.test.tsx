@@ -101,14 +101,14 @@ describe('aba API em demonstração: a página, de cima para baixo', () => {
     fireEvent.click(endereco.getByRole('button', { name: 'Copiar' }))
     await waitFor(() => expect(copiar).toHaveBeenCalledWith('https://api.exemplo-crai.com.br'))
 
-    // Os quatro blocos, nesta ordem, e nenhuma tabela. "Como a API funciona" vem primeiro:
-    // o contexto antes das ferramentas (pedido do professor do TCC, 13/10/2026).
+    // Os quatro blocos, nesta ordem, e nenhuma tabela. "Como a API funciona" vem por último,
+    // depois do "Exemplo de uso", e fechado (pedido do Crai, 14/10/2026).
     await waitFor(() => expect(campos().length).toBeGreaterThan(0), ESPERA)
     expect(screen.getAllByRole('region').map((r) => r.getAttribute('aria-label'))).toEqual([
-      'Como a API funciona',
       'Endereço da API',
       'Chave de API',
       'Exemplo de uso',
+      'Como a API funciona',
     ])
     expect(document.querySelector('table')).toBeNull()
     // A explicação mora no painel: a página não tem parágrafo explicativo solto.
@@ -214,10 +214,24 @@ describe('aba API em demonstração: a página, de cima para baixo', () => {
     expect(screen.getByText(/Esta chamada sai do servidor da sua empresa\. A chave é secreta/)).toBeTruthy()
   })
 
-  it('"Como a API funciona" fica aberto na aba: os 4 passos, as 5 chamadas, as regras e as respostas', async () => {
+  it('"Como a API funciona" começa fechado e abre e fecha pelo título', async () => {
+    abrir('/api')
+    const cartao = within(await screen.findByRole('region', { name: 'Como a API funciona' }, ESPERA))
+    const titulo = cartao.getByRole('button', { name: 'Como a API funciona' })
+    expect(titulo.getAttribute('aria-expanded')).toBe('false')
+    expect(cartao.queryByText(COMO_A_API_FUNCIONA.passos.titulo)).toBeNull()
+    fireEvent.click(titulo)
+    expect(titulo.getAttribute('aria-expanded')).toBe('true')
+    expect(cartao.getByText(COMO_A_API_FUNCIONA.passos.titulo)).toBeTruthy()
+    fireEvent.click(titulo)
+    expect(cartao.queryByText(COMO_A_API_FUNCIONA.passos.titulo)).toBeNull()
+  })
+
+  it('"Como a API funciona", aberto: os 4 passos, as 5 chamadas, as regras e as respostas', async () => {
     abrir('/api')
     const cartao = within(await screen.findByRole('region', { name: 'Como a API funciona' }, ESPERA))
     expect(cartao.getByRole('heading', { name: 'Como a API funciona' })).toBeTruthy()
+    fireEvent.click(cartao.getByRole('button', { name: 'Como a API funciona' }))
 
     // Os passos, numerados e na ordem do caminho de uma chamada.
     const passos = cartao.getAllByRole('list')[0]

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Card } from '../../components/ui/Card'
 import { t } from '../../lib/idioma'
 
@@ -108,70 +109,88 @@ export function textosDoComoFunciona(): string[] {
 const subtitulo = 'text-apoio font-[640] text-paper'
 const codigo = 'tabular shrink-0 rounded-[6px] border border-line bg-ink/60 px-1.5 py-0.5 text-rotulo text-paper/90'
 
-/** O cartão "Como a API funciona", aberto na própria aba. */
+/**
+ * O cartão "Como a API funciona". Fica no fim da aba, depois do "Exemplo de uso", e começa
+ * fechado: abre e fecha pelo título, como o exemplo (pedido do Crai, 14/10/2026).
+ */
 export function CartaoComoFunciona() {
   const c = COMO_A_API_FUNCIONA
+  const [aberto, setAberto] = useState(false)
   return (
     <Card as="section" className="p-5 md:p-6" aria-label={t(c.titulo)}>
-      <h3 className="t-h3 text-paper">{t(c.titulo)}</h3>
+      <h3 className="t-h3 text-paper">
+        <button
+          type="button"
+          aria-expanded={aberto}
+          onClick={() => setAberto((v) => !v)}
+          className="flex w-full items-center justify-between gap-3 text-left"
+        >
+          {t(c.titulo)}
+          <span aria-hidden="true" className="t-label font-[500] text-silver">
+            {aberto ? t('Fechar') : t('Abrir')}
+          </span>
+        </button>
+      </h3>
       <p className="t-apoio mt-1 text-silver">{t(c.abertura)}</p>
 
-      <div className="mt-5 flex flex-col gap-6">
-        <div>
-          <h4 className={subtitulo}>{t(c.passos.titulo)}</h4>
-          <ol className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            {c.passos.itens.map((passo, i) => (
-              <li key={passo.titulo} className="flex items-start gap-3 rounded-[12px] border border-line bg-ink/40 p-3">
-                <span aria-hidden="true" className="tabular grid h-6 w-6 shrink-0 place-items-center rounded-full bg-orange/20 text-rotulo font-[640] text-orange">
-                  {i + 1}
-                </span>
-                <span className="flex flex-col gap-1">
-                  <span className="text-apoio font-[600] text-paper">{t(passo.titulo)}</span>
-                  <span className="text-rotulo leading-[1.5] text-silver">{t(passo.texto)}</span>
-                </span>
-              </li>
-            ))}
-          </ol>
-        </div>
+      {aberto ? (
+        <div id="como-a-api-funciona" className="mt-5 flex flex-col gap-6">
+          <div>
+            <h4 className={subtitulo}>{t(c.passos.titulo)}</h4>
+            <ol className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              {c.passos.itens.map((passo, i) => (
+                <li key={passo.titulo} className="flex items-start gap-3 rounded-[12px] border border-line bg-ink/40 p-3">
+                  <span aria-hidden="true" className="tabular grid h-6 w-6 shrink-0 place-items-center rounded-full bg-orange/20 text-rotulo font-[640] text-orange">
+                    {i + 1}
+                  </span>
+                  <span className="flex flex-col gap-1">
+                    <span className="text-apoio font-[600] text-paper">{t(passo.titulo)}</span>
+                    <span className="text-rotulo leading-[1.5] text-silver">{t(passo.texto)}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
 
-        <div>
-          <h4 className={subtitulo}>{t(c.chamadas.titulo)}</h4>
-          <ul className="mt-3 flex flex-col gap-2.5">
-            {c.chamadas.itens.map((chamada) => (
-              <li key={`${chamada.metodo} ${chamada.caminho}`} className="flex flex-col gap-1.5 md:flex-row md:items-baseline md:gap-3">
-                <code className={`${codigo} md:w-[190px]`}>
-                  {chamada.metodo} {chamada.caminho}
-                </code>
-                <span className="text-apoio leading-[1.55] text-silver">{t(chamada.texto)}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+          <div>
+            <h4 className={subtitulo}>{t(c.chamadas.titulo)}</h4>
+            <ul className="mt-3 flex flex-col gap-2.5">
+              {c.chamadas.itens.map((chamada) => (
+                <li key={`${chamada.metodo} ${chamada.caminho}`} className="flex flex-col gap-1.5 md:flex-row md:items-baseline md:gap-3">
+                  <code className={`${codigo} md:w-[190px]`}>
+                    {chamada.metodo} {chamada.caminho}
+                  </code>
+                  <span className="text-apoio leading-[1.55] text-silver">{t(chamada.texto)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        <div>
-          <h4 className={subtitulo}>{t(c.regras.titulo)}</h4>
-          <ul className="mt-2 flex flex-col gap-1.5">
-            {c.regras.itens.map((regra) => (
-              <li key={regra} className="flex items-start gap-2 text-apoio leading-[1.55] text-silver">
-                <span className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-orange" aria-hidden="true" />
-                <span>{t(regra)}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+          <div>
+            <h4 className={subtitulo}>{t(c.regras.titulo)}</h4>
+            <ul className="mt-2 flex flex-col gap-1.5">
+              {c.regras.itens.map((regra) => (
+                <li key={regra} className="flex items-start gap-2 text-apoio leading-[1.55] text-silver">
+                  <span className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-orange" aria-hidden="true" />
+                  <span>{t(regra)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        <div>
-          <h4 className={subtitulo}>{t(c.respostas.titulo)}</h4>
-          <ul className="mt-3 grid gap-2 md:grid-cols-2">
-            {c.respostas.itens.map((resposta) => (
-              <li key={resposta.codigo} className="flex items-baseline gap-3">
-                <code className={`${codigo} w-[88px] text-center`}>{resposta.codigo}</code>
-                <span className="text-apoio leading-[1.5] text-silver">{t(resposta.texto)}</span>
-              </li>
-            ))}
-          </ul>
+          <div>
+            <h4 className={subtitulo}>{t(c.respostas.titulo)}</h4>
+            <ul className="mt-3 grid gap-2 md:grid-cols-2">
+              {c.respostas.itens.map((resposta) => (
+                <li key={resposta.codigo} className="flex items-baseline gap-3">
+                  <code className={`${codigo} w-[88px] text-center`}>{resposta.codigo}</code>
+                  <span className="text-apoio leading-[1.5] text-silver">{t(resposta.texto)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-      </div>
+      ) : null}
     </Card>
   )
 }

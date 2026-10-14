@@ -19,7 +19,6 @@ import {
   AtividadeRecente,
   ExtratoDoMes,
   FunilInvoluntario,
-  GrupoDeControle,
   OQueMaisFunciona,
   SaudeDoSistema,
   SeloSaude,
@@ -224,7 +223,9 @@ export function VisaoGeral() {
           apoio={premium ? (resumo && resumo.risco_grave_com_oferta !== null ? (resumo.risco_grave_com_oferta === 1 ? t('{n} já recebeu uma oferta', { n: resumo.risco_grave_com_oferta }) : t('{n} já receberam uma oferta', { n: resumo.risco_grave_com_oferta })) : '') : t('Disponível no plano premium')}
           icone={<IconAlert width={17} height={17} />}
         />
+        {/* O último cartão completa a linha (o cartão do grupo de controle saiu em 13/10/2026) */}
         <StatTile
+          className="sm:col-span-2 lg:col-span-4 xl:col-span-4"
           demo={demo}
           rotulo={t('Taxa de recuperação')}
           valor={resumo && resumo.taxa_recuperacao !== null ? fmt.pontos(resumo.taxa_recuperacao * 100) : '—'}
@@ -236,9 +237,6 @@ export function VisaoGeral() {
               : ''
           }
         />
-        <div className="min-h-[150px] sm:col-span-2 lg:col-span-3 xl:col-span-3">
-          <GrupoDeControle />
-        </div>
       </section>
 
       {/* Uma coisa por vez: cada gráfico na sua aba */}
