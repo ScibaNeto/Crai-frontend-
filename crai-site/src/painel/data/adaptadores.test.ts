@@ -512,6 +512,7 @@ describe('configuração', () => {
   it('a resposta do backend vira o tipo da tela', () => {
     expect(adaptarConfiguracao(PADRAO, NOTIFICACOES)).toEqual({
       modo_mensagem_involuntario: 'escolha',
+      modo_mensagem_voluntario: 'escolha', // 14/10/2026: o voluntário também lê o modo
       prazo_escolha_horas: 8,
       janela_contato: { inicio: 8, fim: 20 },
       canais: ['whatsapp', 'email'],
@@ -530,7 +531,18 @@ describe('configuração', () => {
   it('o PUT leva só o que mudou', () => {
     const lida = adaptarConfiguracao(PADRAO, NOTIFICACOES)
     expect(configuracaoParaApi(lida, lida)).toEqual({})
-    expect(configuracaoParaApi({ ...lida, modo_mensagem_involuntario: 'automatico' }, lida)).toEqual({ modo_mensagem_involuntario: 'automatico' })
+    // A tela tem uma escolha só: o voluntário acompanha o involuntário (14/10/2026).
+    expect(configuracaoParaApi({ ...lida, modo_mensagem_involuntario: 'automatico' }, lida)).toEqual({
+      modo_mensagem_involuntario: 'automatico',
+      modo_mensagem_voluntario: 'automatico',
+    })
+    // Um backend que gravou modos diferentes: salvar alinha o voluntário ao que a tela mostra.
+    const divergente = adaptarConfiguracao({ ...PADRAO, modo_mensagem_voluntario: 'automatico' }, NOTIFICACOES)
+    expect(configuracaoParaApi(divergente, divergente)).toEqual({ modo_mensagem_voluntario: 'escolha' })
+    // Um backend anterior, sem o campo: o voluntário segue o involuntário e nada a mais vai no PUT.
+    const { modo_mensagem_voluntario: _ignorado, ...antigo } = PADRAO
+    const lidaAntiga = adaptarConfiguracao(antigo, NOTIFICACOES)
+    expect(configuracaoParaApi(lidaAntiga, lidaAntiga)).toEqual({})
     expect(configuracaoParaApi({ ...lida, prazo_escolha_horas: 4, janela_contato: { inicio: 9, fim: 20 } }, lida)).toEqual({
       prazo_escolha_horas: 4,
       janela_contato_inicio: '09:00',

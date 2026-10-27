@@ -27,6 +27,8 @@ import {
   baseClientes,
   clientesRisco,
   comparacaoReguaModelo,
+  mensagensVoluntario as mensagensVoluntarioDemo,
+  RODADA_2_DESCONTO,
   resumoVoluntario,
   ciclos,
   detalhes,
@@ -64,6 +66,9 @@ import {
   adaptarFunil,
   adaptarImportacao,
   adaptarMensagem,
+  adaptarMensagemVoluntario,
+  adaptarMensagemVoluntarioDetalhe,
+  adaptarSugestaoVoluntario,
   adaptarMetricas,
   adaptarNaoContatar,
   adaptarOQueFunciona,
@@ -97,6 +102,9 @@ import {
   type ListaDeChavesApi,
   type ListaDeCiclosApi,
   type MensagemApi,
+  type ListaMensagensVoluntarioApi,
+  type MensagemVoluntarioDetalheApi,
+  type SugestaoVoluntarioApi,
   type MesVoluntarioApi,
   type MarcaNaoContatar,
   type MetricasMesApi,
@@ -121,6 +129,10 @@ import { LOGIN_REAL, contaDaSessao, empresaDoCadastro, membrosDoCadastro, mudarP
 import { avancar, diasAteProximaAcao, escolherMensagem, estadoVazio, iniciar, simularRetencao } from './simulador'
 import type {
   Abordagem,
+  AbordagemVoluntario,
+  MensagemVoluntarioDetalhe,
+  MensagemVoluntarioResumo,
+  SugestaoVoluntario,
   Canal,
   ChaveApi,
   ChavesDaEmpresa,
@@ -216,6 +228,11 @@ export const ROTAS_REAIS = {
   // Rodada 4, Fase 2: a busca do topo e o extrato em arquivo
   buscar: true, // GET /busca?q=
   extratoCsv: true, // GET /extrato/csv
+  // 14/10/2026: as 3 mensagens do voluntário
+  mensagensVoluntario: true, // GET /voluntario/mensagens
+  mensagemVoluntario: true, // GET /voluntario/mensagens/{id}
+  escolherMensagemVoluntario: true, // POST /voluntario/mensagens/{id}/escolher
+  regerarMensagensVoluntario: true, // POST /voluntario/mensagens/{id}/regerar
 } as const
 
 type RotaReal = keyof typeof ROTAS_REAIS
@@ -402,6 +419,58 @@ function enviarRecomendadasNaDemonstracao(): void {
   }
 }
 
+/** Demonstração: as mensagens do voluntário, numa cópia que a escolha e a regeração podem mudar. */
+const mensagensVoluntarioAtuais: MensagemVoluntarioDetalhe[] = structuredClone(mensagensVoluntarioDemo)
+
+/**
+ * Demonstração: a escolha de uma das mensagens do voluntário, pela empresa ou pelo modo automático.
+ * O detalhe e a linha da lista de clientes mudam juntos, como no backend.
+ */
+function escolherMensagemVoluntarioNaDemonstracao(id: number, rodada: number, abordagem: AbordagemVoluntario, por: 'owner' | 'automatico'): void {
+  const m = mensagensVoluntarioAtuais.find((x) => x.id === id)
+  if (!m || m.estado !== 'aguardando') return
+  const agora = AGORA.toISOString()
+  m.estado = 'enviada'
+  m.escolha_ate = null
+  m.escolhida_por = por
+  m.enviada_em = agora
+  m.sugestoes = m.sugestoes.map((s) => ({ ...s, escolhida: s.rodada === rodada && s.abordagem === abordagem }))
+  m.linha_do_tempo = [
+    ...m.linha_do_tempo,
+    { em: agora, tipo: 'mensagem_escolhida', abordagem, escolhida_por: por },
+    { em: agora, tipo: 'mensagem_enviada', canal: m.canal_legivel },
+  ]
+  const linha = clientesRisco.find((c) => c.id === m.cliente_id)
+  if (linha?.abordagem) linha.abordagem = { ...linha.abordagem, status: 'enviada' }
+}
+
+/** Demonstração do modo automático: as que esperavam saem pela recomendada da rodada mais recente. */
+function enviarRecomendadasDoVoluntarioNaDemonstracao(): void {
+  for (const m of mensagensVoluntarioAtuais.filter((x) => x.estado === 'aguardando')) {
+    const rodada = Math.max(...m.sugestoes.map((s) => s.rodada))
+    const recomendada = m.sugestoes.find((s) => s.rodada === rodada && s.recomendada)
+    if (recomendada) escolherMensagemVoluntarioNaDemonstracao(m.id, rodada, recomendada.abordagem, 'automatico')
+  }
+}
+
+function resumoDaMensagemVoluntario(m: MensagemVoluntarioDetalhe): MensagemVoluntarioResumo {
+  const rodada = Math.max(...m.sugestoes.map((s) => s.rodada))
+  return {
+    id: m.id,
+    cliente_id: m.cliente_id,
+    nome: m.nome,
+    mrr: m.mrr,
+    faixa: m.faixa,
+    estado: m.estado,
+    oferta: m.oferta,
+    canal: m.canal,
+    canal_legivel: m.canal_legivel,
+    criado_em: m.criado_em,
+    escolha_ate: m.escolha_ate,
+    recomendada: m.sugestoes.find((s) => s.rodada === rodada && s.recomendada) ?? null,
+  }
+}
+
 /** O que o topo mostra no lugar do nome quando o cadastro do site não respondeu. */
 export const NOME_QUANDO_O_CADASTRO_NAO_RESPONDE = t('Sua empresa')
 
@@ -485,7 +554,10 @@ export const api = {
     await espera(500)
     configuracaoAtual = structuredClone(nova)
     // No modo automático ninguém escolhe: as que esperavam saem pela recomendada, como no backend.
-    if (configuracaoAtual.modo_mensagem_involuntario === 'automatico') enviarRecomendadasNaDemonstracao()
+    if (configuracaoAtual.modo_mensagem_involuntario === 'automatico') {
+      enviarRecomendadasNaDemonstracao()
+      enviarRecomendadasDoVoluntarioNaDemonstracao()
+    }
     return configuracaoAtual
   },
 
@@ -734,6 +806,74 @@ export const api = {
     await espera(80)
     if (vazio) return null
     return baseClientes
+  },
+
+  /**
+   * GET /voluntario/mensagens — as ofertas de retenção que esperam a escolha da mensagem (das que
+   * vencem primeiro às últimas), e o modo de envio do voluntário. No automático nada espera.
+   */
+  async mensagensVoluntario(): Promise<{ mensagens: MensagemVoluntarioResumo[]; modo: 'automatico' | 'escolha' }> {
+    if (real('mensagensVoluntario')) {
+      const r = await chamar<ListaMensagensVoluntarioApi>('GET', '/voluntario/mensagens')
+      return { mensagens: r.mensagens.map(adaptarMensagemVoluntario), modo: r.modo === 'automatico' ? 'automatico' : 'escolha' }
+    }
+    await espera(150)
+    if (vazio) return { mensagens: [], modo: configuracaoAtual.modo_mensagem_involuntario }
+    return {
+      mensagens: mensagensVoluntarioAtuais.filter((m) => m.estado === 'aguardando').map(resumoDaMensagemVoluntario),
+      modo: configuracaoAtual.modo_mensagem_involuntario,
+    }
+  },
+
+  /** GET /voluntario/mensagens/{id} — o risco, as mensagens de cada rodada e a linha do tempo */
+  async mensagemVoluntario(id: number): Promise<MensagemVoluntarioDetalhe | null> {
+    if (real('mensagemVoluntario')) {
+      return adaptarMensagemVoluntarioDetalhe(await chamar<MensagemVoluntarioDetalheApi>('GET', `/voluntario/mensagens/${id}`))
+    }
+    await espera(150)
+    const m = mensagensVoluntarioAtuais.find((x) => x.id === id)
+    return m ? structuredClone({ ...m, modo: configuracaoAtual.modo_mensagem_involuntario }) : null
+  },
+
+  /**
+   * POST /voluntario/mensagens/{id}/escolher — a empresa escolhe UMA das mensagens. Nunca manda
+   * texto: só a rodada e a abordagem. A mensagem sai na hora.
+   */
+  async escolherMensagemVoluntario(id: number, rodada: number, abordagem: AbordagemVoluntario): Promise<{ enviada: boolean; motivo: string | null }> {
+    if (real('escolherMensagemVoluntario')) {
+      const r = await chamar<{ enviada: boolean; motivo_nao_enviada: string | null }>('POST', `/voluntario/mensagens/${id}/escolher`, { rodada, abordagem })
+      return { enviada: r.enviada, motivo: r.motivo_nao_enviada }
+    }
+    await espera(400)
+    escolherMensagemVoluntarioNaDemonstracao(id, rodada, abordagem, 'owner')
+    return { enviada: true, motivo: null }
+  },
+
+  /** POST /voluntario/mensagens/{id}/regerar — outras 3 para a mesma oferta, sem reiniciar o prazo */
+  async regerarMensagensVoluntario(id: number): Promise<SugestaoVoluntario[]> {
+    if (real('regerarMensagensVoluntario')) {
+      const r = await chamar<{ rodada: number; sugestoes: SugestaoVoluntarioApi[] }>('POST', `/voluntario/mensagens/${id}/regerar`)
+      return r.sugestoes.map(adaptarSugestaoVoluntario).filter((s): s is SugestaoVoluntario => s !== null)
+    }
+    await espera(800)
+    const m = mensagensVoluntarioAtuais.find((x) => x.id === id)
+    if (!m || m.estado !== 'aguardando') throw new ErroApi('conflito', t('Esta oferta não está esperando uma escolha.'), 409)
+    const rodada = Math.max(...m.sugestoes.map((s) => s.rodada)) + 1
+    const recomendada = m.sugestoes.find((s) => s.recomendada)?.abordagem ?? 'facilitacao'
+    const ordem: AbordagemVoluntario[] = ['cuidado_proximo', 'facilitacao', 'direto_ao_ponto']
+    const textos = rodada % 2 === 0 ? RODADA_2_DESCONTO : mensagensVoluntarioDemo[0].sugestoes.map((s) => s.texto ?? '')
+    const novas: SugestaoVoluntario[] = ordem.map((abordagem, i) => ({
+      rodada,
+      abordagem,
+      recomendada: abordagem === recomendada,
+      escolhida: false,
+      texto: textos[i],
+      gerada: false,
+    }))
+    m.sugestoes = [...m.sugestoes.map((s) => ({ ...s, recomendada: false })), ...novas]
+    m.recomendada = novas.find((s) => s.recomendada) ?? null
+    m.linha_do_tempo = m.linha_do_tempo.map((e) => (e.tipo === 'mensagens_sugeridas' ? { ...e, rodadas: rodada } : e))
+    return novas
   },
 
   /** GET /clientes/recentes?limite=10 */

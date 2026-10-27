@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
+import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { IconAlert, IconSend, IconSpark, IconUsers } from '../components/icons/Icons'
 import { usePainel } from '../components/layout/Shell'
@@ -17,8 +18,9 @@ import { useCarregar } from '../lib/useCarregar'
 import { useReducedMotion } from '../lib/useReducedMotion'
 import { GraficoTrintaDias } from './visao/GraficoTrintaDias'
 import { QuemDecideORisco, SuaBase, TabelaClientes } from './voluntario/Blocos'
+import { AbaMensagensVoluntario, MensagemVoluntarioDrawer } from './voluntario/Mensagens'
 
-type AbaVol = 'clientes' | 'mantido' | 'base' | 'decisao'
+type AbaVol = 'clientes' | 'mensagens' | 'mantido' | 'base' | 'decisao'
 
 const nomeDoMes = new Intl.DateTimeFormat(localeAtual(), { month: 'long' })
 /** O rótulo do cartão laranja: "Mantido para você em setembro". O mês é o que o backend devolveu. */
@@ -29,7 +31,7 @@ function rotuloDoMes(mes: string | undefined): string {
 
 /** "1 mês da mensalidade", "6 meses da mensalidade": o número vem do backend. */
 const mesesDaRegra = (n: number) => (n === 1 ? t('1 mês') : t('{n} meses', { n }))
-const ABAS_VALIDAS: AbaVol[] = ['base', 'clientes', 'mantido', 'decisao']
+const ABAS_VALIDAS: AbaVol[] = ['base', 'clientes', 'mensagens', 'mantido', 'decisao']
 
 /** Sparkline do cartão laranja, na cor do fundo escuro. */
 function Sparkline({ pontos }: { pontos: PontoSerie[] }) {
@@ -66,6 +68,26 @@ export function Voluntario() {
   const aba: AbaVol = pedida && ABAS_VALIDAS.includes(pedida) ? pedida : 'base'
   const irPara = (v: AbaVol) => setParams(v === 'base' ? {} : { aba: v }, { replace: true })
 
+  // As 3 mensagens do voluntário: a lista das que esperam a escolha (o número da aba) e o painel
+  // de uma oferta aberto (`?mensagem=<id>`, pela aba Mensagens ou pela coluna Abordagem).
+  const cargaMensagens = useCarregar(() => api.mensagensVoluntario(), [])
+  const esperando = cargaMensagens.dados?.mensagens.length ?? 0
+  const mensagemAberta = Number(params.get('mensagem')) || null
+  const abrirMensagem = (id: number) => {
+    const novos = new URLSearchParams(params)
+    novos.set('mensagem', String(id))
+    setParams(novos, { replace: true })
+  }
+  const [recargaDaLista, setRecargaDaLista] = useState(0)
+  const fecharMensagem = () => {
+    const novos = new URLSearchParams(params)
+    novos.delete('mensagem')
+    setParams(novos, { replace: true })
+    // O que a pessoa fez no painel (escolher, pedir outras três) muda a aba e a lista.
+    cargaMensagens.recarregar()
+    setRecargaDaLista((n) => n + 1)
+  }
+
   const carga = useCarregar(
     () =>
       Promise.all([
@@ -82,6 +104,8 @@ export function Voluntario() {
   // A busca do topo leva a `?aba=clientes&cliente=<id>`: aquele cliente é lido à parte (ele pode
   // não estar na primeira página da lista) e vai para o topo dela.
   const idBuscado = params.get('cliente')?.trim() || null
+  // A lista relê quando a página relê (base anexada, atualização automática) e quando o painel fecha.
+  const recargaDaTabela = useMemo(() => [carga.dados, recargaDaLista], [carga.dados, recargaDaLista])
   const cargaDoBuscado = useCarregar<ClienteRisco | 'nao_encontrado' | null>(
     () => (idBuscado ? api.clientesRecentes({ cliente: idBuscado, limite: 1, incluirSimulados: sim }).then((l) => l[0] ?? 'nao_encontrado') : Promise.resolve(null)),
     [idBuscado, sim],
@@ -112,6 +136,7 @@ export function Voluntario() {
   const abas: Aba<AbaVol>[] = [
     { valor: 'base', rotulo: t('Sua base') },
     { valor: 'clientes', rotulo: t('Clientes em risco'), extra: graves ? <Badge tone="danger" className="px-1.5 py-0 text-rotulo">{t('{n} graves', { n: graves })}</Badge> : null },
+    { valor: 'mensagens', rotulo: t('Mensagens'), extra: esperando ? <Badge tone="orange" className="px-1.5 py-0">{esperando}</Badge> : null },
     { valor: 'mantido', rotulo: t('Dinheiro mantido') },
     { valor: 'decisao', rotulo: t('Quem decide o risco') },
   ]
@@ -204,8 +229,16 @@ export function Voluntario() {
                     </button>
                   </div>
                 ) : null}
-                <TabelaClientes incluirSimulados={sim} total={base?.total ?? null} buscado={buscado && buscado !== 'nao_encontrado' ? buscado : null} recarga={carga.dados} />
+                <TabelaClientes
+                  incluirSimulados={sim}
+                  total={base?.total ?? null}
+                  buscado={buscado && buscado !== 'nao_encontrado' ? buscado : null}
+                  recarga={recargaDaTabela}
+                  onVerMensagens={abrirMensagem}
+                />
               </Card>
+            ) : aba === 'mensagens' ? (
+              <AbaMensagensVoluntario dados={cargaMensagens.dados} erro={cargaMensagens.erro} onTentar={cargaMensagens.recarregar} onEscolher={abrirMensagem} />
             ) : aba === 'mantido' ? (
               <Card className="p-5 md:p-6">
                 {serie ? (
@@ -242,6 +275,7 @@ export function Voluntario() {
           </motion.div>
         </AnimatePresence>
       </section>
+      {mensagemAberta ? <MensagemVoluntarioDrawer key={mensagemAberta} id={mensagemAberta} onClose={fecharMensagem} /> : null}
     </div>
   )
 }

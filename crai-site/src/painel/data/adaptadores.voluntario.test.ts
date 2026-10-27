@@ -53,7 +53,7 @@ describe('clientes recentes', () => {
       motivo: '41 dias sem login, 0 funcionalidades usadas, MRR R$ 480,00',
       risco_decidido_por: 'modelo',
       posicao_na_base: 3,
-      abordagem: { oferta: 'Pausa de 1 mês na assinatura, sem custo', canal: 'E-mail', status: 'enviada' },
+      abordagem: { oferta: 'Pausa de 1 mês na assinatura, sem custo', canal: 'E-mail', status: 'enviada', mensagem_id: null },
       atualizado_em: '2026-10-04T09:00:00-03:00',
       nao_contatar: false, // Rodada 4: o campo novo; ausente na resposta, é falso
       simulado: false,
@@ -84,7 +84,7 @@ describe('clientes recentes', () => {
 
   it('sem o texto pronto, o código da oferta e do canal aparece, nunca um texto de outra oferta', () => {
     const c = adaptarClienteRecente({ ...GRAVE, abordagem: { oferta: 'oferta_nova', oferta_legivel: null, canal: null, canal_legivel: null, situacao: 'aguardando' } })
-    expect(c.abordagem).toEqual({ oferta: 'Oferta_nova', canal: 'Sem canal disponível', status: 'aguardando' })
+    expect(c.abordagem).toEqual({ oferta: 'Oferta_nova', canal: 'Sem canal disponível', status: 'aguardando', mensagem_id: null })
   })
 })
 

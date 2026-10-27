@@ -179,6 +179,11 @@ describe('o mapa único', () => {
         // Rodada 4, Fase 2: a busca do topo e o extrato em arquivo
         'buscar',
         'extratoCsv',
+        // 14/10/2026: as 3 mensagens do voluntário
+        'mensagensVoluntario',
+        'mensagemVoluntario',
+        'escolherMensagemVoluntario',
+        'regerarMensagensVoluntario',
       ].sort(),
     )
     for (const nome of Object.keys(ROTAS_REAIS)) {
@@ -190,5 +195,27 @@ describe('o mapa único', () => {
     const detalhe = await api.ciclo(35)
     expect(detalhe && 'fee' in detalhe).toBe(false)
     expect(JSON.stringify(await api.ciclos())).not.toContain('"fee"')
+  })
+})
+
+describe('as 3 mensagens do voluntário na demonstração (14/10/2026)', () => {
+  it('uma oferta espera; outra rodada mantém a oferta; escolher envia e tira da lista', async () => {
+    const antes = await api.mensagensVoluntario()
+    expect(antes.mensagens.map((m) => m.nome)).toEqual(['Escritório Vértice'])
+    const id = antes.mensagens[0].id
+    const novas = await api.regerarMensagensVoluntario(id)
+    expect(novas.map((s) => s.rodada)).toEqual([2, 2, 2])
+    expect(novas.filter((s) => s.recomendada)).toHaveLength(1)
+    const detalhe = await api.mensagemVoluntario(id)
+    expect(detalhe?.sugestoes).toHaveLength(6)
+    // Nenhum texto encaminha para uma pessoa (a mesma regra do backend).
+    for (const s of detalhe?.sugestoes ?? []) expect(s.texto).not.toMatch(/suporte|especialista|atendente|equipe/i)
+    expect(await api.escolherMensagemVoluntario(id, 2, 'facilitacao')).toEqual({ enviada: true, motivo: null })
+    expect((await api.mensagensVoluntario()).mensagens).toEqual([])
+    const depois = await api.mensagemVoluntario(id)
+    expect(depois?.estado).toBe('enviada')
+    expect(depois?.sugestoes.filter((s) => s.escolhida).map((s) => [s.rodada, s.abordagem])).toEqual([[2, 'facilitacao']])
+    const linha = (await api.clientesRecentes({ cliente: 'c-103' }))[0]
+    expect(linha.abordagem?.status).toBe('enviada')
   })
 })

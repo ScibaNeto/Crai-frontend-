@@ -10,10 +10,11 @@ import { base } from './en/base'
 import { ciclos } from './en/ciclos'
 import { configuracao } from './en/configuracao'
 import { dados } from './en/dados'
+import { mensagensVoluntario } from './en/mensagensVoluntario'
 import { simulacao } from './en/simulacao'
 import { site } from './en/site'
 import { textos } from './en/textos'
 import { visao } from './en/visao'
 
 // `backend` vem primeiro: num texto igual, vale a tradução escrita para a tela.
-export const EN: Record<string, string> = { ...backend, ...base, ...dados, ...textos, ...visao, ...ciclos, ...configuracao, ...simulacao, ...site }
+export const EN: Record<string, string> = { ...backend, ...base, ...dados, ...textos, ...visao, ...ciclos, ...configuracao, ...simulacao, ...site, ...mensagensVoluntario }

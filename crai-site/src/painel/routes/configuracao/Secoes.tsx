@@ -76,7 +76,7 @@ export function SecaoMensagens({ config, onSalvar, podeEditar }: PropsConfig) {
     >
       {!podeEditar ? <Aviso>{t('Você tem o papel de membro: pode ver a configuração, mas só um administrador ou o dono muda.')}</Aviso> : null}
 
-      <Bloco titulo={t('Quem escolhe a mensagem')} apoio={t('O sistema sempre escreve 3 mensagens e recomenda uma. A diferença é quem decide.')}>
+      <Bloco titulo={t('Quem escolhe a mensagem')} apoio={t('O sistema sempre escreve 3 mensagens e recomenda uma. A diferença é quem decide. Vale para as cobranças e para as ofertas aos clientes em risco; no aviso dentro do produto a oferta sai na hora.')}>
         <div role="radiogroup" aria-label={t('Modo de envio')} className="grid gap-3 sm:grid-cols-2">
           {(
             [

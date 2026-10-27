@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type DragEvent } from 'react'
-import { IconCheck, IconDownload, IconSpark, IconTable } from '../../components/icons/Icons'
+import { IconArrowRight, IconCheck, IconDownload, IconSpark, IconTable } from '../../components/icons/Icons'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
 import { ErroCarregar, Vazio } from '../../components/ui/Estados'
@@ -33,7 +33,9 @@ export function FaixaPill({ faixa, className }: { faixa: FaixaRisco; className?:
 
 const STATUS_OFERTA = {
   aguardando: { rotulo: t('A enviar'), classe: 'text-silver' },
+  aguardando_escolha: { rotulo: t('Esperando a sua escolha'), classe: 'text-warn' },
   enviada: { rotulo: t('Enviada'), classe: 'text-amber' },
+  nao_enviada: { rotulo: t('Não enviada'), classe: 'text-silver' },
   aceita: { rotulo: t('Aceita'), classe: 'text-ok' },
   recusada: { rotulo: t('Recusada'), classe: 'text-silver' },
 }
@@ -55,6 +57,8 @@ interface PropsDaTabela {
   buscado?: ClienteRisco | null
   /** Muda quando a página lê os dados de novo (base anexada, atualização automática): a lista relê. */
   recarga?: unknown
+  /** Abre o painel das 3 mensagens de uma oferta (o botão da coluna Abordagem). */
+  onVerMensagens?: (id: number) => void
 }
 
 /**
@@ -63,7 +67,7 @@ interface PropsDaTabela {
  * Antes eram os 10 atualizados por último: numa base anexada de uma vez, todos têm a mesma data, e
  * a lista mostrava quem estava no fim do arquivo.
  */
-export function TabelaClientes({ incluirSimulados, total, buscado = null, recarga }: PropsDaTabela) {
+export function TabelaClientes({ incluirSimulados, total, buscado = null, recarga, onVerMensagens }: PropsDaTabela) {
   const [filtro, setFiltro] = useState<Filtro>('todos')
   const [pagina, setPagina] = useState<PaginaClientes | null>(null)
   const [erro, setErro] = useState<string | null>(null)
@@ -225,6 +229,21 @@ export function TabelaClientes({ incluirSimulados, total, buscado = null, recarg
                         <div className="t-label text-silver">
                           {c.abordagem.canal} · <span className={STATUS_OFERTA[c.abordagem.status].classe}>{STATUS_OFERTA[c.abordagem.status].rotulo}</span>
                         </div>
+                        {c.abordagem.mensagem_id !== null && onVerMensagens ? (
+                          <button
+                            type="button"
+                            onClick={() => onVerMensagens(c.abordagem!.mensagem_id!)}
+                            className={cx(
+                              't-label mt-2 inline-flex items-center gap-1.5 rounded-[8px] border px-2.5 py-1 font-[560] transition-colors',
+                              c.abordagem.status === 'aguardando_escolha'
+                                ? 'border-transparent bg-paper text-ink hover:bg-paper-forte'
+                                : 'border-line text-silver hover:border-graphite hover:text-paper',
+                            )}
+                          >
+                            {c.abordagem.status === 'aguardando_escolha' ? t('Ver as 3 mensagens') : t('Ver as mensagens')}
+                            <IconArrowRight width={13} height={13} />
+                          </button>
+                        ) : null}
                       </>
                     ) : (
                       <span className="t-label text-muted">{c.faixa === 'sem_dado' ? t('Aguardando dados') : t('Nenhuma; monitorado')}</span>

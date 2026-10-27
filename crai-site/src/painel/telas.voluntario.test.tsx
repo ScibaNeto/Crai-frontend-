@@ -15,7 +15,7 @@ vi.hoisted(() => {
 import App from './App'
 import { MODO_REAL, emDemonstracao } from './data/api'
 import { clientesRisco } from './data/mock'
-import { ligarBackendFalso, prepararJsdom } from './testes/modoRealFalso'
+import { corposEnviados, ligarBackendFalso, prepararJsdom } from './testes/modoRealFalso'
 
 const ESPERA = { timeout: 5000 }
 const MES = new Date().toISOString().slice(0, 7)
@@ -252,5 +252,122 @@ describe('a lista de clientes por risco (14/10/2026)', () => {
     abrir('/voluntario')
     await carregada()
     expect(screen.getByText('38 graves')).toBeTruthy()
+  })
+})
+
+describe('as 3 mensagens do voluntário (14/10/2026)', () => {
+  const PRAZO = new Date(Date.now() + 400 * 60_000).toISOString()
+  const SUGESTAO = (abordagem: string, recomendada: boolean, pt: string) => ({
+    rodada: 1,
+    abordagem,
+    recomendada,
+    escolhida: false,
+    origem: 'template',
+    textos: { pt, en: `EN ${pt}` },
+  })
+  const RESUMO = {
+    id: 7,
+    cliente_id: 'cli-001',
+    nome: 'Oficina Boa Viagem',
+    mrr: 480,
+    faixa: 'grave',
+    estado: 'aguardando',
+    oferta: 'desconto_20',
+    oferta_legivel: 'desconto de 20% por 3 meses',
+    canal: 'email',
+    canal_legivel: 'e-mail',
+    criado_em: new Date(Date.now() - 80 * 60_000).toISOString(),
+    escolha_ate: PRAZO,
+    recomendada: SUGESTAO('direto_ao_ponto', true, 'Olá. Temos uma proposta para você continuar.'),
+  }
+  const DETALHE = {
+    ...RESUMO,
+    posicao_no_ranking: 1,
+    total_na_base: 2,
+    modo: 'escolha',
+    escolhida_por: null,
+    enviada_em: null,
+    motivo_nao_enviada: null,
+    texto_apagado: false,
+    risco: {
+      pontuacao: 0.9,
+      decidido_por: 'regua',
+      motivo: '41 dias sem login, 0 funcionalidades usadas, MRR R$ 480,00',
+      contribuicoes: [],
+    },
+    sugestoes: [
+      SUGESTAO('cuidado_proximo', false, 'Olá! Notamos que você tem usado menos a plataforma.'),
+      SUGESTAO('facilitacao', false, 'Olá! Se algo está pesando no momento, a gente facilita.'),
+      SUGESTAO('direto_ao_ponto', true, 'Olá. Temos uma proposta para você continuar.'),
+    ],
+    linha_do_tempo: [
+      { em: new Date(Date.now() - 81 * 60_000).toISOString(), tipo: 'sinal_de_risco', evento: 'Cancellation Page Viewed' },
+      { em: RESUMO.criado_em, tipo: 'mensagens_sugeridas', oferta_legivel: 'desconto de 20% por 3 meses', canal_legivel: 'e-mail', rodadas: 1 },
+    ],
+  }
+  const COM_MENSAGEM = {
+    ...COM_DADOS,
+    'GET /clientes/recentes': {
+      ...RECENTES,
+      clientes: [{ ...RECENTES.clientes[0], abordagem: { ...RECENTES.clientes[0].abordagem, canal: 'email', canal_legivel: 'e-mail', situacao: 'aguardando_escolha', mensagem_id: 7 } }, RECENTES.clientes[1]],
+    },
+    'GET /voluntario/mensagens': { mensagens: [RESUMO], modo: 'escolha', prazo_escolha_horas: 8 },
+    'GET /voluntario/mensagens/7': DETALHE,
+    'POST /voluntario/mensagens/7/escolher': { id: 7, rodada: 1, abordagem: 'facilitacao', escolhida_por: 'owner', enviada: true, motivo_nao_enviada: null },
+    'POST /voluntario/mensagens/7/regerar': { id: 7, rodada: 2, sugestoes: [], escolha_ate: PRAZO },
+  }
+
+  it('as quatro funções estão no mapa de rotas reais', () => {
+    expect(emDemonstracao('mensagensVoluntario', 'mensagemVoluntario', 'escolherMensagemVoluntario', 'regerarMensagensVoluntario')).toBe(false)
+  })
+
+  it('a aba Mensagens mostra quantas esperam e a recomendada de cada uma', async () => {
+    ligarBackendFalso(COM_MENSAGEM)
+    abrir('/voluntario?aba=mensagens')
+    const aba = await screen.findByRole('tab', { name: /Mensagens\s*1/ }, ESPERA)
+    expect(aba.getAttribute('aria-selected')).toBe('true')
+    const lista = within(await screen.findByRole('list', { name: 'Ofertas esperando a escolha da mensagem' }, ESPERA))
+    expect(lista.getByText('Oficina Boa Viagem')).toBeTruthy()
+    expect(lista.getByText(/Oferta: Desconto de 20% por 3 meses/)).toBeTruthy()
+    expect(lista.getByText('Recomendada: Direto ao ponto.')).toBeTruthy()
+    expect(lista.getByText(/Envio automático em 6 h/)).toBeTruthy()
+  })
+
+  it('"Ver as 3 mensagens" abre o painel com o risco, as mensagens e a linha do tempo', async () => {
+    ligarBackendFalso(COM_MENSAGEM)
+    abrir('/voluntario?aba=clientes')
+    const tabela = within(await screen.findByRole('table', {}, ESPERA))
+    await waitFor(() => expect(tabela.getByText('Esperando a sua escolha')).toBeTruthy(), ESPERA)
+    fireEvent.click(tabela.getByRole('button', { name: /Ver as 3 mensagens/ }))
+    const painel = within(await screen.findByRole('dialog', { name: 'Mensagens da oferta' }, ESPERA))
+    expect(await painel.findByText('Por que este cliente está em risco', {}, ESPERA)).toBeTruthy()
+    expect(painel.getByText('90%')).toBeTruthy()
+    expect(painel.getByText(/não uma probabilidade/)).toBeTruthy()
+    expect(painel.getByText('Cuidado próximo')).toBeTruthy()
+    expect(painel.getByText('Facilitação')).toBeTruthy()
+    expect(painel.getByText('Direto ao ponto')).toBeTruthy()
+    expect(painel.getAllByRole('button', { name: /Enviar esta/ })).toHaveLength(3)
+    expect(painel.getByText('Abriu a página de cancelamento.')).toBeTruthy()
+    expect(painel.getByText('Envio automático da recomendada')).toBeTruthy()
+  })
+
+  it('"Enviar esta" manda só a rodada e a abordagem, nunca o texto', async () => {
+    ligarBackendFalso(COM_MENSAGEM)
+    abrir('/voluntario?aba=mensagens&mensagem=7')
+    const painel = within(await screen.findByRole('dialog', { name: 'Mensagens da oferta' }, ESPERA))
+    await painel.findByText('Facilitação', {}, ESPERA)
+    const cartao = document.querySelector('[data-abordagem="facilitacao"]') as HTMLElement
+    fireEvent.click(within(cartao).getByRole('button', { name: /Enviar esta/ }))
+    await waitFor(() => expect(corposEnviados().some((c) => c.chave === 'POST /voluntario/mensagens/7/escolher')).toBe(true), ESPERA)
+    const corpo = corposEnviados().find((c) => c.chave === 'POST /voluntario/mensagens/7/escolher')!.corpo
+    expect(corpo).toEqual({ rodada: 1, abordagem: 'facilitacao' })
+  })
+
+  it('"Quero outro tipo de mensagem" pede outra rodada', async () => {
+    const chamadas = ligarBackendFalso(COM_MENSAGEM)
+    abrir('/voluntario?aba=mensagens&mensagem=7')
+    const painel = within(await screen.findByRole('dialog', { name: 'Mensagens da oferta' }, ESPERA))
+    fireEvent.click(await painel.findByRole('button', { name: /Quero outro tipo de mensagem/ }, ESPERA))
+    await waitFor(() => expect(chamadas).toContain('POST /voluntario/mensagens/7/regerar'), ESPERA)
   })
 })

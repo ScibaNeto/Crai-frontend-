@@ -58,6 +58,8 @@ const RESPOSTAS: Record<string, unknown> = {
   // Rodada 3, Fase 1: a página do voluntário, com a base vazia.
   'GET /clientes/recentes': { clientes: [], total_na_base: 0 },
   'GET /clientes/base': { base: null },
+  // 14/10/2026: as 3 mensagens do voluntário, sem nenhuma esperando.
+  'GET /voluntario/mensagens': { mensagens: [], modo: 'escolha', prazo_escolha_horas: 8 },
   'GET /metrics/voluntario/mes': {
     mes: dia(0).slice(0, 7),
     valor_liquido_mantido: 0,

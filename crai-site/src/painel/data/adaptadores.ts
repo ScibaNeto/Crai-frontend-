@@ -60,8 +60,14 @@ import type {
   TentativaSimulada,
   TipoAtividade,
   PaginaClientes,
+  AbordagemVoluntario,
+  EventoMensagemVoluntario,
+  MensagemVoluntarioDetalhe,
+  MensagemVoluntarioResumo,
+  SugestaoVoluntario,
+  TipoEventoMensagemVoluntario,
 } from './tipos'
-import { t } from '../lib/idioma'
+import { idiomaAtual, t } from '../lib/idioma'
 import { doBackend } from '../lib/doBackend'
 import { fmt } from '../lib/format'
 
@@ -174,6 +180,8 @@ export interface SerieApi {
 
 export interface ConfiguracaoApi {
   modo_mensagem_involuntario: 'automatico' | 'escolha'
+  /** 14/10/2026: o modo do voluntário. Ausente num backend anterior. */
+  modo_mensagem_voluntario?: 'automatico' | 'escolha'
   prazo_escolha_horas: number
   janela_contato_inicio: string // "08:00"
   janela_contato_fim: string // "20:00" (aceita "24:00")
@@ -572,6 +580,7 @@ export const CANAIS_DO_BACKEND: Canal[] = ['whatsapp', 'email']
 export function adaptarConfiguracao(c: ConfiguracaoApi, locais: Pick<Configuracao, 'notificacoes'>): Configuracao {
   return {
     modo_mensagem_involuntario: c.modo_mensagem_involuntario,
+    modo_mensagem_voluntario: c.modo_mensagem_voluntario ?? c.modo_mensagem_involuntario,
     prazo_escolha_horas: c.prazo_escolha_horas,
     janela_contato: { inicio: horaDaTela(c.janela_contato_inicio), fim: horaDaTela(c.janela_contato_fim) },
     canais: c.canais_permitidos.map(canalDaTela).filter((x) => x !== 'sem_canal'),
@@ -594,6 +603,10 @@ export function adaptarConfiguracao(c: ConfiguracaoApi, locais: Pick<Configuraca
 export function configuracaoParaApi(nova: Configuracao, lida: Configuracao): Partial<ConfiguracaoApi> {
   const corpo: Partial<ConfiguracaoApi> = {}
   if (nova.modo_mensagem_involuntario !== lida.modo_mensagem_involuntario) corpo.modo_mensagem_involuntario = nova.modo_mensagem_involuntario
+  // A tela tem uma escolha só, que vale para os dois: o voluntário acompanha o involuntário.
+  if (nova.modo_mensagem_involuntario !== (lida.modo_mensagem_voluntario ?? lida.modo_mensagem_involuntario)) {
+    corpo.modo_mensagem_voluntario = nova.modo_mensagem_involuntario
+  }
   if (nova.prazo_escolha_horas !== lida.prazo_escolha_horas) corpo.prazo_escolha_horas = nova.prazo_escolha_horas
   if (nova.janela_contato.inicio !== lida.janela_contato.inicio) corpo.janela_contato_inicio = horaParaApi(nova.janela_contato.inicio)
   if (nova.janela_contato.fim !== lida.janela_contato.fim) corpo.janela_contato_fim = horaParaApi(nova.janela_contato.fim)
@@ -856,6 +869,8 @@ export interface ClienteRecenteApi {
     canal: string | null
     canal_legivel: string | null
     situacao: string
+    /** 14/10/2026: a oferta passou pela escolha das 3 mensagens. Ausente num backend anterior. */
+    mensagem_id?: number | null
     simulado?: boolean
   } | null
   atualizado_em: string | null
@@ -873,7 +888,7 @@ export interface ClientesRecentesApi {
 }
 
 const FAIXAS: FaixaRisco[] = ['grave', 'preocupante', 'sem_risco', 'sem_dado']
-const SITUACOES = ['aguardando', 'enviada', 'aceita', 'recusada'] as const
+const SITUACOES = ['aguardando', 'aguardando_escolha', 'enviada', 'nao_enviada', 'aceita', 'recusada'] as const
 
 /** Só os campos conhecidos passam, um a um. Faixa que a tela não conhece vira "sem dado". */
 export function adaptarClienteRecente(c: ClienteRecenteApi): ClienteRisco {
@@ -892,6 +907,7 @@ export function adaptarClienteRecente(c: ClienteRecenteApi): ClienteRisco {
             oferta: doBackend(maiuscula(c.abordagem.oferta_legivel ?? c.abordagem.oferta)),
             canal: doBackend(maiuscula(c.abordagem.canal_legivel ?? c.abordagem.canal ?? t('Sem canal disponível'))),
             status: situacao,
+            mensagem_id: typeof c.abordagem.mensagem_id === 'number' ? c.abordagem.mensagem_id : null,
           }
         : null,
     atualizado_em: c.atualizado_em,
@@ -920,6 +936,150 @@ export function adaptarPaginaPorRisco(r: ClientesRecentesApi): PaginaClientes {
     contagem,
     totalFiltrado: typeof r.total_filtrado === 'number' ? r.total_filtrado : clientes.length,
     totalNaBase: r.total_na_base,
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* As 3 mensagens do voluntário (14/10/2026)                            */
+/* ------------------------------------------------------------------ */
+
+export interface SugestaoVoluntarioApi {
+  rodada: number
+  abordagem: string
+  rotulo?: string
+  recomendada: boolean
+  escolhida: boolean
+  origem?: string | null
+  /** {"pt", "en"} do modelo pronto; só "pt" no texto gerado; null depois do prazo de guarda. */
+  textos: Partial<Record<'pt' | 'en', string>> | null
+}
+
+export interface MensagemVoluntarioApi {
+  id: number
+  cliente_id: string
+  nome: string | null
+  mrr: number | null
+  faixa: string
+  estado: string
+  oferta: string
+  oferta_legivel: string | null
+  canal: string
+  canal_legivel: string | null
+  criado_em: string
+  escolha_ate: string | null
+  recomendada: SugestaoVoluntarioApi | null
+}
+
+export interface ListaMensagensVoluntarioApi {
+  mensagens: MensagemVoluntarioApi[]
+  modo: 'automatico' | 'escolha'
+  prazo_escolha_horas: number
+}
+
+export interface MensagemVoluntarioDetalheApi extends MensagemVoluntarioApi {
+  posicao_no_ranking: number | null
+  total_na_base: number
+  modo: 'automatico' | 'escolha'
+  escolhida_por: string | null
+  enviada_em: string | null
+  motivo_nao_enviada: string | null
+  texto_apagado: boolean
+  risco: {
+    pontuacao: number | null
+    decidido_por: string | null
+    motivo: string | null
+    contribuicoes: { fator: string; efeito: string | null }[]
+  }
+  sugestoes: SugestaoVoluntarioApi[]
+  linha_do_tempo: ({ em: string; tipo: string } & Record<string, unknown>)[]
+}
+
+const ABORDAGENS_VOLUNTARIO: AbordagemVoluntario[] = ['cuidado_proximo', 'facilitacao', 'direto_ao_ponto']
+const ESTADOS_MENSAGEM = ['aguardando', 'enviada', 'nao_enviada'] as const
+const TIPOS_EVENTO_MENSAGEM: TipoEventoMensagemVoluntario[] = [
+  'sinal_de_risco',
+  'mensagens_sugeridas',
+  'mensagem_escolhida',
+  'mensagem_enviada',
+  'mensagem_nao_enviada',
+  'oferta_aceita',
+  'oferta_recusada',
+]
+
+/** O texto no idioma de quem lê; sem ele (texto gerado só em português), o português. */
+export function adaptarSugestaoVoluntario(s: SugestaoVoluntarioApi): SugestaoVoluntario | null {
+  const abordagem = ABORDAGENS_VOLUNTARIO.find((a) => a === s.abordagem)
+  if (!abordagem) return null
+  const textos = s.textos ?? null
+  return {
+    rodada: s.rodada,
+    abordagem,
+    recomendada: Boolean(s.recomendada),
+    escolhida: Boolean(s.escolhida),
+    texto: textos ? (textos[idiomaAtual()] ?? textos.pt ?? null) : null,
+    gerada: s.origem === 'gerado',
+  }
+}
+
+const textoOuNull = (v: unknown): string | null => (typeof v === 'string' ? v : null)
+
+export function adaptarMensagemVoluntario(m: MensagemVoluntarioApi): MensagemVoluntarioResumo {
+  const canal = (['whatsapp', 'email', 'sms', 'popup'] as const).find((c) => c === m.canal) ?? 'sem_canal'
+  return {
+    id: m.id,
+    cliente_id: m.cliente_id,
+    nome: m.nome?.trim() || m.cliente_id,
+    mrr: typeof m.mrr === 'number' ? m.mrr : null,
+    faixa: FAIXAS.includes(m.faixa as FaixaRisco) ? (m.faixa as FaixaRisco) : 'sem_dado',
+    estado: ESTADOS_MENSAGEM.find((e) => e === m.estado) ?? 'nao_enviada',
+    oferta: doBackend(maiuscula(m.oferta_legivel ?? m.oferta)),
+    canal,
+    canal_legivel: doBackend(maiuscula(m.canal_legivel ?? m.canal)),
+    criado_em: m.criado_em,
+    escolha_ate: m.escolha_ate,
+    recomendada: m.recomendada ? adaptarSugestaoVoluntario(m.recomendada) : null,
+  }
+}
+
+export function adaptarEventoMensagemVoluntario(e: { em: string; tipo: string } & Record<string, unknown>): EventoMensagemVoluntario | null {
+  const tipo = TIPOS_EVENTO_MENSAGEM.find((x) => x === e.tipo)
+  if (!tipo || !e.em) return null
+  const abordagem = ABORDAGENS_VOLUNTARIO.find((a) => a === e.abordagem)
+  return {
+    em: e.em,
+    tipo,
+    evento: textoOuNull(e.evento),
+    oferta: typeof e.oferta_legivel === 'string' ? doBackend(e.oferta_legivel) : undefined,
+    canal: typeof e.canal_legivel === 'string' ? doBackend(e.canal_legivel) : undefined,
+    rodadas: typeof e.rodadas === 'number' ? e.rodadas : undefined,
+    abordagem,
+    escolhida_por: textoOuNull(e.escolhida_por),
+    motivo: textoOuNull(e.motivo),
+  }
+}
+
+export function adaptarMensagemVoluntarioDetalhe(d: MensagemVoluntarioDetalheApi): MensagemVoluntarioDetalhe {
+  const decidido = d.risco?.decidido_por
+  return {
+    ...adaptarMensagemVoluntario(d),
+    posicao_na_base: d.posicao_no_ranking,
+    total_na_base: d.total_na_base,
+    modo: d.modo === 'automatico' ? 'automatico' : 'escolha',
+    escolhida_por: d.escolhida_por,
+    enviada_em: d.enviada_em,
+    motivo_nao_enviada: d.motivo_nao_enviada,
+    texto_apagado: Boolean(d.texto_apagado),
+    risco: {
+      pontuacao: typeof d.risco?.pontuacao === 'number' ? d.risco.pontuacao : null,
+      decidido_por: decidido === 'modelo' || decidido === 'regua' ? decidido : null,
+      motivo: d.risco?.motivo ? doBackend(maiuscula(d.risco.motivo)) : null,
+      contribuicoes: (d.risco?.contribuicoes ?? []).map((c) => ({
+        fator: doBackend(maiuscula(c.fator)),
+        efeito: c.efeito === 'aumentou' || c.efeito === 'reduziu' ? c.efeito : null,
+      })),
+    },
+    sugestoes: d.sugestoes.map(adaptarSugestaoVoluntario).filter((s): s is SugestaoVoluntario => s !== null),
+    linha_do_tempo: d.linha_do_tempo.map(adaptarEventoMensagemVoluntario).filter((e): e is EventoMensagemVoluntario => e !== null),
   }
 }
 

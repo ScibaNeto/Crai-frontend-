@@ -8,7 +8,9 @@ import type {
   ClienteRisco,
   ComparacaoReguaModelo,
   FaixaRisco,
+  MensagemVoluntarioDetalhe,
   ResumoVoluntario,
+  SugestaoVoluntario,
   CausaFalha,
   Funil,
   LinhaExtrato,
@@ -352,7 +354,12 @@ const cr = (
   motivo: string,
   risco_decidido_por: 'modelo' | 'regua',
   horasAtras: number,
-  abordagem: { oferta: keyof typeof OFERTA_DEMO; canal: keyof typeof CANAL_DEMO; status: NonNullable<ClienteRisco['abordagem']>['status'] } | null = null,
+  abordagem: {
+    oferta: keyof typeof OFERTA_DEMO
+    canal: keyof typeof CANAL_DEMO
+    status: NonNullable<ClienteRisco['abordagem']>['status']
+    mensagem_id?: number
+  } | null = null,
   simulado = false,
   posicao_na_base: number | null = null,
 ): ClienteRisco => ({
@@ -363,16 +370,18 @@ const cr = (
   motivo,
   risco_decidido_por,
   posicao_na_base,
-  abordagem: abordagem ? { oferta: OFERTA_DEMO[abordagem.oferta], canal: CANAL_DEMO[abordagem.canal], status: abordagem.status } : null,
+  abordagem: abordagem
+    ? { oferta: OFERTA_DEMO[abordagem.oferta], canal: CANAL_DEMO[abordagem.canal], status: abordagem.status, mensagem_id: abordagem.mensagem_id ?? null }
+    : null,
   atualizado_em: new Date(AGORA.getTime() - horasAtras * 3_600_000).toISOString(),
   nao_contatar: false,
   simulado,
 })
 
 export const clientesRisco: ClienteRisco[] = [
-  cr('c-101', 'Loja Ponto Certo', 1200, 'grave', t('O uso caiu pela metade em 2 semanas e o pagamento atrasou 2 vezes.'), 'modelo', 1, { oferta: 'desconto', canal: 'whatsapp', status: 'enviada' }, false, 7),
+  cr('c-101', 'Loja Ponto Certo', 1200, 'grave', t('O uso caiu pela metade em 2 semanas e o pagamento atrasou 2 vezes.'), 'modelo', 1, { oferta: 'desconto', canal: 'whatsapp', status: 'enviada', mensagem_id: 2 }, false, 7),
   cr('c-102', 'Cliente fictício · Bruno Lima', 300, 'grave', t('Sinais marcados na simulação: uso em queda e atraso.'), 'regua', 2, { oferta: 'desconto', canal: 'whatsapp', status: 'aceita' }, true, 41),
-  cr('c-103', 'Escritório Vértice', 3400, 'grave', t('Abriu 3 chamados no mês e parou de usar o módulo principal. Estava como Preocupante há 12 dias; com mensalidade alta, só sobe para Grave quando os sinais continuam.'), 'modelo', 5, { oferta: 'suporte', canal: 'email', status: 'aguardando' }, false, 19),
+  cr('c-103', 'Escritório Vértice', 3400, 'grave', t('Abriu 3 chamados no mês e parou de usar o módulo principal. Estava como Preocupante há 12 dias; com mensalidade alta, só sobe para Grave quando os sinais continuam.'), 'modelo', 5, { oferta: 'desconto', canal: 'email', status: 'aguardando_escolha', mensagem_id: 1 }, false, 19),
   cr('c-104', 'Café Aroma', 890, 'preocupante', t('Uso 30% abaixo do normal nas últimas 3 semanas.'), 'modelo', 9, { oferta: 'desconto', canal: 'whatsapp', status: 'aceita' }, false, 168),
   cr('c-105', 'Academia Ritmo', 2890, 'sem_risco', t('Uso estável e pagamentos em dia.'), 'modelo', 12, null, false, 904),
   cr('c-106', 'Distribuidora Norte Sul', 5600, 'preocupante', t('Reduziu o número de usuários ativos de 12 para 7. Mensalidade alta: entra como Preocupante e só sobe para Grave se os sinais continuarem.'), 'modelo', 20, { oferta: 'plano_leve', canal: 'email', status: 'recusada' }, false, 96),
@@ -381,6 +390,117 @@ export const clientesRisco: ClienteRisco[] = [
   cr('c-109', 'Rede Pilates Move', 2400, 'sem_risco', t('Aceitou a oferta há 5 dias e voltou a usar normalmente.'), 'modelo', 44, null, false, 512),
   cr('c-110', 'Contábil Prisma', 3600, 'sem_risco', t('Uso acima da média e nenhum chamado em 60 dias.'), 'modelo', 52, null, false, 1103),
   cr('c-111', 'Pet Shop Amigo', 690, 'grave', t('Cancelou 12 dias depois de aceitar a oferta; o valor foi estornado.'), 'modelo', 70, { oferta: 'desconto', canal: 'whatsapp', status: 'aceita' }, false, 3),
+]
+
+/* As 3 mensagens do voluntário: os mesmos modelos prontos que o backend usa (a 1ª e a 2ª rodada). */
+const sv = (rodada: number, abordagem: SugestaoVoluntario['abordagem'], texto: string, recomendada = false, escolhida = false): SugestaoVoluntario => ({
+  rodada,
+  abordagem,
+  recomendada,
+  escolhida,
+  texto,
+  gerada: false,
+})
+const antes = (minutos: number) => new Date(AGORA.getTime() - minutos * 60_000).toISOString()
+
+/** A 1ª rodada, para a oferta de 20% de desconto. */
+export const RODADA_1_DESCONTO = [
+  t('Olá! Notamos que você tem usado menos a plataforma, e queremos que ela continue valendo a pena para você. Por isso preparamos uma condição só sua: 20% de desconto por 3 meses. Se fizer sentido, é só responder esta mensagem.'),
+  t('Olá! Se algo está pesando no momento, a gente facilita. Uma opção para você: 20% de desconto por 3 meses. Para aceitar, basta responder SIM.'),
+  t('Olá. Temos uma proposta para você continuar: 20% de desconto por 3 meses. Se preferir cancelar, o caminho continua o mesmo, sem nenhuma etapa a mais.'),
+]
+/** A 2ª rodada ("Quero outro tipo de mensagem"). */
+export const RODADA_2_DESCONTO = [
+  t('Olá! Você é importante para a gente, e queremos entender o que pode melhorar. Enquanto isso, deixamos reservado para você: 20% de desconto por 3 meses. Basta responder aqui para ativar.'),
+  t('Olá! Para facilitar a sua rotina, liberamos para você: 20% de desconto por 3 meses. Não precisa preencher nada: responda esta mensagem e a gente ativa.'),
+  t('Olá. Uma oferta para você ficar: 20% de desconto por 3 meses. Para aceitar, responda esta mensagem. Cancelar continua igual, sem etapas extras.'),
+]
+
+export const mensagensVoluntario: MensagemVoluntarioDetalhe[] = [
+  {
+    id: 1,
+    cliente_id: 'c-103',
+    nome: 'Escritório Vértice',
+    mrr: 3400,
+    faixa: 'grave',
+    estado: 'aguardando',
+    oferta: t('Desconto de 20% por 3 meses'),
+    canal: 'email',
+    canal_legivel: t('E-mail'),
+    criado_em: antes(80),
+    escolha_ate: new Date(AGORA.getTime() + 400 * 60_000).toISOString(),
+    recomendada: sv(1, 'cuidado_proximo', RODADA_1_DESCONTO[0], true),
+    posicao_na_base: 19,
+    total_na_base: 1240,
+    modo: 'escolha',
+    escolhida_por: null,
+    enviada_em: null,
+    motivo_nao_enviada: null,
+    texto_apagado: false,
+    risco: {
+      pontuacao: 0.81,
+      decidido_por: 'modelo',
+      motivo: t('Abriu 3 chamados no mês e parou de usar o módulo principal. Estava como Preocupante há 12 dias; com mensalidade alta, só sobe para Grave quando os sinais continuam.'),
+      contribuicoes: [
+        { fator: t('3 chamados de suporte nos últimos 30 dias'), efeito: 'aumentou' },
+        { fator: t('18 dias sem acesso ao produto'), efeito: 'aumentou' },
+        { fator: t('4 funcionalidades usadas nos últimos 30 dias'), efeito: 'aumentou' },
+        { fator: t('740 dias como cliente'), efeito: 'reduziu' },
+        { fator: t('0 pagamentos que falharam nos últimos 90 dias'), efeito: 'reduziu' },
+      ],
+    },
+    sugestoes: [
+      sv(1, 'cuidado_proximo', RODADA_1_DESCONTO[0], true),
+      sv(1, 'facilitacao', RODADA_1_DESCONTO[1]),
+      sv(1, 'direto_ao_ponto', RODADA_1_DESCONTO[2]),
+    ],
+    linha_do_tempo: [
+      { em: antes(81), tipo: 'sinal_de_risco', evento: 'Session Started' },
+      { em: antes(80), tipo: 'mensagens_sugeridas', oferta: t('Desconto de 20% por 3 meses'), canal: t('E-mail'), rodadas: 1 },
+    ],
+  },
+  {
+    id: 2,
+    cliente_id: 'c-101',
+    nome: 'Loja Ponto Certo',
+    mrr: 1200,
+    faixa: 'grave',
+    estado: 'enviada',
+    oferta: t('Desconto de 20% por 3 meses'),
+    canal: 'whatsapp',
+    canal_legivel: 'WhatsApp',
+    criado_em: antes(26 * 60),
+    escolha_ate: null,
+    recomendada: sv(1, 'cuidado_proximo', RODADA_1_DESCONTO[0], true),
+    posicao_na_base: 7,
+    total_na_base: 1240,
+    modo: 'escolha',
+    escolhida_por: 'owner',
+    enviada_em: antes(22 * 60),
+    motivo_nao_enviada: null,
+    texto_apagado: false,
+    risco: {
+      pontuacao: 0.88,
+      decidido_por: 'modelo',
+      motivo: t('O uso caiu pela metade em 2 semanas e o pagamento atrasou 2 vezes.'),
+      contribuicoes: [
+        { fator: t('2 pagamentos que falharam nos últimos 90 dias'), efeito: 'aumentou' },
+        { fator: t('3 acessos nos últimos 7 dias'), efeito: 'aumentou' },
+        { fator: t('Mensalidade de R$ 1.200,00'), efeito: 'reduziu' },
+      ],
+    },
+    sugestoes: [
+      sv(1, 'cuidado_proximo', RODADA_1_DESCONTO[0], true),
+      sv(1, 'facilitacao', RODADA_1_DESCONTO[1], false, true),
+      sv(1, 'direto_ao_ponto', RODADA_1_DESCONTO[2]),
+    ],
+    linha_do_tempo: [
+      { em: antes(26 * 60 + 1), tipo: 'sinal_de_risco', evento: 'Session Started' },
+      { em: antes(26 * 60), tipo: 'mensagens_sugeridas', oferta: t('Desconto de 20% por 3 meses'), canal: 'WhatsApp', rodadas: 1 },
+      { em: antes(22 * 60), tipo: 'mensagem_escolhida', abordagem: 'facilitacao', escolhida_por: 'owner' },
+      { em: antes(22 * 60), tipo: 'mensagem_enviada', canal: 'WhatsApp' },
+    ],
+  },
 ]
 
 export const resumoVoluntario: ResumoVoluntario = {

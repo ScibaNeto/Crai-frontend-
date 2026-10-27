@@ -137,6 +137,12 @@ export interface PontoSerie {
 
 export interface Configuracao {
   modo_mensagem_involuntario: 'automatico' | 'escolha'
+  /**
+   * 14/10/2026: o modo das ofertas do voluntário. A tela tem uma escolha só ("Quem escolhe a
+   * mensagem"), que vale para os dois; ao salvar, este acompanha o do involuntário. Ausente num
+   * backend anterior.
+   */
+  modo_mensagem_voluntario?: 'automatico' | 'escolha'
   prazo_escolha_horas: number
   janela_contato: { inicio: number; fim: number } // horas, ex.: 8 às 20
   canais: Canal[] // permitidos, na ordem de preferência
@@ -437,12 +443,97 @@ export interface ClienteRisco {
   /** null: não há avaliação (sem dado), ou ela veio de um evento que não registra quem decidiu. */
   risco_decidido_por: 'modelo' | 'regua' | null
   posicao_na_base: number | null // 1 = maior risco da base; null quando não há dado suficiente
-  /** A oferta e o canal já vêm em português (o backend manda o texto pronto). */
-  abordagem: { oferta: string; canal: string; status: 'aguardando' | 'enviada' | 'aceita' | 'recusada' } | null
+  /**
+   * A oferta e o canal já vêm em português (o backend manda o texto pronto). `aguardando_escolha`:
+   * as 3 mensagens esperam a escolha da empresa; `mensagem_id` leva a elas (null quando a oferta
+   * não passou pela escolha, como o pop-up ou o modo automático).
+   */
+  abordagem: {
+    oferta: string
+    canal: string
+    status: 'aguardando' | 'aguardando_escolha' | 'enviada' | 'nao_enviada' | 'aceita' | 'recusada'
+    mensagem_id: number | null
+  } | null
   atualizado_em: string | null
   /** O cliente pediu para não receber mensagens (respondeu SAIR), ou a empresa o marcou. */
   nao_contatar: boolean
   simulado: boolean
+}
+
+/* ------------------------------------------------------------------ */
+/* As 3 mensagens do voluntário (14/10/2026)                            */
+/* ------------------------------------------------------------------ */
+
+/** As 3 maneiras de apresentar a mesma oferta. */
+export type AbordagemVoluntario = 'cuidado_proximo' | 'facilitacao' | 'direto_ao_ponto'
+
+export interface SugestaoVoluntario {
+  rodada: number
+  abordagem: AbordagemVoluntario
+  recomendada: boolean
+  escolhida: boolean
+  /** No idioma de quem lê, quando há; null depois do prazo de guarda do texto. */
+  texto: string | null
+  /** Escrita pela Claude API (só em português); senão, o modelo pronto. */
+  gerada: boolean
+}
+
+/** Uma oferta de retenção e as suas mensagens, como a aba "Mensagens" lista. Sem contato. */
+export interface MensagemVoluntarioResumo {
+  id: number
+  cliente_id: string
+  nome: string
+  mrr: number | null
+  faixa: FaixaRisco
+  /** `aguardando`: espera a escolha; `nao_enviada`: o cliente pediu para não ser contatado, ou a entrega falhou. */
+  estado: 'aguardando' | 'enviada' | 'nao_enviada'
+  oferta: string
+  canal: Canal | 'popup'
+  canal_legivel: string
+  criado_em: string
+  /** Até quando a empresa escolhe; null quando não há mais escolha a fazer. */
+  escolha_ate: string | null
+  recomendada: SugestaoVoluntario | null
+}
+
+export type TipoEventoMensagemVoluntario =
+  | 'sinal_de_risco'
+  | 'mensagens_sugeridas'
+  | 'mensagem_escolhida'
+  | 'mensagem_enviada'
+  | 'mensagem_nao_enviada'
+  | 'oferta_aceita'
+  | 'oferta_recusada'
+
+export interface EventoMensagemVoluntario {
+  em: string
+  tipo: TipoEventoMensagemVoluntario
+  evento?: string | null
+  oferta?: string
+  canal?: string
+  rodadas?: number
+  abordagem?: AbordagemVoluntario
+  escolhida_por?: string | null
+  motivo?: string | null
+}
+
+export interface MensagemVoluntarioDetalhe extends MensagemVoluntarioResumo {
+  posicao_na_base: number | null
+  total_na_base: number
+  modo: 'automatico' | 'escolha'
+  escolhida_por: string | null
+  enviada_em: string | null
+  motivo_nao_enviada: string | null
+  texto_apagado: boolean
+  risco: {
+    /** 0 a 1. */
+    pontuacao: number | null
+    decidido_por: 'modelo' | 'regua' | null
+    motivo: string | null
+    contribuicoes: { fator: string; efeito: 'aumentou' | 'reduziu' | null }[]
+  }
+  sugestoes: SugestaoVoluntario[]
+  linha_do_tempo: EventoMensagemVoluntario[]
 }
 
 /**

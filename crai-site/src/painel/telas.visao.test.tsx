@@ -139,8 +139,9 @@ describe('visão geral em modo real', () => {
     expect(resumo.getByText('1 já recebeu uma oferta')).toBeTruthy()
     expect(resumo.getByText('60%')).toBeTruthy()
     expect(resumo.getByText('Das 5 cobranças que já tiveram desfecho')).toBeTruthy()
-    // O cartão do grupo de controle continua planejado, sem número.
-    expect(resumo.getByText('Planejado')).toBeTruthy()
+    // Sem grupo de controle (decisão do Crai, 30/09/2026): o cartão "Planejado" saiu da tela.
+    expect(resumo.queryByText('Planejado')).toBeNull()
+    expect(screen.queryByText('Comparação com grupo de controle')).toBeNull()
   })
 
   it('sem desfecho, a taxa é um traço e a tela diz por quê, em vez de mostrar 0%', async () => {
